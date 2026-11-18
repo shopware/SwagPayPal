@@ -66,7 +66,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         $route = new ExpressCreateOrderRoute(
             $cartService,
             $this->getContainer()->get(PayPalOrderBuilder::class),
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
             $this->getContainer()->get(CartPriceService::class),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
@@ -90,7 +90,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         $route = new ExpressCreateOrderRoute(
             $cartService,
             $this->createMock(PayPalOrderBuilder::class),
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
             $this->getContainer()->get(CartPriceService::class),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
@@ -271,7 +271,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         return new ExpressCreateOrderRoute(
             $this->getContainer()->get(CartService::class),
             $paypalOrderBuilder,
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
             $this->getContainer()->get(CartPriceService::class),
             $systemConfig,
             $router ?? $this->createMock(RouterInterface::class),

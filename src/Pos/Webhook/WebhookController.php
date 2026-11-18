@@ -22,6 +22,8 @@ use Swag\PayPal\Pos\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Pos\Webhook\Exception\WebhookNotRegisteredException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -145,7 +147,10 @@ class WebhookController extends AbstractController
     {
         $postData = $request->request->all();
 
-        $this->logger->debug('[Zettle Webhook] Received webhook', ['payload' => $postData]);
+        $this->logger->debug('Received a Zettle webhook event', [
+            LogKey::WEBHOOK_EVENT_TYPE => \is_string($postData['eventName'] ?? null) ? $postData['eventName'] : null,
+            LogKey::PAYLOAD => $postData,
+        ]);
 
         if ($postData === []) {
             throw new BadRequestHttpException('No webhook data sent');
@@ -163,28 +168,40 @@ class WebhookController extends AbstractController
      */
     private function tryToExecuteWebhook(Webhook $webhook, SalesChannelEntity $salesChannel, Context $context): void
     {
-        $logContext = ['type' => $webhook->getEventName(), 'webhook' => \json_encode($webhook)];
+        $logContext = [
+            LogKey::WEBHOOK_EVENT_TYPE => $webhook->getEventName(),
+            LogKey::SALES_CHANNEL_ID => $salesChannel->getId(),
+        ];
 
         try {
             $this->webhookService->executeWebhook($webhook, $salesChannel, $context);
-            $this->logger->info('[Zettle Webhook] Webhook successfully executed', $logContext);
-        } catch (WebhookHandlerNotFoundException $exception) {
-            $this->logger->info(\sprintf('[Zettle Webhook] %s', $exception->getMessage()), $logContext);
+            $this->logger->info('Processed Zettle webhook event {webhookEventType}', [...$logContext, LogKey::CODE => LogCode::ZETTLE_WEBHOOK_PROCESSED]);
+        } catch (WebhookHandlerNotFoundException) {
+            $this->logger->debug('Ignored Zettle webhook event {webhookEventType}: the plugin doesn\'t handle this event type', $logContext);
         } catch (WebhookException $webhookException) {
-            $this->logger->error(\sprintf('[Zettle Webhook] %s', $webhookException->getMessage()), $logContext);
+            $this->logger->error('Could not process Zettle webhook event {webhookEventType}: the event lacks the data the plugin needs', [
+                ...$logContext,
+                LogKey::CODE => LogCode::ZETTLE_WEBHOOK_INVALID,
+                LogKey::EXCEPTION => $webhookException,
+            ]);
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (\Throwable $e) {
             if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
-                $this->logger->warning(\sprintf('[Zettle Webhook] %s', $e->getMessage()), $logContext);
+                $this->logger->warning('Could not process Zettle webhook event {webhookEventType}: PayPal couldn\'t find the referenced resource', [
+                    ...$logContext,
+                    LogKey::CODE => LogCode::ZETTLE_WEBHOOK_RESOURCE_NOT_FOUND,
+                    LogKey::EXCEPTION => $e,
+                ]);
 
                 return;
             }
 
-            $this->logger->error(
-                \sprintf('[Zettle Webhook] %s', $e->getMessage()),
-                [...$logContext, 'error' => $e],
-            );
+            $this->logger->error('Could not process Zettle webhook event {webhookEventType}', [
+                ...$logContext,
+                LogKey::CODE => LogCode::ZETTLE_WEBHOOK_FAILED,
+                LogKey::EXCEPTION => $e,
+            ]);
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }

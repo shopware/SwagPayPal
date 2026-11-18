@@ -12,7 +12,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -31,6 +30,9 @@ use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandle
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 
 /**
  * @internal
@@ -39,6 +41,8 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 #[CoversClass(TransactionStatusSyncMessageHandler::class)]
 class TransactionStatusSyncMessageHandlerTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private EntityRepository&MockObject $orderTransactionRepository;
 
     private OrderTransactionStateHandler&MockObject $orderTransactionStateHandler;
@@ -46,8 +50,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     private OrderResource&MockObject $orderResource;
 
     private TransactionDataService&MockObject $transactionDataService;
-
-    private LoggerInterface&MockObject $logger;
 
     private TransactionStatusSyncMessageHandler $handler;
 
@@ -57,14 +59,13 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $this->orderTransactionStateHandler = $this->createMock(OrderTransactionStateHandler::class);
         $this->orderResource = $this->createMock(OrderResource::class);
         $this->transactionDataService = $this->createMock(TransactionDataService::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->handler = new TransactionStatusSyncMessageHandler(
             $this->orderTransactionRepository,
             $this->orderTransactionStateHandler,
             $this->orderResource,
             $this->transactionDataService,
-            $this->logger,
+            $this->createPayPalLogger(),
         );
     }
 
@@ -117,8 +118,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method($stateHandlerMethod ?? static::anything())
             ->with('transaction-id');
 
-        $this->logger->expects($this->never())->method(static::anything());
-
         $message = new TransactionStatusSyncMessage(
             'transaction-id',
             'sales-channel-id',
@@ -126,6 +125,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
+
+        // the status change itself is logged by the PaymentStatusChangeSubscriber
+        static::assertSame([], $this->getPayPalLogRecords());
     }
 
     public static function dataProviderInvokeWithAllMatchingStatus(): \Generator
@@ -197,15 +199,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->with('transaction-id')
             ->willThrowException($exception);
 
-        $this->logger
-            ->expects($this->once())
-            ->method('log')
-            ->with(
-                Level::Error,
-                'Failed to synchronise transaction status for "transaction-id": Illegal transition "wanted-state" from state "invalid-state". Possible transitions are: possible-state',
-                ['error' => $exception]
-            );
-
         $message = new TransactionStatusSyncMessage(
             'transaction-id',
             'sales-channel-id',
@@ -213,6 +206,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
+
+        $record = $this->assertPayPalLogged(
+            LogCode::STATUS_SYNC_TRANSITION_FAILED,
+            Level::Error,
+            [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id', LogKey::ORDER_TRANSACTION_ID => 'transaction-id'],
+            'The status sync could not change the payment status for PayPal order {paypalOrderId}: {errorCode}, the payment status stays unchanged',
+        );
+        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class']);
     }
 
     public function testInvokeThrowsPayPalApiException(): void
@@ -237,15 +238,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->with('paypal-order-id', 'sales-channel-id')
             ->willThrowException($exception);
 
-        $this->logger
-            ->expects($this->once())
-            ->method('log')
-            ->with(
-                Level::Warning,
-                'Failed to synchronise transaction status for "transaction-id": The error "General error" occurred with the following message: 404 Not found',
-                ['error' => $exception]
-            );
-
         $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
 
         $message = new TransactionStatusSyncMessage(
@@ -255,6 +247,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
+
+        $record = $this->assertPayPalLogged(
+            LogCode::STATUS_SYNC_REQUEST_FAILED,
+            Level::Warning,
+            [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id'],
+            'The status sync could not fetch PayPal order {paypalOrderId}, it tries again with the next run',
+        );
+        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class']);
     }
 
     public function testInvokeThrowsPayPalApiExceptionResourceNotFound(): void
@@ -279,8 +279,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->with('paypal-order-id', 'sales-channel-id')
             ->willThrowException($exception);
 
-        $this->logger->expects($this->never())->method(static::anything());
-
         $this->orderTransactionStateHandler
             ->expects($this->once())
             ->method('fail')
@@ -293,6 +291,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
+
+        $record = $this->assertPayPalLogged(
+            LogCode::STATUS_SYNC_PAYPAL_ORDER_EXPIRED,
+            Level::Info,
+            [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id'],
+            'The status sync set the payment of PayPal order {paypalOrderId} to Failed, because PayPal no longer knows the order',
+        );
+        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class']);
     }
 
     public function testInvokeWithoutUnconfirmedTransaction(): void
@@ -305,7 +311,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             );
 
         $this->orderResource->expects($this->never())->method('get');
-        $this->logger->expects($this->never())->method(static::anything());
         $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
 
         $message = new TransactionStatusSyncMessage(
@@ -315,14 +320,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
+
+        static::assertSame([], $this->getPayPalLogRecords());
     }
 
     public function testInvokeWithMissingPayPalOrderId(): void
     {
         $this->orderTransactionRepository->expects($this->never())->method(static::anything());
         $this->orderResource->expects($this->never())->method('get');
-        $this->logger->expects($this->never())->method(static::anything());
-
         $this->orderTransactionStateHandler
             ->expects($this->once())
             ->method('cancel')
@@ -335,6 +340,13 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
+
+        $this->assertPayPalLogged(
+            LogCode::STATUS_SYNC_PAYPAL_ORDER_MISSING,
+            Level::Info,
+            [LogKey::ORDER_TRANSACTION_ID => 'transaction-id'],
+            'The status sync cancelled a payment that never got a PayPal order',
+        );
     }
 
     public function testInvokeWithAuthorizedTransactionAndOrderWillSkip(): void
@@ -379,8 +391,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method('authorize')
             ->with('transaction-id');
 
-        $this->logger->expects($this->never())->method(static::anything());
-
         $message = new TransactionStatusSyncMessage(
             'transaction-id',
             'sales-channel-id',
@@ -388,5 +398,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
+
+        static::assertSame([], $this->getPayPalLogRecords());
     }
 }

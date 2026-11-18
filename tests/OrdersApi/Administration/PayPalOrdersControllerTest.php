@@ -7,8 +7,11 @@
 
 namespace Swag\PayPal\Test\OrdersApi\Administration;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -21,6 +24,7 @@ use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\RestApi\V2\Resource\RefundResource;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
@@ -31,6 +35,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -44,6 +50,7 @@ use Symfony\Component\HttpFoundation\Response;
 class PayPalOrdersControllerTest extends TestCase
 {
     use GatewayTestBehaviour;
+    use PayPalLogTrait;
     use ServicesTrait;
 
     private const AMOUNT = 12.34;
@@ -151,6 +158,32 @@ class PayPalOrdersControllerTest extends TestCase
         static::assertSame(self::NOTE_TO_PAYER, $refundDetailArray['note_to_payer']);
     }
 
+    public function testRefundCaptureLogsRefund(): void
+    {
+        $controller = $this->createController();
+        $controller->refundCapture(
+            'orderTransactionId',
+            'captureId',
+            GetOrderCapture::ID,
+            new Context(new AdminApiSource('user-id')),
+            $this->createCaptureRefundRequest(),
+        );
+
+        $record = $this->assertPayPalLogged(
+            LogCode::ADMIN_REFUND_CREATED,
+            Level::Info,
+            [
+                LogKey::ORDER_TRANSACTION_ID => 'orderTransactionId',
+                LogKey::PAYPAL_ORDER_ID => GetOrderCapture::ID,
+                LogKey::CAPTURE_ID => 'captureId',
+            ],
+            'Refunded {amount} {currency} of capture {captureId} in the Administration',
+        );
+        static::assertArrayHasKey(LogKey::REFUND_ID, $record->context);
+        static::assertArrayHasKey(LogKey::AMOUNT, $record->context);
+        static::assertArrayHasKey(LogKey::CURRENCY, $record->context);
+    }
+
     public function testRefundCaptureWithNoAmount(): void
     {
         $request = $this->createCaptureRefundRequest(0);
@@ -221,6 +254,11 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
             $captureDetailArray['id']
         );
         static::assertFalse($captureDetailArray['final_capture']);
+
+        $this->assertPayPalLogged(LogCode::ADMIN_AUTHORIZATION_CAPTURED, Level::Info, [
+            LogKey::AUTHORIZATION_ID => 'authorizationId',
+            LogKey::CAPTURE_ID => CaptureAuthorization::ID,
+        ]);
     }
 
     public function testVoidAuthorization(): void
@@ -233,24 +271,48 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
         );
 
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        $this->assertPayPalLogged(LogCode::ADMIN_AUTHORIZATION_VOIDED, Level::Info, [LogKey::AUTHORIZATION_ID => 'authorizationId']);
     }
 
-    private function createController(): PayPalOrdersController
+    public function testRefundCaptureLogsRefundEvenIfThePaymentStatusUpdateFails(): void
+    {
+        $paymentStatusUtil = $this->createMock(PaymentStatusUtilV2::class);
+        $paymentStatusUtil->method('applyRefundState')->willThrowException(new \RuntimeException('state update failed'));
+
+        $this->expectExceptionObject(new \RuntimeException('state update failed'));
+
+        try {
+            $this->createController($paymentStatusUtil)->refundCapture(
+                'orderTransactionId',
+                'captureId',
+                GetOrderCapture::ID,
+                Context::createDefaultContext(),
+                $this->createCaptureRefundRequest(),
+            );
+        } finally {
+            // PayPal refunded the money, so the log must not claim the refund failed
+            static::assertCount(1, $this->getPayPalLogRecords(LogCode::ADMIN_REFUND_CREATED));
+        }
+    }
+
+    private function createController(?PaymentStatusUtilV2 $paymentStatusUtil = null): PayPalOrdersController
     {
         $orderTransactionRepo = new OrderTransactionRepoMock();
 
         $paymentGateway = self::paymentGateway();
 
         return new PayPalOrdersController(
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
             new AuthorizationResource($paymentGateway, new ApiContextFactoryMock()),
             new CaptureResource($paymentGateway, new ApiContextFactoryMock()),
             new RefundResource($paymentGateway, new ApiContextFactoryMock()),
             $orderTransactionRepo,
-            $this->createMock(PaymentStatusUtilV2::class),
+            $paymentStatusUtil ?? $this->createMock(PaymentStatusUtilV2::class),
             new CaptureRefundCreator(
                 new PriceFormatter()
-            )
+            ),
+            $this->createPayPalLogger(),
         );
     }
 

@@ -20,6 +20,8 @@ use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -59,8 +61,6 @@ class OrderExecuteService
         Context $context,
         string $partnerAttributionId,
     ): PayPalOrder {
-        $this->logger->debug('Started');
-
         try {
             try {
                 return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
@@ -70,7 +70,13 @@ class OrderExecuteService
                     throw $e;
                 }
 
-                $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
+                $this->logger->warning('PayPal already has a payment with the same invoice ID, retried without it', [
+                    LogKey::CODE => LogCode::CHECKOUT_INVOICE_ID_DUPLICATE,
+                    LogKey::SALES_CHANNEL_ID => $salesChannelId,
+                    LogKey::PAYPAL_ORDER => $paypalOrder,
+                    LogKey::ORDER_TRANSACTION_ID => $transactionId,
+                    LogKey::EXCEPTION => $e,
+                ]);
 
                 $this->orderResource->update(
                     [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
@@ -89,7 +95,7 @@ class OrderExecuteService
                 throw $e;
             }
 
-            throw $this->createPayerActionRequiredException($transactionId, $paypalOrder, $e);
+            throw $this->createPayerActionRequiredException($paypalOrder, $e);
         }
     }
 
@@ -98,10 +104,11 @@ class OrderExecuteService
         try {
             $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
         } catch (\Throwable $e) {
-            $this->logger->warning('Could not verify PayPal order before cancellation. Preserving transaction state.', [
-                'paypalOrderId' => $paypalOrderId,
-                'salesChannelId' => $salesChannelId,
-                'exception' => $e,
+            $this->logger->warning('Could not check PayPal order {paypalOrderId} before cancelling the payment, the payment status stays unchanged', [
+                LogKey::CODE => LogCode::CHECKOUT_CANCELLATION_UNVERIFIED,
+                LogKey::PAYPAL_ORDER_ID => $paypalOrderId,
+                LogKey::SALES_CHANNEL_ID => $salesChannelId,
+                LogKey::EXCEPTION => $e,
             ]);
 
             return false;
@@ -199,13 +206,31 @@ class OrderExecuteService
 
         // capturing an order PayPal already flagged is guaranteed to fail
         if ($paypalOrder->isset('status') && $paypalOrder->getStatus() === ConstantsV2::ORDER_PAYER_ACTION_REQUIRED) {
-            throw $this->createPayerActionRequiredException($transactionId, $paypalOrder);
+            throw $this->createPayerActionRequiredException($paypalOrder);
         }
 
         if ($paypalOrder->getIntent() === ConstantsV2::INTENT_CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
+            $payments = $response->isset('purchaseUnits') ? $response->getPurchaseUnits()->first()?->getPayments() : null;
+
+            $this->logger->info('Captured the payment for PayPal order {paypalOrderId}', [
+                LogKey::CODE => LogCode::CHECKOUT_PAYMENT_CAPTURED,
+                LogKey::SALES_CHANNEL_ID => $salesChannelId,
+                LogKey::ORDER_TRANSACTION_ID => $transactionId,
+                LogKey::PAYPAL_ORDER_ID => $paypalOrder->getId(),
+                LogKey::PAYMENT => $payments?->getCaptures()?->first(),
+            ]);
         } else {
             $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
+            $payments = $response->isset('purchaseUnits') ? $response->getPurchaseUnits()->first()?->getPayments() : null;
+
+            $this->logger->info('Authorized the payment for PayPal order {paypalOrderId}', [
+                LogKey::CODE => LogCode::CHECKOUT_PAYMENT_AUTHORIZED,
+                LogKey::SALES_CHANNEL_ID => $salesChannelId,
+                LogKey::ORDER_TRANSACTION_ID => $transactionId,
+                LogKey::PAYPAL_ORDER_ID => $paypalOrder->getId(),
+                LogKey::PAYMENT => $payments?->getAuthorizations()?->first(),
+            ]);
         }
 
         $this->checkFinalizedStatus($response, $salesChannelId, $transactionId, $context);
@@ -214,19 +239,10 @@ class OrderExecuteService
     }
 
     private function createPayerActionRequiredException(
-        string $transactionId,
         PayPalOrder $paypalOrder,
         ?PayPalApiException $previous = null,
     ): PayerActionRequiredException {
-        $exception = PayerActionRequiredException::payerActionRequired($paypalOrder->getId(), $previous);
-
-        $this->logger->warning('PayPal requires another payer action before the order can be captured.', [
-            'orderTransactionId' => $transactionId,
-            'payPalOrderId' => $paypalOrder->getId(),
-            'error' => $previous,
-        ]);
-
-        return $exception;
+        return PayerActionRequiredException::payerActionRequired($paypalOrder->getId(), $previous);
     }
 
     private function getPayments(PayPalOrder $order, string $salesChannelId, bool $refetch): ?Payments

@@ -15,6 +15,7 @@ parameters:
         - tests/acceptance
         - tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
         - tests/DeprecatedTagTest.php
+        - tests/DevOps/StaticAnalyze/PHPStan/Rules/data
 
     bootstrapFiles:
         - tests/PHPStanBootstrap.php
@@ -182,3 +183,6 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\NoAfterStatementRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
+
+    # Plugin rules
+    - Swag\PayPal\DevOps\StaticAnalyze\PHPStan\Rules\LogCallRule

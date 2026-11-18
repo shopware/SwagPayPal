@@ -13,6 +13,7 @@ use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -45,7 +46,7 @@ class CheckoutSubscriber implements EventSubscriberInterface
         $order = $event->getPage()->getOrder();
 
         if ($order->getPrice()->getTotalPrice() === 0.0) {
-            $this->logger->info('PayPal is removed from the available payment methods, because the amount of the order is zero');
+            $this->logger->debug('Hid PayPal on the edit-order page, because the order amount is zero', [LogKey::ORDER_ID => $order->getId()]);
             $this->removePayPalPaymentMethodsFromPage($event);
         }
     }

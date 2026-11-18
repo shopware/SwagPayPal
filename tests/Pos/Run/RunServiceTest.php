@@ -151,7 +151,7 @@ class RunServiceTest extends TestCase
         $logEntry = $this->logRepository->search($criteria, $context)->getEntities()->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
-        static::assertSame(Level::Emergency, Level::from($logEntry->getLevel()));
+        static::assertSame(Level::Info, Level::from($logEntry->getLevel()));
     }
 
     public function testIsRunActiveTrue(): void

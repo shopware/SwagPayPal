@@ -64,6 +64,7 @@ class CheckoutSubscriberTest extends TestCase
     public function testOrderEditPageDoesRemoveWithCartWithValueZero(): void
     {
         $event = $this->getOrderEditPageEvent();
+        $event->getPage()->getOrder()->setId('order-id');
         $event->getPage()->getOrder()->setPrice($this->createCartPrice(0.0, 0.0, 0.0));
         $this->checkoutSubscriber->onEditOrderPageLoaded($event);
 

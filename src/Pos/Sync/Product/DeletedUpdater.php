@@ -13,6 +13,7 @@ use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
+use Swag\PayPal\Util\Log\LogKey;
 
 #[Package('checkout')]
 class DeletedUpdater
@@ -63,7 +64,7 @@ class DeletedUpdater
             $this->productResource->deleteProducts($productContext->getPosSalesChannel(), $productUuids);
             $this->logger->info('Deleted products at Zettle: {productIds}', ['productIds' => \implode(', ', \array_keys($deletions))]);
         } catch (PosApiException $e) {
-            $this->logger->error('Product deletion error: ' . $e->getMessage(), ['error' => $e]);
+            $this->logger->error('Could not delete the products at Zettle', [LogKey::EXCEPTION => $e]);
         }
 
         foreach ($deletions as $deletion) {

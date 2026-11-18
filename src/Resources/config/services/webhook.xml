@@ -19,6 +19,7 @@
             <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="router"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <!-- handler registry -->

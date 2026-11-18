@@ -26,6 +26,9 @@ use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -81,12 +84,10 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
     public function createPayPalOrder(Request $request, SalesChannelContext $salesChannelContext): TokenResponse
     {
         try {
-            $this->logger->debug('Started');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
             $this->cartPriceService->validateProcessable($cart, $salesChannelContext);
 
-            $this->logger->debug('Building order');
             $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));
             $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
 
@@ -112,9 +113,9 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                     $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_OPTIONS]);
                     $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
 
-                    $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);
+                    $this->logger->debug('Requested shipping callbacks from PayPal', [LogKey::CALLBACK_HOST => \parse_url($callbackUrl, \PHP_URL_HOST) ?: null]);
                 } else {
-                    $this->logger->debug('Skipped shipping callback due to being disabled in system config');
+                    $this->logger->debug('Did not request shipping callbacks, because they are disabled in the settings');
                 }
             }
 
@@ -126,7 +127,11 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
             return new TokenResponse($orderResponse->getId());
         } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            if (FailureClassifier::isCausedByBuyer($e)) {
+                $this->logger->notice('Could not create the PayPal order: {errorCode}', [LogKey::CODE => LogCode::CHECKOUT_ORDER_CREATION_DECLINED, LogKey::EXCEPTION => $e]);
+            } else {
+                $this->logger->error('Could not create the PayPal order: {errorCode}, the buyer sees an error in the checkout', [LogKey::CODE => LogCode::CHECKOUT_ORDER_CREATION_FAILED, LogKey::EXCEPTION => $e]);
+            }
 
             throw $e;
         }

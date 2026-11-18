@@ -8,6 +8,7 @@
 namespace Swag\PayPal\OrdersApi\Administration;
 
 use OpenApi\Attributes as OA;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
@@ -15,6 +16,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException;
 use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -23,6 +26,8 @@ use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\RestApi\V2\Resource\RefundResource;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -52,6 +57,7 @@ class PayPalOrdersController extends AbstractController
         private readonly EntityRepository $orderTransactionRepository,
         private readonly PaymentStatusUtilV2 $paymentStatusUtil,
         private readonly CaptureRefundCreator $captureRefundCreator,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -169,7 +175,7 @@ class PayPalOrdersController extends AbstractController
         responses: [new OA\Response(
             response: Response::HTTP_OK,
             description: 'Details of the PayPal capture',
-            content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Capture::class)
+            content: new OA\JsonContent(ref: Capture::class)
         )]
     )]
     #[Route(path: '/api/paypal-v2/capture/{orderTransactionId}/{captureId}', name: 'api.paypal_v2.capture_details', defaults: ['_acl' => ['order.viewer']], methods: ['GET'])]
@@ -209,7 +215,7 @@ class PayPalOrdersController extends AbstractController
         responses: [new OA\Response(
             response: Response::HTTP_OK,
             description: 'Details of the PayPal refund',
-            content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Refund::class)
+            content: new OA\JsonContent(ref: Refund::class)
         )]
     )]
     #[Route(path: '/api/paypal-v2/refund/{orderTransactionId}/{refundId}', name: 'api.paypal_v2.refund_details', defaults: ['_acl' => ['order_refund.viewer']], methods: ['GET'])]
@@ -264,7 +270,7 @@ class PayPalOrdersController extends AbstractController
         responses: [new OA\Response(
             response: Response::HTTP_OK,
             description: 'Details of the PayPal refund',
-            content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Refund::class)
+            content: new OA\JsonContent(ref: Refund::class)
         )]
     )]
     #[Route(path: '/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}', name: 'api.action.paypal_v2.refund_capture', defaults: ['_acl' => ['order_refund.editor']], methods: ['POST'])]
@@ -285,6 +291,15 @@ class PayPalOrdersController extends AbstractController
             $this->getPartnerAttributionId($request),
             false
         );
+
+        $this->logger->info('Refunded {amount} {currency} of capture {captureId} in the Administration', [
+            LogKey::CODE => LogCode::ADMIN_REFUND_CREATED,
+            LogKey::SALES_CHANNEL_ID => $salesChannelId,
+            LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
+            LogKey::PAYPAL_ORDER_ID => $paypalOrderId,
+            LogKey::CAPTURE_ID => $captureId,
+            LogKey::PAYMENT => $refundResponse,
+        ]);
 
         $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
 
@@ -327,7 +342,7 @@ class PayPalOrdersController extends AbstractController
         responses: [new OA\Response(
             response: Response::HTTP_OK,
             description: 'Details of the PayPal capture',
-            content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Capture::class)
+            content: new OA\JsonContent(ref: Capture::class)
         )]
     )]
     #[Route(path: '/api/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}', name: 'api.action.paypal_v2.capture_authorization', defaults: ['_acl' => ['order.editor']], methods: ['POST'])]
@@ -338,14 +353,23 @@ class PayPalOrdersController extends AbstractController
         Request $request,
     ): JsonResponse {
         $capture = $this->captureRefundCreator->createCapture($request);
+        $salesChannelId = $this->getSalesChannelId($orderTransactionId, $context);
 
         $captureResponse = $this->authorizationResource->capture(
             $authorizationId,
             $capture,
-            $this->getSalesChannelId($orderTransactionId, $context),
+            $salesChannelId,
             $this->getPartnerAttributionId($request),
             false
         );
+
+        $this->logger->info('Captured {amount} {currency} of authorization {authorizationId} in the Administration', [
+            LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_CAPTURED,
+            LogKey::SALES_CHANNEL_ID => $salesChannelId,
+            LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
+            LogKey::AUTHORIZATION_ID => $authorizationId,
+            LogKey::PAYMENT => $captureResponse,
+        ]);
 
         $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
 
@@ -390,11 +414,16 @@ class PayPalOrdersController extends AbstractController
         Context $context,
         Request $request,
     ): Response {
-        $this->authorizationResource->void(
-            $authorizationId,
-            $this->getSalesChannelId($orderTransactionId, $context),
-            $this->getPartnerAttributionId($request)
-        );
+        $salesChannelId = $this->getSalesChannelId($orderTransactionId, $context);
+
+        $this->authorizationResource->void($authorizationId, $salesChannelId, $this->getPartnerAttributionId($request));
+
+        $this->logger->info('Voided authorization {authorizationId} in the Administration', [
+            LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_VOIDED,
+            LogKey::SALES_CHANNEL_ID => $salesChannelId,
+            LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
+            LogKey::AUTHORIZATION_ID => $authorizationId,
+        ]);
 
         $this->paymentStatusUtil->applyVoidState($orderTransactionId, $context);
 

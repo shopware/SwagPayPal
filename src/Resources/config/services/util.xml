@@ -47,6 +47,23 @@
             <tag name="monolog.processor" channel="paypal" />
         </service>
 
+        <service id="monolog.processor.paypal.uid" class="Monolog\Processor\UidProcessor">
+            <tag name="monolog.processor" channel="paypal"/>
+            <tag name="kernel.reset" method="reset"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Log\PayPalLogProcessor">
+            <argument type="service" id="request_stack"/>
+            <tag name="monolog.processor" channel="paypal"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="Swag\PayPal\Util\Lifecycle\ActivateDeactivate">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PosStateService"/>

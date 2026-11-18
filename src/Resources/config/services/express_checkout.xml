@@ -69,7 +69,6 @@
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator"/>
             <argument type="service" id="customer.repository"/>
-            <argument type="service" id="monolog.logger.paypal"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

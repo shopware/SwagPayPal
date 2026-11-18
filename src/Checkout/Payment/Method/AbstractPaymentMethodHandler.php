@@ -9,7 +9,8 @@ namespace Swag\PayPal\Checkout\Payment\Method;
 
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -43,14 +44,18 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @deprecated tag:v11.0.0 - reason:remove-interface - Interface `LoggerAwareInterface` will be removed, the logger is injected via the constructor
+ */
 #[Package('checkout')]
 abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler implements LoggerAwareInterface
 {
-    use LoggerAwareTrait;
-
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
 
@@ -71,8 +76,18 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         private readonly OrderResource $orderResource,
         private readonly VaultTokenService $vaultTokenService,
         private readonly EntityRepository $orderTransactionRepository,
+        protected LoggerInterface $logger,
         private readonly AbstractOrderBuilder $orderBuilder,
     ) {
+    }
+
+    /**
+     * Has no effect: only the injected `paypal` logger expands logged entities and redacts request data.
+     *
+     * @deprecated tag:v11.0.0 - Will be removed, the logger is injected via the constructor
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
     }
 
     public function supports(PaymentHandlerType $type, string $paymentMethodId, Context $context): bool
@@ -86,69 +101,78 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         Context $context,
         ?Struct $validateStruct,
     ): ?RedirectResponse {
-        // empty unless the payer approved a PayPal order the shop prepared for them
-        $preparedOrderId = $request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
-        $paypalOrderId = $preparedOrderId;
-        [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
-        $existingVault = $this->isVaultable() ? $this->vaultTokenService->getAvailableToken($transaction, $orderTransaction, $order, $context) : null;
-        if ($this->requirePreparedOrder() && !$paypalOrderId && !$existingVault) {
-            throw CheckoutException::preparedOrderRequired(static::class);
-        }
-
-        $this->settingsValidationService->validate($order->getSalesChannelId());
-
-        $this->stateMachineRegistry->transition(
-            new Transition(
-                OrderTransactionDefinition::ENTITY_NAME,
-                $transaction->getOrderTransactionId(),
-                $this->getProgressTransactionState(),
-                'stateId'
-            ),
-            $context
-        );
-
-        $response = null;
-        if (!$paypalOrderId) {
-            $response = $this->createPayPalOrder($request, $transaction, $orderTransaction, $order, $context);
-            $paypalOrderId = $response->getId();
-        }
-
-        $this->transactionDataService->setOrderId(
-            $transaction->getOrderTransactionId(),
-            $paypalOrderId,
-            $this->resolvePartnerAttributionId($request),
-            $order->getSalesChannelId(),
-            $context,
-        );
-
-        if (!$response) {
-            $this->orderPatchService->patchOrder(
-                $order,
-                $orderTransaction,
-                $context,
-                $paypalOrderId,
-                PartnerAttributionId::PAYPAL_PPCP
-            );
-            $response = $this->orderResource->get($paypalOrderId, $order->getSalesChannelId());
-        }
-
-        if ($action = $this->resolveRedirect($response)) {
-            return new RedirectResponse($action);
-        }
+        $orderTransaction = null;
+        $paypalOrderId = null;
 
         try {
-            $this->executeOrder(
-                $transaction,
-                $response,
-                $order,
-                $orderTransaction,
+            // empty unless the payer approved a PayPal order the shop prepared for them
+            $preparedOrderId = $request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+            $paypalOrderId = $preparedOrderId;
+            [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
+            $existingVault = $this->isVaultable() ? $this->vaultTokenService->getAvailableToken($transaction, $orderTransaction, $order, $context) : null;
+            if ($this->requirePreparedOrder() && !$paypalOrderId && !$existingVault) {
+                throw CheckoutException::preparedOrderRequired(static::class);
+            }
+
+            $this->settingsValidationService->validate($order->getSalesChannelId());
+
+            $this->stateMachineRegistry->transition(
+                new Transition(
+                    OrderTransactionDefinition::ENTITY_NAME,
+                    $transaction->getOrderTransactionId(),
+                    $this->getProgressTransactionState(),
+                    'stateId'
+                ),
+                $context
+            );
+
+            $response = null;
+            if (!$paypalOrderId) {
+                $response = $this->createPayPalOrder($request, $transaction, $orderTransaction, $order, $context);
+                $paypalOrderId = $response->getId();
+            }
+
+            $this->transactionDataService->setOrderId(
+                $transaction->getOrderTransactionId(),
+                $paypalOrderId,
+                $this->resolvePartnerAttributionId($request),
+                $order->getSalesChannelId(),
                 $context,
             );
-        } catch (PayerActionRequiredException $e) {
-            return $this->recoverFromPayerAction($e, $request, $preparedOrderId, $transaction, $orderTransaction, $order, $context);
-        }
 
-        return null;
+            if (!$response) {
+                $this->orderPatchService->patchOrder(
+                    $order,
+                    $orderTransaction,
+                    $context,
+                    $paypalOrderId,
+                    PartnerAttributionId::PAYPAL_PPCP
+                );
+                $response = $this->orderResource->get($paypalOrderId, $order->getSalesChannelId());
+            }
+
+            if ($action = $this->resolveRedirect($response)) {
+                return new RedirectResponse($action);
+            }
+
+            try {
+                $this->executeOrder(
+                    $transaction,
+                    $response,
+                    $order,
+                    $orderTransaction,
+                    $context,
+                );
+            } catch (PayerActionRequiredException $e) {
+                return $this->recoverFromPayerAction($e, $request, $preparedOrderId, $transaction, $orderTransaction, $order, $context);
+            }
+
+            return null;
+        } catch (\Throwable $e) {
+            $this->logPaymentFailure($e, $transaction, $orderTransaction, $paypalOrderId);
+
+            throw $e;
+        }
     }
 
     public function finalize(
@@ -156,60 +180,35 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         PaymentTransactionStruct $transaction,
         Context $context,
     ): void {
-        [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
+        $orderTransaction = null;
+        $paypalOrderId = null;
 
-        $isCancelled = $request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL);
-        if ($isCancelled && $this->isTransactionSuccessful($orderTransaction)) {
-            return;
-        }
+        try {
+            [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
 
-        $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
-        if (!\is_string($paypalOrderId) || !$paypalOrderId) {
-            if ($isCancelled) {
+            $isCancelled = $request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL);
+            if ($isCancelled && $this->isTransactionSuccessful($orderTransaction)) {
                 return;
             }
 
-            throw CheckoutException::preparedOrderRequired(static::class);
-        }
-
-        if ($isCancelled) {
-            if (!$this->orderExecuteService->isCancellationAllowed($paypalOrderId, $order->getSalesChannelId())) {
-                return;
-            }
-
-            throw PaymentException::customerCanceled(
-                $transaction->getOrderTransactionId(),
-                'Customer canceled the payment on the PayPal page'
-            );
-        }
-
-        $this->executeOrder(
-            $transaction,
-            $this->orderResource->get($paypalOrderId, $order->getSalesChannelId()),
-            $order,
-            $orderTransaction,
-            $context,
-        );
-    }
-
-    public function recurring(PaymentTransactionStruct $transaction, Context $context): void
-    {
-        if (!$this->isVaultable()) {
-            parent::recurring($transaction, $context);
-
-            return;
-        }
-
-        if (!$this->vaultTokenService->getSubscriptions($transaction)) {
-            throw PaymentException::recurringInterrupted($transaction->getOrderTransactionId(), 'Subscription not found');
-        }
-
-        [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
-
-        if ($this->isTransactionSuccessful($orderTransaction)) {
             $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
             if (!\is_string($paypalOrderId) || !$paypalOrderId) {
+                if ($isCancelled) {
+                    return;
+                }
+
                 throw CheckoutException::preparedOrderRequired(static::class);
+            }
+
+            if ($isCancelled) {
+                if (!$this->orderExecuteService->isCancellationAllowed($paypalOrderId, $order->getSalesChannelId())) {
+                    return;
+                }
+
+                throw PaymentException::customerCanceled(
+                    $transaction->getOrderTransactionId(),
+                    'Customer canceled the payment on the PayPal page'
+                );
             }
 
             $this->executeOrder(
@@ -218,46 +217,89 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
                 $order,
                 $orderTransaction,
                 $context,
-                false,
             );
+        } catch (\Throwable $e) {
+            $this->logPaymentFailure($e, $transaction, $orderTransaction, $paypalOrderId);
 
-            return;
+            throw $e;
         }
+    }
 
-        $this->settingsValidationService->validate($order->getSalesChannelId());
-        $paypalOrder = $this->orderBuilder->getRecurringOrder($transaction, $orderTransaction, $order, $context);
-        $response = $this->orderResource->create(
-            $paypalOrder,
-            $order->getSalesChannelId(),
-            PartnerAttributionId::PAYPAL_PPCP,
-            false,
-            $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
-        );
-
-        $this->transactionDataService->setOrderId(
-            $transaction->getOrderTransactionId(),
-            $response->getId(),
-            PartnerAttributionId::PAYPAL_PPCP,
-            $order->getSalesChannelId(),
-            $context,
-        );
+    public function recurring(PaymentTransactionStruct $transaction, Context $context): void
+    {
+        $orderTransaction = null;
+        $paypalOrderId = null;
 
         try {
-            $this->executeOrder(
-                $transaction,
-                $response,
-                $order,
-                $orderTransaction,
-                $context,
+            if (!$this->isVaultable()) {
+                parent::recurring($transaction, $context);
+
+                return;
+            }
+
+            if (!$this->vaultTokenService->getSubscriptions($transaction)) {
+                throw PaymentException::recurringInterrupted($transaction->getOrderTransactionId(), 'Subscription not found');
+            }
+
+            [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
+
+            if ($this->isTransactionSuccessful($orderTransaction)) {
+                $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
+                if (!\is_string($paypalOrderId) || !$paypalOrderId) {
+                    throw CheckoutException::preparedOrderRequired(static::class);
+                }
+
+                $this->executeOrder(
+                    $transaction,
+                    $this->orderResource->get($paypalOrderId, $order->getSalesChannelId()),
+                    $order,
+                    $orderTransaction,
+                    $context,
+                    false,
+                );
+
+                return;
+            }
+
+            $this->settingsValidationService->validate($order->getSalesChannelId());
+            $paypalOrder = $this->orderBuilder->getRecurringOrder($transaction, $orderTransaction, $order, $context);
+            $response = $this->orderResource->create(
+                $paypalOrder,
+                $order->getSalesChannelId(),
+                PartnerAttributionId::PAYPAL_PPCP,
                 false,
+                $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
             );
-        } catch (PayerActionRequiredException $e) {
-            // no payer is present to approve
-            throw PaymentException::recurringInterrupted(
+
+            $this->transactionDataService->setOrderId(
                 $transaction->getOrderTransactionId(),
-                $e->getMessage(),
-                $e,
+                $response->getId(),
+                PartnerAttributionId::PAYPAL_PPCP,
+                $order->getSalesChannelId(),
+                $context,
             );
+
+            try {
+                $this->executeOrder(
+                    $transaction,
+                    $response,
+                    $order,
+                    $orderTransaction,
+                    $context,
+                    false,
+                );
+            } catch (PayerActionRequiredException $e) {
+                // no payer is present to approve
+                throw PaymentException::recurringInterrupted(
+                    $transaction->getOrderTransactionId(),
+                    $e->getMessage(),
+                    $e,
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->logPaymentFailure($e, $transaction, $orderTransaction, $paypalOrderId);
+
+            throw $e;
         }
     }
 
@@ -337,6 +379,8 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
             }
         }
 
+        $logContext = [LogKey::ORDER_TRANSACTION => $orderTransaction, LogKey::PAYPAL_ORDER_ID => $preparedOrderId];
+
         try {
             $confirmedOrder = $this->orderResource->confirm(
                 $preparedOrderId,
@@ -345,11 +389,12 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
                 PartnerAttributionId::PAYPAL_PPCP,
             );
         } catch (PayPalApiException|ClientExceptionInterface $confirmationException) {
-            $this->logger?->warning('Could not reopen the PayPal order for payer approval.', [
-                'orderTransactionId' => $transaction->getOrderTransactionId(),
-                'payPalOrderId' => $preparedOrderId,
-                'exception' => $confirmationException,
-            ]);
+            // logPaymentFailure() only sees the payer action exception, this line carries the cause's level
+            $this->logger->log(
+                FailureClassifier::isCausedByBuyer($confirmationException) ? LogLevel::NOTICE : LogLevel::ERROR,
+                'Could not send the buyer back to PayPal to approve the payment of order {orderNumber} again, the payment fails',
+                [...$logContext, LogKey::CODE => LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED, LogKey::EXCEPTION => $confirmationException],
+            );
 
             throw $exception;
         }
@@ -358,6 +403,11 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         if ($action === null) {
             throw $exception;
         }
+
+        $this->logger->info(
+            'Redirected the buyer to PayPal to approve the payment of order {orderNumber} again',
+            [...$logContext, LogKey::CODE => LogCode::CHECKOUT_PAYER_ACTION_REDIRECT],
+        );
 
         return new RedirectResponse($action);
     }
@@ -409,6 +459,40 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         return $order->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
     }
 
+    /**
+     * @internal
+     */
+    protected function logPaymentFailure(
+        \Throwable $e,
+        PaymentTransactionStruct $transaction,
+        ?OrderTransactionEntity $orderTransaction,
+        mixed $paypalOrderId,
+    ): void {
+        $context = [
+            LogKey::ORDER_TRANSACTION_ID => $transaction->getOrderTransactionId(),
+            LogKey::ORDER_TRANSACTION => $orderTransaction,
+            LogKey::PAYPAL_ORDER_ID => $paypalOrderId ?: null,
+            LogKey::EXCEPTION => $e,
+        ];
+
+        if ($orderTransaction === null) {
+            // nothing reached PayPal yet, so it can't be the buyer's failure
+            $this->logger->error(
+                'Could not complete the payment of order transaction {orderTransactionId}: {errorCode}, the payment status of the order is now Failed',
+                [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_FAILED],
+            );
+        } elseif (FailureClassifier::isCancelledByBuyer($e)) {
+            $this->logger->notice('The buyer cancelled the payment of order {orderNumber} at PayPal', [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_CANCELLED]);
+        } elseif (FailureClassifier::isCausedByBuyer($e)) {
+            $this->logger->notice('Could not complete the payment of order {orderNumber}: {errorCode}', [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_DECLINED]);
+        } else {
+            $this->logger->error(
+                'Could not complete the payment of order {orderNumber}: {errorCode}, the payment status of the order is now Failed',
+                [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_FAILED],
+            );
+        }
+    }
+
     private function createPayPalOrder(
         Request $request,
         PaymentTransactionStruct $transaction,
@@ -449,6 +533,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
     {
         $criteria = new Criteria([$transactionId]);
         $criteria->addAssociation('stateMachineState');
+        $criteria->addAssociation('paymentMethod');
         $criteria->addAssociation('order.billingAddress.country');
         $criteria->addAssociation('order.billingAddress.countryState');
         $criteria->addAssociation('order.currency');

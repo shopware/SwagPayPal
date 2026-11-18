@@ -381,7 +381,6 @@ class InstallmentBannerSubscriberTest extends TestCase
                 $this->languageRepository
             ),
             $this->excludedProductValidator,
-            new NullLogger(),
             $this->payLaterMethodData
         );
     }

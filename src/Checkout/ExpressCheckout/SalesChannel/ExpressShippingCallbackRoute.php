@@ -16,6 +16,8 @@ use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -56,10 +58,11 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
     {
         $callback = (new OrderShippingCallback())->assign($request->request->all());
 
-        $this->logger->debug('Shipping callback received', ['callback' => $callback]);
-
         if (!$callback->isset('id') || !$callback->isset('shippingAddress') || !$callback->isset('purchaseUnits')) {
-            $this->logger->error('Shipping callback: Invalid payload', ['callback' => $callback]);
+            $this->logger->warning('Rejected a shipping callback with an invalid payload', [
+                LogKey::CODE => LogCode::EXPRESS_CALLBACK_INVALID,
+                LogKey::SALES_CHANNEL_ID => $salesChannelContext->getSalesChannelId(),
+            ]);
 
             return new JsonResponse(['error' => 'Invalid payload'], Response::HTTP_BAD_REQUEST);
         }
@@ -69,11 +72,26 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
 
             return new JsonResponse($order);
         } catch (\Throwable $e) {
-            $this->logger->error('Shipping callback failed', ['exception' => $e]);
+            $logContext = [
+                LogKey::SALES_CHANNEL_ID => $salesChannelContext->getSalesChannelId(),
+                LogKey::PAYPAL_ORDER_ID => $callback->getId(),
+                LogKey::EXCEPTION => $e,
+            ];
 
             if ($e instanceof ExpressShippingCallbackException) {
+                $this->logger->notice('Could not offer shipping for PayPal order {paypalOrderId}: {errorCode}', [
+                    LogKey::CODE => LogCode::EXPRESS_CALLBACK_SHIPPING_UNAVAILABLE,
+                    LogKey::COUNTRY_CODE => $callback->getShippingAddress()->getCountryCode(),
+                    ...$logContext,
+                ]);
+
                 return $e->intoCallbackResponse();
             }
+
+            $this->logger->error('Could not answer the shipping callback for PayPal order {paypalOrderId}, PayPal shows the buyer an error', [
+                LogKey::CODE => LogCode::EXPRESS_CALLBACK_FAILED,
+                ...$logContext,
+            ]);
 
             throw $e;
         }

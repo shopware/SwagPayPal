@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
@@ -45,6 +46,7 @@ use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
@@ -56,6 +58,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -70,6 +74,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use PaymentTransactionTrait;
+    use PayPalLogTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
 
@@ -95,6 +100,14 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, Context::createDefaultContext());
         $this->assertCustomFields($transactionId, Context::createDefaultContext(), GetOrderCapture::ID, PartnerAttributionId::PAYPAL_PPCP, CaptureOrderCapture::CAPTURE_ID);
         $this->assertPatchData($transactionId);
+
+        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED, Level::Info, [
+            LogKey::ORDER_TRANSACTION_ID => $transactionId,
+            LogKey::PAYPAL_ORDER_ID => GetOrderCapture::ID,
+            LogKey::CAPTURE_ID => CaptureOrderCapture::CAPTURE_ID,
+            LogKey::CAPTURE_STATUS => 'COMPLETED',
+        ]);
+        $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
     }
 
     public function testPayCaptureDeclined(): void
@@ -106,7 +119,16 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
 
         $this->expectException(OrderFailedException::class);
         $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Order "%s" failed', CaptureOrderDeclined::ID), '/') . '\z/');
-        $handler->pay($this->createRequest(CaptureOrderDeclined::ID), $paymentTransaction, Context::createDefaultContext(), null);
+        try {
+            $handler->pay($this->createRequest(CaptureOrderDeclined::ID), $paymentTransaction, Context::createDefaultContext(), null);
+        } finally {
+            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_FAILED, Level::Error, [
+                LogKey::ORDER_TRANSACTION_ID => $transactionId,
+                LogKey::PAYPAL_ORDER_ID => CaptureOrderDeclined::ID,
+            ]);
+            static::assertNotSame('unknown', $record->context[LogKey::ORDER_NUMBER] ?? null);
+            static::assertSame(OrderFailedException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        }
     }
 
     public function testPayAuthorize(): void
@@ -144,7 +166,12 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
 
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. | [INSTRUMENT_DECLINED] The instrument presented was either declined by the processor or bank, or it can\'t be used for this payment.', '/') . '\z/');
-        $handler->pay($this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $paymentTransaction, Context::createDefaultContext(), null);
+        try {
+            $handler->pay($this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $paymentTransaction, Context::createDefaultContext(), null);
+        } finally {
+            $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [LogKey::ORDER_TRANSACTION_ID => $transactionId]);
+            $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
+        }
     }
 
     public function testPayWithInvalidSettingsException(): void
@@ -212,13 +239,13 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
     protected function createPaymentHandler(array $settings = []): AbstractPaymentMethodHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
+        $logger = $this->createPayPalLogger();
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), $logger);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
-        $logger = new NullLogger();
 
         $handlerClass = $this->getPaymentHandlerClassName();
 
-        return new $handlerClass(
+        $handler = new $handlerClass(
             new SettingsValidationService($systemConfig, new NullLogger()),
             $this->stateMachineRegistry,
             new OrderExecuteService(
@@ -256,8 +283,11 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
                 null,
             ),
             $this->orderTransactionRepo,
+            $logger,
             $this->createMock(AbstractOrderBuilder::class),
         );
+
+        return $handler;
     }
 
     protected function createRequest(?string $orderId = null): Request

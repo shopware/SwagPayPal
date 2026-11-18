@@ -12,13 +12,8 @@ use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Psr\Log\LogLevel;
-use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\ShopwareHttpException;
-use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
-use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
-use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -112,16 +107,7 @@ class IntrospectionProcessor implements ProcessorInterface
             }
         }
 
-        $context = [];
-
-        foreach (['exception', 'error'] as $prop) {
-            if (isset($record->context[$prop]) && $record->context[$prop] instanceof \Throwable) {
-                $context[$prop] = $this->exceptionToContext($record->context[$prop]);
-            }
-        }
-
         return $record->with(...[
-            'context' => [...$record->context, ...$context],
             'extra' => [
                 ...$record->extra,
                 ...$extra,
@@ -144,43 +130,6 @@ class IntrospectionProcessor implements ProcessorInterface
         \array_splice($traces, 0, 3);
 
         return $traces;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function exceptionToContext(\Throwable $exception): array
-    {
-        $context = ['message' => $exception->getMessage()];
-
-        if ($exception instanceof AgentHttpException) {
-            $context['details'] = $exception->getDetails()->jsonSerialize();
-        }
-
-        if ($exception instanceof ShopwareHttpException) {
-            $context['parameters'] = $exception->getParameters();
-        }
-
-        if ($exception instanceof ConstraintViolationException) {
-            foreach ($exception->getViolations() as $violation) {
-                $context['parameters']['violations'][] = (string) $violation;
-            }
-        }
-
-        if ($exception instanceof HttpException || $exception instanceof PosException) {
-            $context['errorCode'] = $exception->getErrorCode();
-        }
-
-        // Order class, file and line at the end to make the exception & the most important information more readable in logs
-        $context['class'] = $this->traceToClassString($exception->getTrace()[0]);
-        $context['file'] = $exception->getFile();
-        $context['line'] = $exception->getLine();
-
-        if ($exception->getPrevious()) {
-            $context['previous'] = $this->exceptionToContext($exception->getPrevious());
-        }
-
-        return $context;
     }
 
     /**

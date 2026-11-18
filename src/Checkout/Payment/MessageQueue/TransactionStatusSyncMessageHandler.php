@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\Payment\MessageQueue;
 
-use Monolog\Level;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -24,6 +23,8 @@ use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -48,10 +49,17 @@ class TransactionStatusSyncMessageHandler
     public function __invoke(TransactionStatusSyncMessage $message): void
     {
         $context = Context::createDefaultContext();
+        $logContext = [
+            LogKey::SALES_CHANNEL_ID => $message->getSalesChannelId(),
+            LogKey::ORDER_TRANSACTION_ID => $message->getTransactionId(),
+            LogKey::PAYPAL_ORDER_ID => $message->getPayPalOrderId() ?: null,
+        ];
 
         try {
             if (!$message->getPayPalOrderId()) {
                 $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context);
+
+                $this->logger->info('The status sync cancelled a payment that never got a PayPal order', [...$logContext, LogKey::CODE => LogCode::STATUS_SYNC_PAYPAL_ORDER_MISSING]);
 
                 return;
             }
@@ -106,17 +114,26 @@ class TransactionStatusSyncMessageHandler
             if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ISSUE_INVALID_RESOURCE_ID)) {
                 $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context);
 
+                $this->logger->info(
+                    'The status sync set the payment of PayPal order {paypalOrderId} to Failed, because PayPal no longer knows the order',
+                    [...$logContext, LogKey::CODE => LogCode::STATUS_SYNC_PAYPAL_ORDER_EXPIRED, LogKey::EXCEPTION => $e],
+                );
+
                 return;
             }
 
-            $this->logger->log(
-                $e instanceof StateMachineException ? Level::Error : Level::Warning,
-                \sprintf(
-                    'Failed to synchronise transaction status for "%s": %s',
-                    $message->getTransactionId(),
-                    $e->getMessage()
-                ),
-                ['error' => $e]
+            if ($e instanceof StateMachineException) {
+                $this->logger->error(
+                    'The status sync could not change the payment status for PayPal order {paypalOrderId}: {errorCode}, the payment status stays unchanged',
+                    [...$logContext, LogKey::CODE => LogCode::STATUS_SYNC_TRANSITION_FAILED, LogKey::EXCEPTION => $e],
+                );
+
+                return;
+            }
+
+            $this->logger->warning(
+                'The status sync could not fetch PayPal order {paypalOrderId}, it tries again with the next run',
+                [...$logContext, LogKey::CODE => LogCode::STATUS_SYNC_REQUEST_FAILED, LogKey::EXCEPTION => $e],
             );
         }
     }

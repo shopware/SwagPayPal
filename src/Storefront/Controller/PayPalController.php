@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Storefront\Controller;
 
-use Monolog\Level;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
@@ -40,9 +39,12 @@ use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Storefront\BrowserErrorCode;
 use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Storefront\Service\ReturnToken;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -106,7 +108,13 @@ class PayPalController extends StorefrontController
         try {
             $returnToken = $this->returnTokenService->parse($token, $salesChannelContext->getSalesChannelId());
         } catch (JWTException $e) {
-            $this->logger->warning('Could not restore storefront context from return token', ['error' => $e]);
+            $this->logger->warning(
+                'Could not restore the buyer\'s session after the return from PayPal, because the return token is invalid or expired',
+                [
+                    LogKey::CODE => LogCode::STOREFRONT_RETURN_TOKEN_INVALID,
+                    LogKey::EXCEPTION => $e,
+                ],
+            );
 
             return $this->redirectToRoute('frontend.checkout.confirm.page');
         }
@@ -236,7 +244,6 @@ class PayPalController extends StorefrontController
         $code = \mb_trim($request->request->getString('code')) ?: null;
         $pageType = \mb_trim($request->request->getString('pageType')) ?: null;
         $fatal = $request->request->getBoolean('fatal');
-        $plugin = \mb_trim($request->request->getString('plugin')) ?: null;
         $error = $request->request->getString('error') ?: null;
 
         /** @deprecated tag:v11.0.0 - Will be removed */
@@ -255,7 +262,7 @@ class PayPalController extends StorefrontController
             } elseif ($transSnippetGeneric !== $snippetGeneric) {
                 $this->addFlash(self::DANGER, $transSnippetGeneric);
             } else {
-                $this->addFlash(self::DANGER, $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR'));
+                $this->addFlash(self::DANGER, $this->trans('paypal.error.' . BrowserErrorCode::GENERIC));
             }
         }
 
@@ -266,21 +273,45 @@ class PayPalController extends StorefrontController
             $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
-        $this->logger->log(
-            \in_array($code, ['SWAG_PAYPAL__SCRIPT_ERROR', 'SWAG_PAYPAL__SCRIPT_NOT_LOADED'], true) ? Level::Error : Level::Warning,
-            'Storefront checkout error',
-            [
-                'error' => $error,
-                'step' => $step,
-                'code' => $code,
-                'fatal' => $fatal,
-                'plugin' => $plugin,
-                'paymentMethodId' => $context->getPaymentMethod()->getId(),
-                'paymentMethodName' => $context->getPaymentMethod()->getName(),
-            ],
-        );
+        $this->logBrowserError($context, $code, $pageType, $fatal, $error);
 
         return new NoContentResponse();
+    }
+
+    private function logBrowserError(SalesChannelContext $context, ?string $code, ?string $pageType, bool $fatal, ?string $error): void
+    {
+        // untrusted browser input: context only, cut
+        $logContext = [
+            LogKey::PAYMENT_METHOD => $context->getPaymentMethod()->getTechnicalName(),
+            LogKey::CLIENT_CODE => \mb_substr($code ?? '', 0, 200) ?: null,
+            LogKey::PAGE_TYPE => \mb_substr($pageType ?? '', 0, 200) ?: null,
+            LogKey::CLIENT_ERROR => \mb_substr($error ?? '', 0, 200) ?: null,
+            LogKey::FATAL => $fatal,
+        ];
+
+        switch ($code) {
+            case BrowserErrorCode::USER_CANCELLED:
+            case BrowserErrorCode::EXPRESS_USER_CANCELLED:
+                $this->logger->notice('The browser reported that the buyer closed the PayPal window', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_BUYER_CANCELLED]);
+
+                break;
+            case BrowserErrorCode::DECLINED:
+                $this->logger->notice('The browser reported that PayPal declined the payment method', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_PAYMENT_DECLINED]);
+
+                break;
+            case BrowserErrorCode::SCRIPT:
+            case BrowserErrorCode::SCRIPT_NOT_LOADED:
+                $this->logger->warning('The browser reported that the PayPal script failed', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_SCRIPT_FAILED]);
+
+                break;
+            case BrowserErrorCode::BROWSER_UNSUPPORTED:
+            case BrowserErrorCode::NOT_ELIGIBLE:
+                $this->logger->debug('The browser reported that PayPal is unavailable for this buyer', $logContext);
+
+                break;
+            default:
+                $this->logger->warning('The browser reported a PayPal error', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_ERROR_REPORTED]);
+        }
     }
 
     private function addRestoreUrls(SalesChannelContext $salesChannelContext, Request $request): void

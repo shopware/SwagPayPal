@@ -14,6 +14,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
+use Swag\PayPal\Util\Log\LogKey;
 
 #[Package('checkout')]
 class UnsyncedChecker
@@ -72,7 +73,7 @@ class UnsyncedChecker
             $this->productResource->deleteProducts($productContext->getPosSalesChannel(), $deletions);
             $this->logger->info('Removed unsynced products at Zettle: {productIds}', ['productIds' => \implode(', ', $deletions)]);
         } catch (PosApiException $e) {
-            $this->logger->warning('Unsynced product deletion error: ' . $e->getMessage(), ['error' => $e]);
+            $this->logger->warning('Could not remove products from Zettle that are no longer synced', [LogKey::EXCEPTION => $e]);
         }
     }
 }

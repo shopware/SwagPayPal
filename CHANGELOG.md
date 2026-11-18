@@ -2,6 +2,7 @@
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 - Fixes an issue, where PayPal Express Checkout showed all shipping methods except the selected one as free (shopware/SwagPayPal#913, requires Shopware 6.7.14.0 or greater)
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
+- Reworked the plugin's log messages: clearer wording, stable log codes, consistent context and levels, and names, addresses, email addresses and tokens redacted from logged API requests, responses and webhook events. Monitoring based on the old message texts needs to be adjusted
 
 # 10.9.0
 - Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)
