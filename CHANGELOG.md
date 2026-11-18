@@ -1,7 +1,12 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
+- Fixes an issue, where failed or cancelled PayPal refunds were deducted from the refundable amount in the Administration and could disable the refund button (shopware/SwagPayPal#878)
+- Fixes an issue, where PayPal Express Checkout failed for carts with only digital products (shopware/SwagPayPal#825)
+- Fixes an issue, where uninstalling the plugin without keeping user data left saved PayPal accounts and cards, transaction reports and PayPal order references in the database (shopware/SwagPayPal#846)
 - Fixes an issue, where PayPal Express Checkout showed all shipping methods except the selected one as free (shopware/SwagPayPal#913, requires Shopware 6.7.14.0 or greater)
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
+- Fixes an issue, where the transaction status synchronisation could change a transaction based on an outdated payment attempt (shopware/SwagPayPal#842)
 - Reworked the plugin's log messages: clearer wording, stable log codes, consistent context and levels, and names, addresses, email addresses and tokens redacted from logged API requests, responses and webhook events. Monitoring based on the old message texts needs to be adjusted
 
 # 10.9.0

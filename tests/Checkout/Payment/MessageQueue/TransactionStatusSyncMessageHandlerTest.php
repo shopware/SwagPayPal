@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineException;
@@ -30,6 +31,7 @@ use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandle
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Util\Log\LogKey;
@@ -326,7 +328,18 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeWithMissingPayPalOrderId(): void
     {
-        $this->orderTransactionRepository->expects($this->never())->method(static::anything());
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
+
         $this->orderResource->expects($this->never())->method('get');
         $this->orderTransactionStateHandler
             ->expects($this->once())
@@ -347,6 +360,49 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             [LogKey::ORDER_TRANSACTION_ID => 'transaction-id'],
             'The status sync cancelled a payment that never got a PayPal order',
         );
+    }
+
+    public function testInvokeWithMissingPayPalOrderIdSkipsTransactionThatIsNoLongerOpen(): void
+    {
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static fn (Criteria $criteria, Context $context) => new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context)
+            );
+
+        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
+
+        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', null));
+    }
+
+    #[DataProvider('dataProviderQueuedPayPalOrderId')]
+    public function testInvokeOnlyLoadsTransactionWithQueuedPayPalOrderId(?string $queuedPayPalOrderId): void
+    {
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context) use ($queuedPayPalOrderId): EntitySearchResult {
+                    static::assertContainsEquals(
+                        new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID, $queuedPayPalOrderId),
+                        $criteria->getFilters()
+                    );
+
+                    return new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context);
+                }
+            );
+
+        $this->orderResource->expects($this->never())->method('get');
+        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
+
+        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', $queuedPayPalOrderId));
+    }
+
+    public static function dataProviderQueuedPayPalOrderId(): \Generator
+    {
+        yield 'with PayPal order' => ['paypal-order-id'];
+        yield 'without PayPal order' => [null];
     }
 
     public function testInvokeWithAuthorizedTransactionAndOrderWillSkip(): void

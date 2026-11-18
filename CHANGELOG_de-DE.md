@@ -1,7 +1,12 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem ein Einzug oder eine Rückerstattung in der Administration die Zahlung als bezahlt oder erstattet markierte, obwohl PayPal mit einem ausstehenden, abgelehnten oder fehlgeschlagenen Status antwortete (shopware/SwagPayPal#839)
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
+- Behebt ein Problem, bei dem fehlgeschlagene oder abgebrochene PayPal-Rückerstattungen in der Administration vom erstattbaren Betrag abgezogen wurden und die Schaltfläche für Rückerstattungen deaktivieren konnten (shopware/SwagPayPal#878)
+- Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
+- Behebt ein Problem, bei dem nach dem Deinstallieren des Plugins ohne Beibehalten der Benutzerdaten gespeicherte PayPal-Konten und Karten, Transaktionsberichte und PayPal-Bestellzuordnungen in der Datenbank verblieben (shopware/SwagPayPal#846)
 - Behebt ein Problem, bei dem PayPal Express Checkout alle Versandarten außer der gewählten als kostenlos anzeigte (shopware/SwagPayPal#913, benötigt Shopware 6.7.14.0 oder höher)
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer Karte im Abonnement-Checkout zu einer Fehlerseite führte und stattdessen andere Zahlungsdaten entfernen konnte. Headless-Storefronts können diese jetzt entfernen, auch bei Abonnements
+- Behebt ein Problem, bei dem die Synchronisierung des Transaktionsstatus eine Transaktion anhand eines veralteten Zahlungsversuchs ändern konnte (shopware/SwagPayPal#842)
 - Überarbeitet die Log-Meldungen des Plugins: verständlichere Texte, stabile Log-Codes, einheitlicher Kontext und Log-Level sowie unkenntlich gemachte Namen, Adressen, E-Mail-Adressen und Tokens in geloggten API-Anfragen, API-Antworten und Webhook-Ereignissen. Monitoring, das auf den alten Meldungstexten basiert, muss angepasst werden
 
 # 10.9.0

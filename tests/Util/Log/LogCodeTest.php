@@ -51,12 +51,12 @@ class LogCodeTest extends TestCase
 
     public function testNoServiceUsesTheGenericLogger(): void
     {
-        $files = \glob(__DIR__ . '/../../../src/Resources/config/services/{*.xml,*/*.xml}', \GLOB_BRACE);
+        $files = \glob(__DIR__ . '/../../../src/Resources/config/services/{*.php,*/*.php}', \GLOB_BRACE);
 
         static::assertIsArray($files);
         static::assertGreaterThan(0, \count($files));
         foreach ($files as $file) {
-            static::assertStringNotContainsString('id="logger"', (string) \file_get_contents($file), $file . ' must use monolog.logger.paypal');
+            static::assertDoesNotMatchRegularExpression('/service\([\'"]logger[\'"]\)/', (string) \file_get_contents($file), $file . ' must use monolog.logger.paypal');
         }
     }
 }

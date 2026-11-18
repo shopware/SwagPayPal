@@ -76,6 +76,7 @@ class ExpressShippingCallbackService
         $order->unset('intent');
         $order->setId($callback->getId());
         $order->setPurchaseUnits($fullOrder->getPurchaseUnits());
+        DigitalGoodsCategoryRemover::remove($order);
         $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
         $order->getPurchaseUnits()->first()?->setShippingOptions($shippingOptions);
 

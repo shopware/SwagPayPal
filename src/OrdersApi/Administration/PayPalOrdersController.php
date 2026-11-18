@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
@@ -301,9 +302,10 @@ class PayPalOrdersController extends AbstractController
             LogKey::PAYMENT => $refundResponse,
         ]);
 
-        $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
-
-        $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refundResponse, $order, $context);
+        if ($refundResponse->getStatus() === ConstantsV2::ORDER_REFUND_COMPLETED) {
+            $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
+            $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refundResponse, $order, $context);
+        }
 
         return new JsonResponse($refundResponse);
     }
@@ -371,7 +373,9 @@ class PayPalOrdersController extends AbstractController
             LogKey::PAYMENT => $captureResponse,
         ]);
 
-        $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
+        if ($captureResponse->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
+            $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
+        }
 
         return new JsonResponse($captureResponse);
     }

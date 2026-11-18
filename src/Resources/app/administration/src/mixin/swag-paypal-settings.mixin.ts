@@ -50,7 +50,7 @@ export default Shopware.Mixin.register('swag-paypal-settings', Shopware.Componen
                 return;
             }
 
-            const config = await this.systemConfigApiService.getValues('SwagPayPal.settings', salesChannel as null) as PayPal.SystemConfig;
+            const config = await this.systemConfigApiService.getValues('SwagPayPal.settings', salesChannel) as PayPal.SystemConfig;
 
             this.settingsStore.setConfig(salesChannel, config || {});
         },
