@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Patch as PatchV2;
 use Shopware\PayPalSDK\Struct\V2\PatchCollection;
 use Swag\PayPal\Checkout\CheckoutException;
@@ -122,12 +123,14 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         try {
             $handler->pay($this->createRequest(CaptureOrderDeclined::ID), $paymentTransaction, Context::createDefaultContext(), null);
         } finally {
-            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_FAILED, Level::Error, [
+            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [
                 LogKey::ORDER_TRANSACTION_ID => $transactionId,
                 LogKey::PAYPAL_ORDER_ID => CaptureOrderDeclined::ID,
             ]);
             static::assertNotSame('unknown', $record->context[LogKey::ORDER_NUMBER] ?? null);
             static::assertSame(OrderFailedException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+            static::assertSame(ConstantsV2::ORDER_CAPTURE_DECLINED, $record->context[LogKey::EXCEPTION]['parameters']['status'] ?? null);
+            $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
             $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED);
         }
     }
@@ -155,7 +158,13 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
 
         $this->expectException(OrderFailedException::class);
         $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Order "%s" failed', AuthorizeOrderDenied::ID), '/') . '\z/');
-        $handler->pay($this->createRequest(AuthorizeOrderDenied::ID), $paymentTransaction, Context::createDefaultContext(), null);
+        try {
+            $handler->pay($this->createRequest(AuthorizeOrderDenied::ID), $paymentTransaction, Context::createDefaultContext(), null);
+        } finally {
+            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [LogKey::ORDER_TRANSACTION_ID => $transactionId]);
+            static::assertSame(ConstantsV2::ORDER_AUTHORIZATION_DENIED, $record->context[LogKey::EXCEPTION]['parameters']['status'] ?? null);
+            $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_AUTHORIZED);
+        }
     }
 
     public function testPayWithExceptionDuringPayPalCommunication(): void

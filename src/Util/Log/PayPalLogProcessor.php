@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Expands logged objects, redacts request data, normalizes the exception and adds its error code, PayPal issue and debug ID,
- * the sales channel and Admin user of the request and `extra.area`, and drops `null` values; call site values win.
+ * the sales channel and Admin user of the request, `extra.route` and `extra.area`, and drops `null` values; call site values win.
  * Handlers interpolate placeholders afterwards, so messages can use the added keys, e.g. `{errorCode}`.
  *
  * @internal
@@ -46,6 +46,7 @@ final class PayPalLogProcessor implements ProcessorInterface
             $salesChannelId = $attributes?->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID);
             $requestContext = $attributes?->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
             $source = $requestContext instanceof Context ? $requestContext->getSource() : null;
+            $route = $attributes?->get('_route');
 
             $context = LogContext::expand($record->context);
             $context = LogRedactor::redactContext($context);
@@ -57,7 +58,11 @@ final class PayPalLogProcessor implements ProcessorInterface
                 LogKey::USER_ID => $source instanceof AdminApiSource ? $source->getUserId() : null,
             ], $notNull);
 
-            return $record->with(context: $context, extra: [...$record->extra, LogKey::AREA => $this->detectArea()]);
+            return $record->with(context: $context, extra: [
+                ...$record->extra,
+                ...(\is_string($route) ? [LogKey::ROUTE => $route] : []),
+                LogKey::AREA => $this->detectArea(),
+            ]);
         } catch (\Throwable) {
             // raw request data and objects must never pass: a formatter writes objects whole, including the buyer's address
             $context = \array_diff_key($record->context, LogContext::OBJECT_KEYS);

@@ -12,10 +12,12 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\PayPalSDK\Exception\ApiException;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Util\IssueCategory;
 use Shopware\PayPalSDK\Util\IssueClassifier;
 use Swag\PayPal\Checkout\Card\Exception\CardValidationFailedException;
 use Swag\PayPal\Checkout\Exception\EmptyCartException;
+use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
@@ -33,9 +35,19 @@ final class FailureClassifier
         PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL,
     ];
 
+    // PayPal or the card issuer refused the payment, as with `INSTRUMENT_DECLINED`
+    private const REFUSED_PAYMENT_STATUSES = [
+        ConstantsV2::ORDER_CAPTURE_DECLINED,
+        ConstantsV2::ORDER_AUTHORIZATION_DENIED,
+    ];
+
     public static function isCausedByBuyer(\Throwable $e): bool
     {
         if ($e instanceof PayerActionRequiredException || $e instanceof CartException) {
+            return true;
+        }
+
+        if ($e instanceof OrderFailedException && \in_array($e->getStatus(), self::REFUSED_PAYMENT_STATUSES, true)) {
             return true;
         }
 

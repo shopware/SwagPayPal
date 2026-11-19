@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Util\Log;
 
 use Monolog\Level;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
@@ -17,6 +18,10 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\Log\PayPalLogProcessor;
+use Symfony\Bridge\Monolog\Processor\WebProcessor;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * @internal
@@ -38,6 +43,26 @@ class PayPalLoggerWiringTest extends TestCase
             $logger->getProcessors(),
             static fn (callable $processor) => $processor instanceof PayPalLogProcessor,
         )));
+    }
+
+    public function testRequestUrlIsNotLogged(): void
+    {
+        $logger = $this->getContainer()->get('monolog.logger.paypal');
+        static::assertInstanceOf(Logger::class, $logger);
+        $webProcessors = \array_values(\array_filter(
+            $logger->getProcessors(),
+            static fn (callable $processor) => $processor instanceof WebProcessor,
+        ));
+        static::assertCount(1, $webProcessors);
+
+        // a copy, so the request data doesn't stay in the shared service
+        $processor = clone $webProcessors[0];
+        $request = Request::create('https://shop.example/paypal/restore-context/restore-token?sw-token=webhook-token');
+        $processor->onKernelRequest(new RequestEvent($this->createMock(HttpKernelInterface::class), $request, HttpKernelInterface::MAIN_REQUEST));
+
+        $record = $processor(new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Info, 'message'));
+
+        static::assertSame(['http_method' => 'GET', 'server' => 'shop.example'], $record->extra);
     }
 
     public function testErrorLinesGetTheDetailsOfTheException(): void

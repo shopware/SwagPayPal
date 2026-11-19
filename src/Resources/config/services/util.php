@@ -89,10 +89,10 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set('monolog.processor.paypal.introspection', IntrospectionProcessor::class)
         ->tag('monolog.processor', ['channel' => 'paypal']);
 
+    // no `url`: paths and queries carry tokens, e.g. the restore token or the webhook's `sw-token`, the `PayPalLogProcessor` adds the route instead
     $services->set('monolog.processor.paypal.web', WebProcessor::class)
         ->args([
             [
-                'url' => 'REQUEST_URI',
                 'http_method' => 'REQUEST_METHOD',
                 'server' => 'SERVER_NAME',
             ],

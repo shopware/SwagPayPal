@@ -121,7 +121,7 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
     {
         $this->systemConfig->set(Settings::SPB_APP_SWITCH_ENABLED, true);
         // reusing a stored token would skip the payer entirely; storing a new one must not
-        $this->vaultTokenService->expects($this->never())->method('getAvailableToken');
+        $this->vaultTokenService->expects($this->never())->method('getTokenForPayment');
         $this->vaultTokenService
             ->expects($this->once())
             ->method('shouldRequestVaulting')
@@ -153,7 +153,7 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
     {
         $this->systemConfig->set(Settings::SPB_APP_SWITCH_ENABLED, true);
         // the confirmation must stay an interactive consent, so the token is never even looked up
-        $this->vaultTokenService->expects($this->never())->method('getAvailableToken');
+        $this->vaultTokenService->expects($this->never())->method('getTokenForPayment');
 
         $orderTransaction = $this->createOrderTransaction();
         $confirmationRequest = new Request();

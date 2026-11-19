@@ -174,7 +174,7 @@ class OrderExecuteService
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_DECLINED
                 || $capture->getStatus() === ConstantsV2::ORDER_CAPTURE_FAILED) {
-                throw new OrderFailedException($order->getId());
+                throw new OrderFailedException($order->getId(), $capture->getStatus());
             }
 
             return false;
@@ -206,7 +206,7 @@ class OrderExecuteService
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_DENIED
             || $authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_VOIDED) {
-            throw new OrderFailedException($order->getId());
+            throw new OrderFailedException($order->getId(), $authorization->getStatus());
         }
 
         return false;

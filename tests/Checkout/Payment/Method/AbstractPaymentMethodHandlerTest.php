@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\Checkout\Payment\Method;
 
 use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -25,13 +27,17 @@ use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Venmo;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
+use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -57,11 +63,19 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     private OrderResource&MockObject $orderResource;
 
+    private OrderExecuteService&MockObject $orderExecuteService;
+
+    private VaultTokenService&MockObject $vaultTokenService;
+
+    private TransactionDataService&MockObject $transactionDataService;
+
     private PayPalPaymentHandler $handler;
 
     private OrderTransactionEntity $orderTransaction;
 
     private PayerActionRequiredException $payerActionRequired;
+
+    private Order $paypalOrder;
 
     protected function setUp(): void
     {
@@ -69,17 +83,22 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         $order->setId('order-id');
         $order->setOrderNumber('10000');
         $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customerId');
+        $order->setOrderCustomer($orderCustomer);
 
         $this->orderTransaction = new OrderTransactionEntity();
         $this->orderTransaction->setId(self::TRANSACTION_ID);
         $this->orderTransaction->setOrder($order);
 
-        $paypalOrder = new Order();
-        $paypalOrder->setId(self::PAYPAL_ORDER_ID);
-        $paypalOrder->setPaymentSource(new PaymentSource());
+        $this->paypalOrder = new Order();
+        $this->paypalOrder->setId(self::PAYPAL_ORDER_ID);
+        $this->paypalOrder->setPaymentSource(new PaymentSource());
 
         $this->orderResource = $this->createMock(OrderResource::class);
-        $this->orderResource->expects($this->once())->method('get')->willReturn($paypalOrder);
+        $this->orderExecuteService = $this->createMock(OrderExecuteService::class);
+        $this->vaultTokenService = $this->createMock(VaultTokenService::class);
+        $this->transactionDataService = $this->createMock(TransactionDataService::class);
 
         $captureRejection = new PayPalApiException(
             'UNPROCESSABLE_ENTITY',
@@ -89,30 +108,62 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         );
         $this->payerActionRequired = PayerActionRequiredException::payerActionRequired(self::PAYPAL_ORDER_ID, previous: $captureRejection);
 
-        $orderExecuteService = $this->createMock(OrderExecuteService::class);
-        $orderExecuteService->expects($this->once())
-            ->method('captureOrAuthorizeOrder')
-            ->willThrowException($this->payerActionRequired);
+        $this->handler = $this->createHandler(PayPalPaymentHandler::class);
+    }
 
-        $orderBuilder = static::createStub(AbstractOrderBuilder::class);
-        $orderBuilder->method('getOrder')->willReturn($paypalOrder);
+    /**
+     * @param class-string<AbstractPaymentMethodHandler> $handlerClass
+     */
+    #[DataProvider('savedTokenPaymentSourceProvider')]
+    public function testPayWithSavedTokenSavesItToTheSubscriptions(string $handlerClass, PaymentSource $paymentSource): void
+    {
+        $context = Context::createDefaultContext();
+        $transaction = new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL);
 
-        $this->handler = new PayPalPaymentHandler(
-            static::createStub(SettingsValidationServiceInterface::class),
-            static::createStub(StateMachineRegistry::class),
-            $orderExecuteService,
-            static::createStub(OrderPatchService::class),
-            static::createStub(TransactionDataService::class),
-            $this->orderResource,
-            static::createStub(VaultTokenService::class),
-            new StaticEntityRepository([new OrderTransactionCollection([$this->orderTransaction])]),
-            $this->createPayPalLogger(),
-            $orderBuilder,
-        );
+        // without a prepared order, the order is created with the `vault_id` and needs no approval
+        $response = new Order();
+        $response->setId(self::PAYPAL_ORDER_ID);
+        $response->setPaymentSource($paymentSource);
+
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId('vaultTokenId');
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getTokenForPayment')
+            ->with($transaction, $this->orderTransaction, static::anything(), $context, false)
+            ->willReturn($vaultToken);
+        $this->orderResource->expects($this->once())->method('create')->willReturn($response);
+        $this->transactionDataService
+            ->expects($this->once())
+            ->method('setVaultTokenId')
+            ->with($this->orderTransaction, 'vaultTokenId', $context);
+        $this->orderExecuteService->expects($this->once())->method('captureOrAuthorizeOrder')->willReturn($response);
+        $this->vaultTokenService->expects($this->once())->method('saveToken');
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('saveUsedTokenToSubscriptions')
+            ->with($transaction, $this->orderTransaction, $context);
+
+        static::assertNull($this->createHandler($handlerClass)->pay(new Request(), $transaction, $context, null));
+    }
+
+    public static function savedTokenPaymentSourceProvider(): \Generator
+    {
+        // e.g. headless checkouts, or the storefront without Smart Payment Buttons
+        $paymentSource = new PaymentSource();
+        $paymentSource->setPaypal(new Paypal());
+        yield 'PayPal' => [PayPalPaymentHandler::class, $paymentSource];
+
+        $paymentSource = new PaymentSource();
+        $paymentSource->setVenmo(new Venmo());
+        yield 'Venmo' => [VenmoHandler::class, $paymentSource];
     }
 
     public function testPayPreservesPayerActionRequiredWhenConfirmationIsRejected(): void
     {
+        $this->expectCaptureRequiringPayerAction();
+
         $confirmationException = new PayPalApiException(
             'UNPROCESSABLE_ENTITY',
             'The order cannot be confirmed.',
@@ -148,6 +199,8 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     public function testPayPreservesPayerActionRequiredWhenConfirmationCannotReachPayPal(): void
     {
+        $this->expectCaptureRequiringPayerAction();
+
         $confirmationException = new class('Connection timed out') extends \RuntimeException implements ClientExceptionInterface {};
         $this->orderResource->expects($this->once())->method('confirm')->willThrowException($confirmationException);
 
@@ -174,6 +227,8 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     public function testPayLogsBuyerCausedConfirmationFailureAsNotice(): void
     {
+        $this->expectCaptureRequiringPayerAction();
+
         $confirmationException = new PayPalApiException(
             'UNPROCESSABLE_ENTITY',
             'The instrument was declined.',
@@ -199,6 +254,8 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     public function testSetLoggerKeepsTheInjectedLogger(): void
     {
+        $this->expectCaptureRequiringPayerAction();
+
         $otherLogger = $this->createMock(LoggerInterface::class);
         $otherLogger->expects($this->never())->method(static::anything());
         $this->handler->setLogger($otherLogger);
@@ -226,6 +283,8 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     public function testPayDoesNotHideUnexpectedConfirmationErrors(): void
     {
+        $this->expectCaptureRequiringPayerAction();
+
         $confirmationException = new \LogicException('Unexpected confirmation response');
         $this->orderResource->expects($this->once())->method('confirm')->willThrowException($confirmationException);
         try {
@@ -241,5 +300,39 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         }
 
         $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED);
+    }
+
+    /**
+     * @template T of AbstractPaymentMethodHandler
+     *
+     * @param class-string<T> $handlerClass
+     *
+     * @return T
+     */
+    private function createHandler(string $handlerClass): AbstractPaymentMethodHandler
+    {
+        $orderBuilder = static::createStub(AbstractOrderBuilder::class);
+        $orderBuilder->method('getOrder')->willReturn($this->paypalOrder);
+
+        return new $handlerClass(
+            static::createStub(SettingsValidationServiceInterface::class),
+            static::createStub(StateMachineRegistry::class),
+            $this->orderExecuteService,
+            static::createStub(OrderPatchService::class),
+            $this->transactionDataService,
+            $this->orderResource,
+            $this->vaultTokenService,
+            new StaticEntityRepository([new OrderTransactionCollection([$this->orderTransaction])]),
+            $this->createPayPalLogger(),
+            $orderBuilder,
+        );
+    }
+
+    private function expectCaptureRequiringPayerAction(): void
+    {
+        $this->orderResource->expects($this->once())->method('get')->willReturn($this->paypalOrder);
+        $this->orderExecuteService->expects($this->once())
+            ->method('captureOrAuthorizeOrder')
+            ->willThrowException($this->payerActionRequired);
     }
 }

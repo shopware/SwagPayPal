@@ -276,6 +276,24 @@ class PayPalLogProcessorTest extends TestCase
         static::assertSame(['fatal' => false, 'amount' => '0', 'trackingCodes' => [null]], $record->context);
     }
 
+    public function testRouteOfTheMainRequestIsAdded(): void
+    {
+        $stack = $this->createStack(new Request(attributes: ['_route' => 'frontend.paypal.restore_context']));
+        $stack->push(new Request(attributes: ['_route' => 'sub.request']));
+
+        $record = $this->createProcessor($stack)($this->createRecord(extra: ['http_method' => 'GET']));
+
+        static::assertSame('frontend.paypal.restore_context', $record->extra[LogKey::ROUTE]);
+        static::assertSame('GET', $record->extra['http_method']);
+    }
+
+    public function testNoRouteWithoutRequest(): void
+    {
+        $record = $this->createProcessor()($this->createRecord());
+
+        static::assertArrayNotHasKey(LogKey::ROUTE, $record->extra);
+    }
+
     public function testNeverThrows(): void
     {
         $stack = $this->createMock(RequestStack::class);
@@ -368,9 +386,10 @@ class PayPalLogProcessorTest extends TestCase
 
     /**
      * @param array<string, mixed> $context
+     * @param array<string, mixed> $extra
      */
-    private function createRecord(array $context = []): LogRecord
+    private function createRecord(array $context = [], array $extra = []): LogRecord
     {
-        return new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Info, 'message', $context);
+        return new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Info, 'message', $context, $extra);
     }
 }

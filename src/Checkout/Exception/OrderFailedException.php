@@ -14,12 +14,22 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class OrderFailedException extends ShopwareHttpException
 {
-    public function __construct(string $orderId)
-    {
+    /**
+     * @param string|null $status the status PayPal answered the capture or authorization with
+     */
+    public function __construct(
+        string $orderId,
+        private readonly ?string $status = null,
+    ) {
         parent::__construct(
             'Order "{{ orderId }}" failed',
-            ['orderId' => $orderId]
+            ['orderId' => $orderId, ...($status !== null ? ['status' => $status] : [])]
         );
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
     }
 
     public function getStatusCode(): int
