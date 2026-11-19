@@ -16,7 +16,7 @@ jobs:
   check:
       if: always()
       needs: [build-zip, test-install-zip, phpunit, acceptance]
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-24.04
       steps:
         - uses: re-actors/alls-green@v1.2.2
           with:
@@ -24,7 +24,7 @@ jobs:
             allowed-skips: '["acceptance"]'
 
   build-zip:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       artifact-url: ${{ steps.upload.outputs.artifact-url }}
     steps:
@@ -35,7 +35,7 @@ jobs:
 
   test-install-zip:
     needs: build-zip
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         PLATFORM_BRANCH: ["v6.6.0.0", "6.6.x"]
@@ -52,7 +52,7 @@ jobs:
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
 
   phpunit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         MYSQL_IMAGE: ["mysql:8.0", "mariadb:10.11"]
@@ -90,7 +90,7 @@ jobs:
     needs: test-install-zip
     # The PayPal sandbox credentials only exist in the public repository's environment
     if: github.repository == 'shopware/SwagPayPal' && ((needs.test-install-zip.result == 'success' && contains(github.event.pull_request.labels.*.name, 'run/acceptance')) || github.event_name != 'pull_request')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: acceptance-production
     services:
       redis:
