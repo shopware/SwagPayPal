@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where the PayPal Express Checkout window stayed blank on product detail, listing and search pages, if "Open offcanvas cart after adding a product" was disabled (shopware/SwagPayPal#858)
+- Fixes an issue, where the Pay Later button showed an error instead of opening PayPal, if the PayPal JS SDK v6 was enabled (shopware/shopware#23097)
 - Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 - Fixes an issue, where failed or cancelled PayPal refunds were deducted from the refundable amount in the Administration and could disable the refund button (shopware/SwagPayPal#878)
@@ -8,6 +9,7 @@
 - Fixes an issue, where PayPal Express Checkout showed all shipping methods except the selected one as free (shopware/SwagPayPal#913, requires Shopware 6.7.14.0 or greater)
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 - Fixes an issue, where the transaction status synchronisation could change a transaction based on an outdated payment attempt (shopware/SwagPayPal#842)
+- Fixes an issue, where renewals of subscriptions paid with a saved PayPal account or card failed after the customer removed it, or used one added later instead
 
 # 10.9.0
 - Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)
