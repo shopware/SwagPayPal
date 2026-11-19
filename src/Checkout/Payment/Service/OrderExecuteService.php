@@ -141,6 +141,12 @@ class OrderExecuteService
 
     public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
     {
+        $logContext = [
+            LogKey::SALES_CHANNEL_ID => $salesChannelId,
+            LogKey::ORDER_TRANSACTION_ID => $transactionId,
+            LogKey::PAYPAL_ORDER_ID => $order->getId(),
+        ];
+
         if ($order->getIntent() === ConstantsV2::INTENT_CAPTURE) {
             $capture = $this->getPayments($order, $salesChannelId, $refetch)?->getCaptures()?->first();
             if ($capture === null) {
@@ -148,6 +154,8 @@ class OrderExecuteService
             }
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_PENDING) {
+                $this->logger->info('PayPal hasn\'t completed the payment for PayPal order {paypalOrderId} yet', [...$logContext, LogKey::PAYMENT => $capture, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_PENDING]);
+
                 try {
                     $this->orderTransactionStateHandler->process($transactionId, $context);
                 } catch (IllegalTransitionException) {
@@ -157,6 +165,8 @@ class OrderExecuteService
             }
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
+                $this->logger->info('Captured the payment for PayPal order {paypalOrderId}', [...$logContext, LogKey::PAYMENT => $capture, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_CAPTURED]);
+
                 $this->orderTransactionStateHandler->paid($transactionId, $context);
 
                 return true;
@@ -176,6 +186,8 @@ class OrderExecuteService
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_PENDING) {
+            $this->logger->info('PayPal hasn\'t completed the payment for PayPal order {paypalOrderId} yet', [...$logContext, LogKey::PAYMENT => $authorization, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_PENDING]);
+
             try {
                 $this->orderTransactionStateHandler->process($transactionId, $context);
             } catch (IllegalTransitionException) {
@@ -185,6 +197,8 @@ class OrderExecuteService
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_CREATED) {
+            $this->logger->info('Authorized the payment for PayPal order {paypalOrderId}', [...$logContext, LogKey::PAYMENT => $authorization, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_AUTHORIZED]);
+
             $this->orderTransactionStateHandler->authorize($transactionId, $context);
 
             return true;
@@ -209,29 +223,9 @@ class OrderExecuteService
             throw $this->createPayerActionRequiredException($paypalOrder);
         }
 
-        if ($paypalOrder->getIntent() === ConstantsV2::INTENT_CAPTURE) {
-            $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-            $payments = $response->isset('purchaseUnits') ? $response->getPurchaseUnits()->first()?->getPayments() : null;
-
-            $this->logger->info('Captured the payment for PayPal order {paypalOrderId}', [
-                LogKey::CODE => LogCode::CHECKOUT_PAYMENT_CAPTURED,
-                LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                LogKey::ORDER_TRANSACTION_ID => $transactionId,
-                LogKey::PAYPAL_ORDER_ID => $paypalOrder->getId(),
-                LogKey::PAYMENT => $payments?->getCaptures()?->first(),
-            ]);
-        } else {
-            $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-            $payments = $response->isset('purchaseUnits') ? $response->getPurchaseUnits()->first()?->getPayments() : null;
-
-            $this->logger->info('Authorized the payment for PayPal order {paypalOrderId}', [
-                LogKey::CODE => LogCode::CHECKOUT_PAYMENT_AUTHORIZED,
-                LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                LogKey::ORDER_TRANSACTION_ID => $transactionId,
-                LogKey::PAYPAL_ORDER_ID => $paypalOrder->getId(),
-                LogKey::PAYMENT => $payments?->getAuthorizations()?->first(),
-            ]);
-        }
+        $response = $paypalOrder->getIntent() === ConstantsV2::INTENT_CAPTURE
+            ? $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId)
+            : $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
 
         $this->checkFinalizedStatus($response, $salesChannelId, $transactionId, $context);
 

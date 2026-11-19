@@ -70,7 +70,7 @@ class RemoteUpdater
         try {
             $status = $this->inventoryResource->changeInventoryBulk($inventoryContext->getPosSalesChannel(), $remoteChanges);
         } catch (PosApiException $e) {
-            $this->logger->error('Could not update the inventory at Zettle', [LogKey::EXCEPTION => $e]);
+            $this->logger->error('Could not update the inventory at PayPal POS', [LogKey::EXCEPTION => $e]);
 
             return $changedProducts;
         }

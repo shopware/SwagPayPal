@@ -51,9 +51,10 @@ class Client implements ClientInterface
         ];
 
         if ($response->getStatusCode() >= 400) {
-            $issue = $this->extractIssue($responseBody);
+            ['name' => $name, 'issues' => $issues] = $this->extractError($responseBody);
+            $issue = \implode(', ', $issues) ?: $name;
 
-            if (FailureClassifier::isMerchantAccountIssue($issue)) {
+            if (FailureClassifier::isMerchantAccountIssue($name, ...$issues)) {
                 $this->logger->critical(
                     self::LOG_MESSAGE,
                     [...$context, LogKey::CODE => LogCode::API_MERCHANT_ACCOUNT_REJECTED, LogKey::PAYPAL_ISSUE => $issue],
@@ -69,20 +70,24 @@ class Client implements ClientInterface
         $this->logger->debug(self::LOG_MESSAGE, [
             ...$context,
             LogKey::REQUEST => $isTokenRequest ? LogRedactor::REDACTED : (string) $request->getBody(),
-            LogKey::REQUEST_HEADERS => $request->getHeaders(),
             LogKey::RESPONSE => $isTokenRequest ? LogRedactor::REDACTED : $responseBody,
-            LogKey::RESPONSE_HEADERS => $response->getHeaders(),
         ]);
 
         return $response;
     }
 
-    private function extractIssue(string $responseBody): ?string
+    /**
+     * @return array{name: string|null, issues: list<string>}
+     */
+    private function extractError(string $responseBody): array
     {
         $body = \json_decode($responseBody, true);
-        $issues = \array_filter(\array_column(\is_array($body['details'] ?? null) ? $body['details'] : [], 'issue'), \is_string(...));
-        $issue = \array_pop($issues) ?: ($body['name'] ?? $body['error'] ?? null);
+        $name = \is_array($body) ? ($body['name'] ?? $body['error'] ?? null) : null;
+        $details = \is_array($body) && \is_array($body['details'] ?? null) ? $body['details'] : [];
 
-        return \is_string($issue) && $issue ? $issue : null;
+        return [
+            'name' => \is_string($name) && $name !== '' ? $name : null,
+            'issues' => \array_values(\array_filter(\array_column($details, 'issue'), static fn (mixed $issue): bool => \is_string($issue) && $issue !== '')),
+        ];
     }
 }

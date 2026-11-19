@@ -273,23 +273,26 @@ class PayPalController extends StorefrontController
             $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
-        $this->logBrowserError($context, $code, $pageType, $fatal, $error);
+        $this->logBrowserError($context, $code, $step, $pageType, $fatal, $error);
 
         return new NoContentResponse();
     }
 
-    private function logBrowserError(SalesChannelContext $context, ?string $code, ?string $pageType, bool $fatal, ?string $error): void
+    private function logBrowserError(SalesChannelContext $context, ?string $code, ?string $step, ?string $pageType, bool $fatal, ?string $error): void
     {
         // untrusted browser input: context only, cut
         $logContext = [
             LogKey::PAYMENT_METHOD => $context->getPaymentMethod()->getTechnicalName(),
             LogKey::CLIENT_CODE => \mb_substr($code ?? '', 0, 200) ?: null,
+            LogKey::CLIENT_STEP => \mb_substr($step ?? '', 0, 200) ?: null,
             LogKey::PAGE_TYPE => \mb_substr($pageType ?? '', 0, 200) ?: null,
             LogKey::CLIENT_ERROR => \mb_substr($error ?? '', 0, 200) ?: null,
             LogKey::FATAL => $fatal,
         ];
 
-        switch ($code) {
+        $isScriptLoad = $code === BrowserErrorCode::GENERIC && $step === BrowserErrorCode::STEP_SCRIPT_LOAD;
+
+        switch ($isScriptLoad ? BrowserErrorCode::SCRIPT : $code) {
             case BrowserErrorCode::USER_CANCELLED:
             case BrowserErrorCode::EXPRESS_USER_CANCELLED:
                 $this->logger->notice('The browser reported that the buyer closed the PayPal window', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_BUYER_CANCELLED]);

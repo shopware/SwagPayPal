@@ -71,9 +71,9 @@ class UnsyncedChecker
 
         try {
             $this->productResource->deleteProducts($productContext->getPosSalesChannel(), $deletions);
-            $this->logger->info('Removed unsynced products at Zettle: {productIds}', ['productIds' => \implode(', ', $deletions)]);
+            $this->logger->info('Removed unsynced products at PayPal POS: {productIds}', ['productIds' => \implode(', ', $deletions)]);
         } catch (PosApiException $e) {
-            $this->logger->warning('Could not remove products from Zettle that are no longer synced', [LogKey::EXCEPTION => $e]);
+            $this->logger->warning('Could not remove products from PayPal POS that are no longer synced', [LogKey::EXCEPTION => $e]);
         }
     }
 }

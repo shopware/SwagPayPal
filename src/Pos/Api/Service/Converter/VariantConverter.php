@@ -59,7 +59,7 @@ class VariantConverter
             $variant->setDescription(\sprintf('%s...', \mb_substr($variant->getDescription(), 0, 1021)));
 
             $this->logger->info(
-                'Shortened the description of product {productName} to Zettle\'s maximum of 1024 characters',
+                'Shortened the description of product {productName} to the PayPal POS maximum of 1024 characters',
                 [
                     'productName' => $variant->getName(),
                     'product' => $shopwareVariant,

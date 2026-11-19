@@ -62,9 +62,9 @@ class DeletedUpdater
 
         try {
             $this->productResource->deleteProducts($productContext->getPosSalesChannel(), $productUuids);
-            $this->logger->info('Deleted products at Zettle: {productIds}', ['productIds' => \implode(', ', \array_keys($deletions))]);
+            $this->logger->info('Deleted products at PayPal POS: {productIds}', ['productIds' => \implode(', ', \array_keys($deletions))]);
         } catch (PosApiException $e) {
-            $this->logger->error('Could not delete the products at Zettle', [LogKey::EXCEPTION => $e]);
+            $this->logger->error('Could not delete the products at PayPal POS', [LogKey::EXCEPTION => $e]);
         }
 
         foreach ($deletions as $deletion) {

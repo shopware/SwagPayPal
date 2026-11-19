@@ -58,7 +58,7 @@ abstract class AbstractSyncHandler
             $this->messageHydrator->hydrateMessage($message);
             $this->sync($message);
         } catch (\Throwable $e) {
-            $this->logger->error('The Zettle sync step failed', [LogKey::EXCEPTION => $e]);
+            $this->logger->error('The PayPal POS sync step failed', [LogKey::EXCEPTION => $e]);
             $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_CANCELLED);
         } finally {
             $this->runService->decrementMessageCount($runId);

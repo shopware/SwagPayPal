@@ -236,15 +236,13 @@ class PayPalLogProcessorTest extends TestCase
         static::assertEquals($record, $this->createProcessor($stack)($record));
     }
 
-    public function testRedactsBodiesHeadersAndPath(): void
+    public function testRedactsBodiesAndPath(): void
     {
         $record = $this->createProcessor()($this->createRecord([
             LogKey::HTTP_PATH => '/v3/vault/payment-tokens/abc',
             LogKey::REQUEST => '{"payer":{"email_address":"buyer@example.com"}}',
             LogKey::RESPONSE => 'grant_type=client_credentials&client_secret=secret',
             LogKey::PAYLOAD => ['firstName' => 'A'],
-            LogKey::REQUEST_HEADERS => ['Authorization' => 'Bearer x', 'Content-Type' => 'application/json'],
-            LogKey::RESPONSE_HEADERS => ['paypal-debug-id' => '1', 'Set-Cookie' => 'x'],
             LogKey::PAYPAL_ORDER_ID => '5O1',
         ]));
 
@@ -253,8 +251,6 @@ class PayPalLogProcessorTest extends TestCase
             LogKey::REQUEST => ['payer' => ['email_address' => '<redacted>']],
             LogKey::RESPONSE => '<redacted>',
             LogKey::PAYLOAD => ['firstName' => '<redacted>'],
-            LogKey::REQUEST_HEADERS => ['Content-Type' => 'application/json'],
-            LogKey::RESPONSE_HEADERS => ['paypal-debug-id' => '1'],
             LogKey::PAYPAL_ORDER_ID => '5O1',
         ], $record->context);
     }
@@ -267,14 +263,12 @@ class PayPalLogProcessorTest extends TestCase
         $record = $this->createProcessor($stack)($this->createRecord([
             LogKey::REQUEST => ['email' => 'a@b.c'],
             LogKey::HTTP_PATH => '/v3/vault/payment-tokens/abc',
-            LogKey::RESPONSE_HEADERS => ['Authorization' => 'Bearer x'],
             LogKey::PAYPAL_ORDER_ID => '5O1',
         ]));
 
         static::assertSame([
             LogKey::REQUEST => '<redacted>',
             LogKey::HTTP_PATH => '<redacted>',
-            LogKey::RESPONSE_HEADERS => '<redacted>',
             LogKey::PAYPAL_ORDER_ID => '5O1',
         ], $record->context);
     }

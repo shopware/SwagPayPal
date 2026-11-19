@@ -50,9 +50,9 @@ class OutdatedUpdater
                 } catch (PosApiException $e) {
                     if ($e->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
                         $productContext->removeProduct($shopwareProduct);
-                        $this->logger->notice('The product was marked as synced but is missing at Zettle, the next sync recreates it', ['product' => $shopwareProduct]);
+                        $this->logger->notice('The product was marked as synced but is missing at PayPal POS, the next sync recreates it', ['product' => $shopwareProduct]);
                     } else {
-                        $this->logger->error('Could not update the product at Zettle', ['product' => $shopwareProduct, LogKey::EXCEPTION => $e]);
+                        $this->logger->error('Could not update the product at PayPal POS', ['product' => $shopwareProduct, LogKey::EXCEPTION => $e]);
                     }
                 }
             }

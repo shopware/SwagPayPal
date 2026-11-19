@@ -23,13 +23,13 @@ final class LogRedactor
         LogKey::REQUEST,
         LogKey::RESPONSE,
         LogKey::PAYLOAD,
-        LogKey::REQUEST_HEADERS,
-        LogKey::RESPONSE_HEADERS,
         LogKey::HTTP_PATH,
     ];
 
     private const BODY_KEYS = [LogKey::REQUEST, LogKey::RESPONSE, LogKey::PAYLOAD];
-    private const HEADER_KEYS = [LogKey::REQUEST_HEADERS, LogKey::RESPONSE_HEADERS];
+
+    // return, callback and webhook URLs carry tokens, e.g. the restore token or the webhook's `sw-token`
+    private const URL_KEYS = ['return_url', 'cancel_url', 'callback_url', 'url'];
 
     private const TOKEN_PARENT_KEYS = ['vault', 'token'];
 
@@ -115,14 +115,6 @@ final class LogRedactor
         'admin_area_2',
     ];
 
-    private const HEADER_ALLOW_LIST = [
-        'paypal-request-id',
-        'paypal-debug-id',
-        'content-type',
-        'date',
-        'prefer',
-    ];
-
     /**
      * @param array<array-key, mixed> $context
      *
@@ -133,12 +125,6 @@ final class LogRedactor
         foreach (self::BODY_KEYS as $key) {
             if (\array_key_exists($key, $context)) {
                 $context[$key] = self::redactBody($context[$key]);
-            }
-        }
-
-        foreach (self::HEADER_KEYS as $key) {
-            if (isset($context[$key]) && \is_array($context[$key])) {
-                $context[$key] = self::redactHeaders($context[$key]);
             }
         }
 
@@ -188,17 +174,14 @@ final class LogRedactor
     }
 
     /**
-     * @param array<array-key, mixed> $headers
-     *
-     * @return array<array-key, mixed>
+     * Keeps scheme and host, so a wrong shop domain stays visible.
      */
-    private static function redactHeaders(array $headers): array
+    private static function redactUrl(string $url): string
     {
-        return \array_filter(
-            $headers,
-            static fn (mixed $name) => \is_string($name) && \in_array(\mb_strtolower($name), self::HEADER_ALLOW_LIST, true),
-            \ARRAY_FILTER_USE_KEY,
-        );
+        $scheme = \parse_url($url, \PHP_URL_SCHEME);
+        $host = \parse_url($url, \PHP_URL_HOST);
+
+        return \is_string($scheme) && \is_string($host) ? \sprintf('%s://%s/%s', $scheme, $host, self::REDACTED) : self::REDACTED;
     }
 
     private static function redactLevel(mixed $data, ?string $parentKey, bool $isRoot): mixed
@@ -229,6 +212,12 @@ final class LogRedactor
 
             if ($isTokenId || (!$isErrorName && \in_array($lowerKey, self::DENY_LIST, true))) {
                 $data[$key] = self::REDACTED;
+
+                continue;
+            }
+
+            if (\is_string($value) && \in_array($lowerKey, self::URL_KEYS, true)) {
+                $data[$key] = self::redactUrl($value);
 
                 continue;
             }

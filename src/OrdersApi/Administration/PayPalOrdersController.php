@@ -293,18 +293,22 @@ class PayPalOrdersController extends AbstractController
             false
         );
 
-        $this->logger->info('Refunded {amount} {currency} of capture {captureId} in the Administration', [
-            LogKey::CODE => LogCode::ADMIN_REFUND_CREATED,
+        $logContext = [
             LogKey::SALES_CHANNEL_ID => $salesChannelId,
             LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
             LogKey::PAYPAL_ORDER_ID => $paypalOrderId,
             LogKey::CAPTURE_ID => $captureId,
             LogKey::PAYMENT => $refundResponse,
-        ]);
+        ];
 
         if ($refundResponse->getStatus() === ConstantsV2::ORDER_REFUND_COMPLETED) {
+            // before the status update, so a failing update can't hide a refund PayPal completed
+            $this->logger->info('Refunded {amount} {currency} of capture {captureId} in the Administration', [...$logContext, LogKey::CODE => LogCode::ADMIN_REFUND_CREATED]);
+
             $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
             $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refundResponse, $order, $context);
+        } else {
+            $this->logger->notice('PayPal answered the refund of capture {captureId} with status {refundStatus}', [...$logContext, LogKey::CODE => LogCode::ADMIN_REFUND_NOT_COMPLETED]);
         }
 
         return new JsonResponse($refundResponse);
@@ -365,16 +369,19 @@ class PayPalOrdersController extends AbstractController
             false
         );
 
-        $this->logger->info('Captured {amount} {currency} of authorization {authorizationId} in the Administration', [
-            LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_CAPTURED,
+        $logContext = [
             LogKey::SALES_CHANNEL_ID => $salesChannelId,
             LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
             LogKey::AUTHORIZATION_ID => $authorizationId,
             LogKey::PAYMENT => $captureResponse,
-        ]);
+        ];
 
         if ($captureResponse->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
+            $this->logger->info('Captured {amount} {currency} of authorization {authorizationId} in the Administration', [...$logContext, LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_CAPTURED]);
+
             $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
+        } else {
+            $this->logger->notice('PayPal answered the capture of authorization {authorizationId} with status {captureStatus}', [...$logContext, LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_CAPTURE_NOT_COMPLETED]);
         }
 
         return new JsonResponse($captureResponse);

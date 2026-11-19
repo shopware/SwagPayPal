@@ -244,14 +244,14 @@ class ImageSyncerTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())->method('info')->with(
-            'Uploaded {count} images to Zettle',
+            'Uploaded {count} images to PayPal POS',
             ['count' => 2]
         );
         $matcher = $this->exactly(3);
         $logger->expects($matcher)->method('warning')->willReturnCallback(static function (string $message, array $context) use ($matcher): void {
             switch ($matcher->numberOfInvocations()) {
                 case 1:
-                    static::assertSame('Zettle doesn\'t support media type {mimeType}, skipped image {fileName}', $message);
+                    static::assertSame('PayPal POS doesn\'t support media type {mimeType}, skipped image {fileName}', $message);
                     static::assertSame(self::INVALID_MIME_TYPE, $context['mimeType']);
                     static::assertSame(self::LOCAL_FILE_NAME . '.' . self::LOCAL_FILE_EXTENSION, $context['fileName']);
 
@@ -262,7 +262,7 @@ class ImageSyncerTest extends TestCase
 
                     break;
                 case 3:
-                    static::assertSame('Zettle didn\'t accept image {imageUrl}', $message);
+                    static::assertSame('PayPal POS didn\'t accept image {imageUrl}', $message);
                     static::assertSame(self::DOMAIN_URL . self::MEDIA_URL_INVALID, $context['imageUrl']);
 
                     break;

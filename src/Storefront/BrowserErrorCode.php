@@ -27,4 +27,7 @@ final class BrowserErrorCode
     public const NOT_ELIGIBLE = 'SWAG_PAYPAL__NOT_ELIGIBLE';
     public const GENERIC = 'SWAG_PAYPAL__GENERIC_ERROR';
     public const EXPRESS_GENERIC = 'SWAG_PAYPAL__EXPRESS_GENERIC_ERROR';
+
+    // the dependency loader reports a failed script load as a generic error with this step
+    public const STEP_SCRIPT_LOAD = 'SCRIPT_LOAD';
 }

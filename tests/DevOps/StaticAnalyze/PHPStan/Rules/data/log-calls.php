@@ -18,7 +18,7 @@ class Calls
     {
     }
 
-    public function run(\Throwable $e, array $other, string $dynamic, ?\Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity $transaction = null, ?\Shopware\PayPalSDK\Struct\V2\Order $paypalOrder = null, ?\Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture $capture = null, string $level = 'debug', bool $flag = false): void
+    public function run(\Throwable $e, array $other, string $dynamic, ?\Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity $transaction = null, ?\Shopware\PayPalSDK\Struct\V2\Order $paypalOrder = null, ?\Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture $capture = null, string $level = 'debug', bool $flag = false, ?LoggerInterface $nullableLogger = null): void
     {
         // valid
         $this->logger->debug('Debug without code');
@@ -52,7 +52,7 @@ class Calls
         $this->logger->debug('Object', [LogKey::ORDER_ID => $this->object]);
         $this->logger->debug('Wrong key', [LogKey::ERROR_CODE => $e]);
         $this->logger->info('Nested object', [...[LogKey::ORDER_ID => $this->object], LogKey::CODE => LogCode::API_REQUEST_FAILED]);
-        $this->logger->debug('Product outside Zettle', [LogKey::ORDER_NUMBER => $this->object]);
+        $this->logger->debug('Product outside POS', [LogKey::ORDER_NUMBER => $this->object]);
 
         // invalid message style
         $this->logger->debug('Trailing period.');
@@ -85,5 +85,9 @@ class Calls
         $this->logger->log(LogLevel::DEBUG, 'Log trailing period.');
         $this->logger->log(LogLevel::DEBUG, 'Log literal key', ['paypalOrderId' => $dynamic]);
         $this->logger->log(LogLevel::DEBUG, 'Log object', [LogKey::ORDER_ID => $this->object]);
+
+        // nullsafe calls are checked too
+        $nullableLogger?->info('Nullsafe without code');
+        $nullableLogger?->debug('Nullsafe debug');
     }
 }

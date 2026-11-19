@@ -59,8 +59,11 @@ final class FailureClassifier
         return $e instanceof ShopwareHttpException && $e->getErrorCode() === PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL;
     }
 
-    public static function isMerchantAccountIssue(?string $paypalIssue): bool
+    /**
+     * @param string|null ...$codes the error name and issues of one response
+     */
+    public static function isMerchantAccountIssue(?string ...$codes): bool
     {
-        return IssueClassifier::classifyCodes($paypalIssue) === IssueCategory::MERCHANT;
+        return IssueClassifier::classifyCodes(...$codes) === IssueCategory::MERCHANT;
     }
 }

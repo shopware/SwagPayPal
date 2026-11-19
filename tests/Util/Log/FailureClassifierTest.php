@@ -75,6 +75,8 @@ class FailureClassifierTest extends TestCase
         static::assertTrue(FailureClassifier::isMerchantAccountIssue('NOT_ENABLED_FOR_APPLE_PAY'));
         static::assertFalse(FailureClassifier::isMerchantAccountIssue('PAYER_ACCOUNT_RESTRICTED'));
         static::assertFalse(FailureClassifier::isMerchantAccountIssue(null));
+        // a merchant issue wins over a buyer issue of the same response
+        static::assertTrue(FailureClassifier::isMerchantAccountIssue('UNPROCESSABLE_ENTITY', 'PAYEE_ACCOUNT_RESTRICTED', 'INSTRUMENT_DECLINED'));
     }
 
     private static function httpException(string $errorCode): HttpException

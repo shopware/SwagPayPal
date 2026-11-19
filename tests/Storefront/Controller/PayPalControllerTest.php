@@ -271,14 +271,14 @@ class PayPalControllerTest extends TestCase
     }
 
     #[DataProvider('onHandleErrorDataProvider')]
-    public function testOnHandleError(string $code, bool $fatal, Level $level, ?string $logCode, string $message): void
+    public function testOnHandleError(string $code, bool $fatal, Level $level, ?string $logCode, string $message, ?string $step = null): void
     {
         $salesChannelContext = $this->generateSalesChannelContext();
         $request = new Request(request: [
             'code' => $code,
             'fatal' => $fatal,
             'plugin' => 'test',
-            'step' => null,
+            'step' => $step,
             'pageType' => 'checkout',
             'error' => 'Something happened',
         ]);
@@ -318,6 +318,7 @@ class PayPalControllerTest extends TestCase
             yield 'script error' . $suffix => ['SWAG_PAYPAL__SCRIPT_ERROR', $fatal, Level::Warning, LogCode::STOREFRONT_SCRIPT_FAILED, $script];
             yield 'script not loaded' . $suffix => ['SWAG_PAYPAL__SCRIPT_NOT_LOADED', $fatal, Level::Warning, LogCode::STOREFRONT_SCRIPT_FAILED, $script];
             yield 'generic error' . $suffix => ['SWAG_PAYPAL__GENERIC_ERROR', $fatal, Level::Warning, LogCode::STOREFRONT_ERROR_REPORTED, $reported];
+            yield 'script load failed' . $suffix => ['SWAG_PAYPAL__GENERIC_ERROR', $fatal, Level::Warning, LogCode::STOREFRONT_SCRIPT_FAILED, $script, 'SCRIPT_LOAD'];
             yield 'browser unsupported' . $suffix => ['SWAG_PAYPAL__BROWSER_UNSUPPORTED', $fatal, Level::Debug, null, $unavailable];
             yield 'not eligible' . $suffix => ['SWAG_PAYPAL__NOT_ELIGIBLE', $fatal, Level::Debug, null, $unavailable];
         }

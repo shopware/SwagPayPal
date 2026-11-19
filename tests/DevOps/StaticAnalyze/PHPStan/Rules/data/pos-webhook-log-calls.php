@@ -17,7 +17,7 @@ class Calls
 
     public function run(): void
     {
-        $this->logger->info('The Zettle webhook needs a code');
+        $this->logger->info('The POS webhook needs a code');
         $this->logger->debug('Product', ['product' => $this->product]);
     }
 }

@@ -110,7 +110,7 @@ class SyncManagerHandler
 
             $this->messageBus->bulkDispatch($messages, $runId);
         } catch (\Throwable $e) {
-            $this->logger->error('Could not start the Zettle sync', [LogKey::EXCEPTION => $e]);
+            $this->logger->error('Could not start the PayPal POS sync', [LogKey::EXCEPTION => $e]);
             $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_FAILED);
         } finally {
             $this->runService->writeLog($runId, $context);

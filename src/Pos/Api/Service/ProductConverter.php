@@ -55,7 +55,7 @@ class ProductConverter
                 $grouping->setProduct($product);
             } catch (PosConversionException $e) {
                 $groupingCollection->remove($grouping->getIdentifyingId());
-                $this->logger->warning('Could not convert the product for Zettle, it\'s skipped', [LogKey::EXCEPTION => $e, 'product' => $grouping->getIdentifyingEntity()]);
+                $this->logger->warning('Could not convert the product for PayPal POS, it\'s skipped', [LogKey::EXCEPTION => $e, 'product' => $grouping->getIdentifyingEntity()]);
             }
         }
 

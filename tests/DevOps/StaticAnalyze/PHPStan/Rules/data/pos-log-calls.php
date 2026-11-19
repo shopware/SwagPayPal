@@ -18,7 +18,7 @@ class Calls
 
     public function run(\Throwable $e): void
     {
-        $this->logger->info('The Zettle run log needs no code');
+        $this->logger->info('The POS run log needs no code');
         $this->logger->error('Could not do it', [LogKey::EXCEPTION => $e, 'product' => $this->product, 'productName' => 'name']);
         $this->logger->error('Could not do it', ['exception' => $e]);
         $this->logger->debug('Object', ['order' => $this->product]);

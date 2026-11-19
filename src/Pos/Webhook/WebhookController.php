@@ -147,7 +147,7 @@ class WebhookController extends AbstractController
     {
         $postData = $request->request->all();
 
-        $this->logger->debug('Received a Zettle webhook event', [
+        $this->logger->debug('Received a PayPal POS webhook event', [
             LogKey::WEBHOOK_EVENT_TYPE => \is_string($postData['eventName'] ?? null) ? $postData['eventName'] : null,
             LogKey::PAYLOAD => $postData,
         ]);
@@ -175,31 +175,31 @@ class WebhookController extends AbstractController
 
         try {
             $this->webhookService->executeWebhook($webhook, $salesChannel, $context);
-            $this->logger->info('Processed Zettle webhook event {webhookEventType}', [...$logContext, LogKey::CODE => LogCode::ZETTLE_WEBHOOK_PROCESSED]);
+            $this->logger->info('Processed PayPal POS webhook event {webhookEventType}', [...$logContext, LogKey::CODE => LogCode::POS_WEBHOOK_PROCESSED]);
         } catch (WebhookHandlerNotFoundException) {
-            $this->logger->debug('Ignored Zettle webhook event {webhookEventType}: the plugin doesn\'t handle this event type', $logContext);
+            $this->logger->debug('Ignored PayPal POS webhook event {webhookEventType}: the plugin doesn\'t handle this event type', $logContext);
         } catch (WebhookException $webhookException) {
-            $this->logger->error('Could not process Zettle webhook event {webhookEventType}: the event lacks the data the plugin needs', [
+            $this->logger->error('Could not process PayPal POS webhook event {webhookEventType}: the event lacks the data the plugin needs', [
                 ...$logContext,
-                LogKey::CODE => LogCode::ZETTLE_WEBHOOK_INVALID,
+                LogKey::CODE => LogCode::POS_WEBHOOK_INVALID,
                 LogKey::EXCEPTION => $webhookException,
             ]);
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (\Throwable $e) {
             if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
-                $this->logger->warning('Could not process Zettle webhook event {webhookEventType}: PayPal couldn\'t find the referenced resource', [
+                $this->logger->warning('Could not process PayPal POS webhook event {webhookEventType}: PayPal couldn\'t find the referenced resource', [
                     ...$logContext,
-                    LogKey::CODE => LogCode::ZETTLE_WEBHOOK_RESOURCE_NOT_FOUND,
+                    LogKey::CODE => LogCode::POS_WEBHOOK_RESOURCE_NOT_FOUND,
                     LogKey::EXCEPTION => $e,
                 ]);
 
                 return;
             }
 
-            $this->logger->error('Could not process Zettle webhook event {webhookEventType}', [
+            $this->logger->error('Could not process PayPal POS webhook event {webhookEventType}', [
                 ...$logContext,
-                LogKey::CODE => LogCode::ZETTLE_WEBHOOK_FAILED,
+                LogKey::CODE => LogCode::POS_WEBHOOK_FAILED,
                 LogKey::EXCEPTION => $e,
             ]);
 

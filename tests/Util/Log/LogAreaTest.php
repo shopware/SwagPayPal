@@ -47,7 +47,7 @@ class LogAreaTest extends TestCase
             'Storefront\Controller\PayPalController' => LogArea::STOREFRONT,
             'Installment\Banner\InstallmentBannerSubscriber' => LogArea::STOREFRONT,
             'AgenticCommerce\HoneyWebhookService' => LogArea::AGENTIC_COMMERCE,
-            'Pos\Sync\ImageSyncer' => LogArea::ZETTLE,
+            'Pos\Sync\ImageSyncer' => LogArea::POS,
             'Reporting\ScheduledTask\TurnoverReportingTaskHandler' => LogArea::REPORTING,
             'Dispute\Something' => LogArea::OTHER,
             'Test\Something' => LogArea::OTHER,

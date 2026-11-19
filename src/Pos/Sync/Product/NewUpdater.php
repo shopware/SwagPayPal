@@ -50,9 +50,9 @@ class NewUpdater
                 } catch (PosApiException $e) {
                     if ($e->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
                         $productContext->changeProduct($shopwareProduct);
-                        $this->logger->notice('The product wasn\'t marked as synced but exists at Zettle, overwriting it', ['product' => $shopwareProduct]);
+                        $this->logger->notice('The product wasn\'t marked as synced but exists at PayPal POS, overwriting it', ['product' => $shopwareProduct]);
                     } else {
-                        $this->logger->error('Could not create the product at Zettle', ['product' => $shopwareProduct, LogKey::EXCEPTION => $e]);
+                        $this->logger->error('Could not create the product at PayPal POS', ['product' => $shopwareProduct, LogKey::EXCEPTION => $e]);
                     }
                 }
             }

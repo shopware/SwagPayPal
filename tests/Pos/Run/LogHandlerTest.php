@@ -29,10 +29,10 @@ class LogHandlerTest extends TestCase
         $handler = new LogHandler();
         $logger = new Logger('test', [$handler], [new PsrLogMessageProcessor()]);
 
-        $logger->error('Could not update the product at Zettle', [LogKey::EXCEPTION => new \RuntimeException('The product is locked')]);
+        $logger->error('Could not update the product at PayPal POS', [LogKey::EXCEPTION => new \RuntimeException('The product is locked')]);
 
         static::assertSame(
-            [['level' => Level::Error->value, 'message' => 'Could not update the product at Zettle: The product is locked']],
+            [['level' => Level::Error->value, 'message' => 'Could not update the product at PayPal POS: The product is locked']],
             $handler->getLogs(),
         );
     }

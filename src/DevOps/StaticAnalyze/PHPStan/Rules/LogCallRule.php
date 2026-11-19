@@ -119,7 +119,7 @@ final class LogCallRule implements Rule
 
         // an unknown level may be "info" or higher
         $needsCode = $levels === null || \array_intersect($levels, self::LEVELS_WITH_CODE) !== [];
-        if ($needsCode && !$this->isInZettleRunLog($className)
+        if ($needsCode && !$this->isInPosRunLog($className)
             && ($context === null || !$this->containsCode($context, $scope))) {
             $errors[] = $this->error(
                 'Log calls from "info" up need \'code\' => LogCode::X in the context.',
@@ -129,7 +129,7 @@ final class LogCallRule implements Rule
         }
 
         if ($context !== null) {
-            $isZettleRunLog = $this->isInZettleRunLog($className);
+            $isPosRunLog = $this->isInPosRunLog($className);
             foreach ($this->collectArrays($context) as $array) {
                 foreach ($array->items as $item) {
                     if ($item->unpack) {
@@ -138,7 +138,7 @@ final class LogCallRule implements Rule
 
                     // the run log has its own placeholder keys, but its handler reads the exception by LogKey
                     if ($this->isInvalidKey($item, $scope)
-                        && (!$isZettleRunLog || $this->resolveKey($item, $scope) === LogKey::EXCEPTION)) {
+                        && (!$isPosRunLog || $this->resolveKey($item, $scope) === LogKey::EXCEPTION)) {
                         $errors[] = $this->error(
                             'Use a LogKey constant as log context key.',
                             'swagPayPal.logCall.contextKey',
@@ -150,7 +150,7 @@ final class LogCallRule implements Rule
                     $valueType = TypeCombinator::removeNull($scope->getType($item->value));
 
                     // the run log has no processor that turns the objects into scalars
-                    if (!$isZettleRunLog && $key !== null && isset(LogContext::OBJECT_KEYS[$key])) {
+                    if (!$isPosRunLog && $key !== null && isset(LogContext::OBJECT_KEYS[$key])) {
                         $classes = LogContext::OBJECT_KEYS[$key];
                         if (!TypeCombinator::union(...\array_map(static fn (string $class) => new ObjectType($class), $classes))->isSuperTypeOf($valueType)->yes()) {
                             $errors[] = $this->error(
@@ -202,7 +202,7 @@ final class LogCallRule implements Rule
         return true;
     }
 
-    private function isInZettleRunLog(string $className): bool
+    private function isInPosRunLog(string $className): bool
     {
         return \str_starts_with($className, self::POS_NAMESPACE_PREFIX)
             && !\str_starts_with($className, self::POS_WEBHOOK_NAMESPACE_PREFIX);
@@ -214,7 +214,7 @@ final class LogCallRule implements Rule
             return true;
         }
 
-        return $key === 'product' && $this->isInZettleRunLog($className);
+        return $key === 'product' && $this->isInPosRunLog($className);
     }
 
     /**

@@ -132,23 +132,30 @@ class LogRedactorTest extends TestCase
         static::assertSame([1, 2, ['a' => 'b']], LogRedactor::redactBody([1, 2, ['a' => 'b']]));
     }
 
-    public function testRedactHeadersKeepsOnlyAllowList(): void
+    public function testUrlsKeepOnlySchemeAndHost(): void
     {
         static::assertSame([
-            'PayPal-Request-Id' => '1',
-            'paypal-debug-id' => '2',
-            'Content-Type' => 'application/json',
-            'date' => 'now',
-            'Prefer' => 'return=minimal',
-        ], LogRedactor::redactContext([LogKey::REQUEST_HEADERS => [
-            'PayPal-Request-Id' => '1',
-            'paypal-debug-id' => '2',
-            'Content-Type' => 'application/json',
-            'date' => 'now',
-            'Prefer' => 'return=minimal',
-            'Authorization' => 'Bearer x',
-            'paypal-auth-assertion' => 'y',
-        ]])[LogKey::REQUEST_HEADERS]);
+            'experience_context' => [
+                'return_url' => 'https://shop.example/<redacted>',
+                'cancel_url' => 'https://shop.example/<redacted>',
+                'order_update_callback_config' => ['callback_url' => 'https://shop.example/<redacted>'],
+            ],
+            'url' => 'https://shop.example/<redacted>',
+            'links' => [['href' => 'https://api-m.paypal.com/v2/checkout/orders/5O1']],
+        ], LogRedactor::redactBody([
+            'experience_context' => [
+                'return_url' => 'https://shop.example/paypal/restore-context?token=secret',
+                'cancel_url' => 'https://shop.example/paypal/restore-context?token=secret&cancel=1',
+                'order_update_callback_config' => ['callback_url' => 'https://shop.example/store-api/paypal/express/shipping-callback/sc/secret'],
+            ],
+            'url' => 'https://shop.example/api/_action/paypal/webhook/execute?sw-token=secret',
+            'links' => [['href' => 'https://api-m.paypal.com/v2/checkout/orders/5O1']],
+        ]));
+    }
+
+    public function testUrlKeysWithoutAUrlAreRedactedEntirely(): void
+    {
+        static::assertSame(['return_url' => '<redacted>'], LogRedactor::redactBody(['return_url' => '/relative?token=secret']));
     }
 
     public function testRedactBodyDecodesJsonStrings(): void
@@ -170,7 +177,7 @@ class LogRedactorTest extends TestCase
         static::assertSame('', LogRedactor::redactBody(''));
     }
 
-    public function testRedactContextRedactsBodiesHeadersAndPath(): void
+    public function testRedactContextRedactsBodiesAndPath(): void
     {
         $context = LogRedactor::redactContext([
             LogKey::CODE => 'CODE',
@@ -178,8 +185,6 @@ class LogRedactorTest extends TestCase
             LogKey::REQUEST => '{"email":"a@b.c"}',
             LogKey::RESPONSE => ['payer' => ['email' => 'a@b.c']],
             LogKey::PAYLOAD => ['firstName' => 'A'],
-            LogKey::REQUEST_HEADERS => ['Authorization' => 'Bearer x', 'Content-Type' => 'application/json'],
-            LogKey::RESPONSE_HEADERS => ['paypal-debug-id' => '1', 'Set-Cookie' => 'x'],
         ]);
 
         static::assertSame([
@@ -188,8 +193,6 @@ class LogRedactorTest extends TestCase
             LogKey::REQUEST => ['email' => '<redacted>'],
             LogKey::RESPONSE => ['payer' => ['email' => '<redacted>']],
             LogKey::PAYLOAD => ['firstName' => '<redacted>'],
-            LogKey::REQUEST_HEADERS => ['Content-Type' => 'application/json'],
-            LogKey::RESPONSE_HEADERS => ['paypal-debug-id' => '1'],
         ], $context);
     }
 

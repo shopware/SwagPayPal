@@ -28,7 +28,7 @@ final class LogArea
     public const STOREFRONT = 'storefront';
     public const API = 'api';
     public const AGENTIC_COMMERCE = 'agentic-commerce';
-    public const ZETTLE = 'zettle';
+    public const POS = 'pos';
     public const REPORTING = 'reporting';
     public const OTHER = 'other';
 
@@ -52,7 +52,7 @@ final class LogArea
         'Storefront' => self::STOREFRONT,
         'Installment' => self::STOREFRONT,
         'AgenticCommerce' => self::AGENTIC_COMMERCE,
-        'Pos' => self::ZETTLE,
+        'Pos' => self::POS,
         'Reporting' => self::REPORTING,
     ];
 

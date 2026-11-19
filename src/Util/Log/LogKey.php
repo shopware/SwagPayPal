@@ -73,6 +73,7 @@ final class LogKey
     // Storefront and Express Checkout
     public const CLIENT_CODE = 'clientCode';
     public const CLIENT_ERROR = 'clientError';
+    public const CLIENT_STEP = 'clientStep';
     public const PAGE_TYPE = 'pageType';
     public const FATAL = 'fatal';
     public const HANDLERS = 'handlers';
@@ -98,7 +99,5 @@ final class LogKey
     public const REQUEST = 'request';
     public const RESPONSE = 'response';
     public const PAYLOAD = 'payload';
-    public const REQUEST_HEADERS = 'requestHeaders';
-    public const RESPONSE_HEADERS = 'responseHeaders';
     public const HTTP_PATH = 'httpPath';
 }

@@ -44,16 +44,31 @@ final class LogContext
      */
     public static function expand(array $context): array
     {
-        $transaction = $context[LogKey::ORDER_TRANSACTION] ?? null;
-        $paypalOrder = $context[LogKey::PAYPAL_ORDER] ?? null;
-        $payment = $context[LogKey::PAYMENT] ?? null;
-        $event = $context[LogKey::WEBHOOK_EVENT] ?? null;
+        $expanded = [];
 
-        return \array_filter(\array_diff_key($context, self::OBJECT_KEYS), static fn (mixed $value): bool => $value !== null)
-            + ($payment instanceof Capture || $payment instanceof Refund || $payment instanceof Authorization ? self::payment($payment) : [])
-            + ($paypalOrder instanceof Order ? self::paypalOrder($paypalOrder) : [])
-            + ($transaction instanceof OrderTransactionEntity ? self::orderTransaction($transaction) : [])
-            + ($event instanceof Event ? self::webhookEvent($event) : []);
+        $event = $context[LogKey::WEBHOOK_EVENT] ?? null;
+        if ($event instanceof Event) {
+            $expanded = [...$expanded, ...self::webhookEvent($event)];
+        }
+
+        $transaction = $context[LogKey::ORDER_TRANSACTION] ?? null;
+        if ($transaction instanceof OrderTransactionEntity) {
+            $expanded = [...$expanded, ...self::orderTransaction($transaction)];
+        }
+
+        $paypalOrder = $context[LogKey::PAYPAL_ORDER] ?? null;
+        if ($paypalOrder instanceof Order) {
+            $expanded = [...$expanded, ...self::paypalOrder($paypalOrder)];
+        }
+
+        $payment = $context[LogKey::PAYMENT] ?? null;
+        if ($payment instanceof Capture || $payment instanceof Refund || $payment instanceof Authorization) {
+            $expanded = [...$expanded, ...self::payment($payment)];
+        }
+
+        $callSiteValues = \array_filter(\array_diff_key($context, self::OBJECT_KEYS), static fn (mixed $value): bool => $value !== null);
+
+        return [...$expanded, ...$callSiteValues];
     }
 
     /**

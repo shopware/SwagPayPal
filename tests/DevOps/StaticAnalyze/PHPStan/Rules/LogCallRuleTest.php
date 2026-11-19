@@ -68,10 +68,11 @@ class LogCallRuleTest extends RuleTestCase
             [self::ERROR_STYLE, 85],
             [self::ERROR_KEY, 86],
             [\sprintf(self::ERROR_OBJECT, ' (key "orderId")'), 87],
+            [self::ERROR_CODE, 90],
         ]);
     }
 
-    public function testZettleRunLogNeedsNoCodeAndOnlyTheExceptionKeyAndMayLogProducts(): void
+    public function testPosRunLogNeedsNoCodeAndOnlyTheExceptionKeyAndMayLogProducts(): void
     {
         $this->analyse([__DIR__ . '/data/pos-log-calls.php'], [
             [self::ERROR_KEY, 23],
@@ -81,7 +82,7 @@ class LogCallRuleTest extends RuleTestCase
         ]);
     }
 
-    public function testZettleWebhookFollowsTheGeneralRules(): void
+    public function testPosWebhookFollowsTheGeneralRules(): void
     {
         $this->analyse([__DIR__ . '/data/pos-webhook-log-calls.php'], [
             [self::ERROR_CODE, 20],
