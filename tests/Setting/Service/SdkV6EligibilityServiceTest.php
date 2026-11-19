@@ -79,7 +79,7 @@ class SdkV6EligibilityServiceTest extends TestCase
             [LogKey::SALES_CHANNEL_ID => 'sales-channel-id'],
         );
         static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
-        static::assertSame($exception->getReason(), $record->context[LogKey::EXCEPTION]['message'] ?? null);
+        static::assertSame($exception->getMessage(), $record->context[LogKey::EXCEPTION]['message'] ?? null);
     }
 
     public function testUndeterminedWithoutCredentials(): void

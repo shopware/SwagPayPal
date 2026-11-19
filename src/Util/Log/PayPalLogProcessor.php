@@ -150,8 +150,7 @@ final class PayPalLogProcessor implements ProcessorInterface
      */
     private function normalizeException(\Throwable $e): array
     {
-        // the SDK's message echoes the submitted value of a rejected field
-        $normalized = ['class' => $e::class, 'message' => $e instanceof ApiException ? $e->getReason() : $e->getMessage()];
+        $normalized = ['class' => $e::class, 'message' => $e->getMessage()];
 
         if ($e instanceof ShopwareHttpException) {
             $normalized['errorCode'] = $e->getErrorCode();

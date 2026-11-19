@@ -11,6 +11,7 @@ use GuzzleHttp\Psr7\Response;
 use Monolog\Level;
 use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
@@ -45,6 +46,8 @@ use Symfony\Component\Validator\ConstraintViolationList;
 #[CoversClass(PayPalLogProcessor::class)]
 class PayPalLogProcessorTest extends TestCase
 {
+    private const ECHOED_IBAN = 'DE89370400440532013000';
+
     public function testAreaIsAdded(): void
     {
         $record = $this->createProcessor()($this->createRecord());
@@ -88,7 +91,7 @@ class PayPalLogProcessorTest extends TestCase
 
         static::assertSame('SWAG_PAYPAL__API_INSTRUMENT_DECLINED', $record->context['errorCode']);
         static::assertSame(['CARD_EXPIRED', 'INSTRUMENT_DECLINED'], $record->context['paypalIssues']);
-        static::assertSame('Some reason', $record->context['exception']['message'] ?? null);
+        static::assertSame($apiException->getMessage(), $record->context['exception']['message'] ?? null);
     }
 
     public function testExistingContextIsKept(): void
@@ -156,21 +159,31 @@ class PayPalLogProcessorTest extends TestCase
         ], $record->context[LogKey::EXCEPTION]);
     }
 
-    public function testSubmittedValuesOfRejectedFieldsAreNotLogged(): void
+    #[DataProvider('provideExceptionsWithAnEchoedValue')]
+    public function testSubmittedValuesOfRejectedFieldsAreNotLogged(\Throwable $exception): void
     {
-        $iban = 'DE89370400440532013000';
+        $record = $this->createProcessor()($this->createRecord([LogKey::EXCEPTION => $exception]));
+
+        static::assertStringNotContainsString(self::ECHOED_IBAN, \json_encode($record->toArray(), \JSON_THROW_ON_ERROR));
+        static::assertSame(['INVALID_IBAN'], $record->context[LogKey::PAYPAL_ISSUES]);
+        static::assertSame('debug-123', $record->context[LogKey::PAYPAL_DEBUG_ID]);
+        static::assertStringContainsString('[INVALID_IBAN] (/payment_source/sepa_debit/iban) The IBAN is invalid.', $record->context[LogKey::EXCEPTION]['message'] ?? '');
+    }
+
+    /**
+     * @return iterable<string, array{\Throwable}>
+     */
+    public static function provideExceptionsWithAnEchoedValue(): iterable
+    {
         $apiException = ExceptionFactory::createFromResponse(new Response(422, ['paypal-debug-id' => 'debug-123'], \json_encode([
             'name' => 'UNPROCESSABLE_ENTITY',
             'message' => 'The requested action could not be performed.',
             'debug_id' => 'debug-123',
-            'details' => [['field' => '/payment_source/sepa_debit/iban', 'value' => $iban, 'issue' => 'INVALID_IBAN', 'description' => 'The IBAN is invalid.']],
+            'details' => [['field' => '/payment_source/sepa_debit/iban', 'value' => self::ECHOED_IBAN, 'issue' => 'INVALID_IBAN', 'description' => 'The IBAN is invalid.']],
         ], \JSON_THROW_ON_ERROR)));
-        $record = $this->createProcessor()($this->createRecord([LogKey::EXCEPTION => PayPalApiException::from($apiException)]));
 
-        static::assertStringNotContainsString($iban, \json_encode($record->toArray(), \JSON_THROW_ON_ERROR));
-        static::assertSame(['INVALID_IBAN'], $record->context[LogKey::PAYPAL_ISSUES]);
-        static::assertSame('debug-123', $record->context[LogKey::PAYPAL_DEBUG_ID]);
-        static::assertStringContainsString('[INVALID_IBAN] (/payment_source/sepa_debit/iban) The IBAN is invalid.', $record->context[LogKey::EXCEPTION]['message'] ?? '');
+        yield 'SDK exception' => [$apiException];
+        yield 'wrapped SDK exception' => [PayPalApiException::from($apiException)];
     }
 
     public function testParametersOfTheExceptionAreRedacted(): void
