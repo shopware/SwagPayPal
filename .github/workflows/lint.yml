@@ -25,14 +25,14 @@ jobs:
         - admin-jest
         - storefront-eslint
         - acceptance-eslint
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-24.04
       steps:
         - uses: re-actors/alls-green@v1.2.2
           with:
             jobs: ${{ toJSON(needs) }}
 
   phpstan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         PLATFORM_BRANCH: ["v6.6.0.0", "6.6.x"]
@@ -96,7 +96,7 @@ jobs:
           if-no-files-found: ignore
 
   php-cs-fixer:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
@@ -110,7 +110,7 @@ jobs:
         run: composer -d custom/plugins/SwagPayPal run ecs
 
   validate-openapi-typescript:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
@@ -133,7 +133,7 @@ jobs:
           git diff --exit-code src/Resources/Schema || (echo "Please run 'composer openapi:generate' to update Resources/Schema files" && exit 1)
 
   bc-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
@@ -159,7 +159,7 @@ jobs:
         run: composer bc-check -- --format=github-actions --from="origin/${{ github.base_ref }}"
 
   admin-eslint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
@@ -178,7 +178,7 @@ jobs:
         run: composer run lint:admin:ci
 
   admin-jest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
@@ -197,7 +197,7 @@ jobs:
         run: composer run jest
 
   storefront-eslint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
@@ -217,7 +217,7 @@ jobs:
         run: composer lint:storefront:ci
 
   acceptance-eslint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v5
