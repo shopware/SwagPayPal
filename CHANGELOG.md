@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the PayPal Express Checkout window stayed blank on product detail, listing and search pages, if "Open offcanvas cart after adding a product" was disabled (shopware/SwagPayPal#858)
 - Fixes an issue, where the Pay Later button showed an error instead of opening PayPal, if the PayPal JS SDK v6 was enabled (shopware/shopware#23097)
 - Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments

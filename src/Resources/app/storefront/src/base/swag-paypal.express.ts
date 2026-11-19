@@ -6,6 +6,10 @@ import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
 import PayPalPluginError from './paypal-plugin.error';
 import { RequestHelper } from '../helper/request.helper';
 
+// Core emits `addToCartWithoutOffcanvas` instead of `openOffCanvasCart` if the offcanvas cart is disabled.
+const ADD_TO_CART_EVENTS = ['openOffCanvasCart', 'addToCartWithoutOffcanvas'];
+let addToCartCalls = 0;
+
 export interface SwagPaypalExpressOptions extends SwagPaypalPaymentOptions {
     buyButtonSelector: string;
     addProductToCart: boolean;
@@ -130,8 +134,17 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     protected addProductToCart(): Promise<void> {
         const plugin = window.PluginManager.getPluginInstanceFromElement(this.buyButtonForm!, 'AddToCart') as SwPlugin;
 
-        return new Promise(resolve => {
-            plugin.$emitter!.subscribe('openOffCanvasCart', () => resolve());
+        // Unsubscribing removes every listener of an event name, so each call uses its own suffix.
+        addToCartCalls += 1;
+        const events = ADD_TO_CART_EVENTS.map((event) => `${event}.SwagPayPalExpressV6-${addToCartCalls}`);
+
+        return new Promise((resolve) => {
+            const onAdded = () => {
+                events.forEach((event) => plugin.$emitter!.unsubscribe(event));
+                resolve();
+            };
+
+            events.forEach((event) => plugin.$emitter!.subscribe(event, onAdded));
             this.buyButton!.click();
         });
     }

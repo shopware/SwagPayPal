@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem das Fenster des PayPal Express Checkouts auf Produktdetail-, Listing- und Suchergebnisseiten leer blieb, wenn "Offcanvas-Warenkorb nach dem Hinzufügen eines Produkts öffnen" deaktiviert war (shopware/SwagPayPal#858)
 - Behebt ein Problem, bei dem die Schaltfläche "Später bezahlen" einen Fehler anzeigte, statt PayPal zu öffnen, wenn das PayPal JS SDK v6 aktiviert war (shopware/shopware#23097)
 - Behebt ein Problem, bei dem ein Einzug oder eine Rückerstattung in der Administration die Zahlung als bezahlt oder erstattet markierte, obwohl PayPal mit einem ausstehenden, abgelehnten oder fehlgeschlagenen Status antwortete (shopware/SwagPayPal#839)
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
