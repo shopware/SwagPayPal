@@ -52,6 +52,10 @@ async function createWrapper(props = {}) {
 }
 
 describe('sw-sales-channel-detail-base', () => {
+    afterEach(() => {
+        Shopware.State.commit('context/addAppConfigValue', { key: 'version', value: null });
+    });
+
     it('should be a Vue component', async () => {
         const wrapper = await createWrapper();
 
@@ -80,6 +84,33 @@ describe('sw-sales-channel-detail-base', () => {
         });
 
         expect(wrapper.vm.isAgenticCommerceType).toBeFalsy();
+    });
+
+    it.each([
+        {
+            description: 'show the webhook card for agentic commerce',
+            typeId: PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID,
+            version: '6.6.9.0',
+            expected: true,
+        },
+        {
+            description: 'hide the webhook card for agentic commerce below Shopware 6.6.9.0',
+            typeId: PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID,
+            version: '6.6.8.2',
+            expected: false,
+        },
+        {
+            description: 'hide the webhook card for other sales channels',
+            typeId: 'some-other-type-id',
+            version: '6.6.9.0',
+            expected: false,
+        },
+    ])('should $description', async ({ typeId, version, expected }) => {
+        Shopware.State.commit('context/addAppConfigValue', { key: 'version', value: version });
+
+        const wrapper = await createWrapper({ salesChannel: { typeId } });
+
+        expect(wrapper.vm.showWebhookCard).toBe(expected);
     });
 
     it('should be product comparison', async () => {

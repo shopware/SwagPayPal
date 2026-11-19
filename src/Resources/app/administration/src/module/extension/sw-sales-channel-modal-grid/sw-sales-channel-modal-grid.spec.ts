@@ -78,7 +78,12 @@ function createComponent(hasUsDefaultCountryStorefrontSalesChannel: boolean) {
 }
 
 describe('sw-sales-channel-modal-grid', () => {
+    afterEach(() => {
+        Shopware.State.commit('context/addAppConfigValue', { key: 'version', value: null });
+    });
+
     it('should decorate the original sales channel type repository and show PayPal Agentic Commerce when a USA storefront exists', async () => {
+        Shopware.State.commit('context/addAppConfigValue', { key: 'version', value: '6.6.9.0' });
         const { component, salesChannelTypeRepository, salesChannelTypeSearch } = createComponent(true);
 
         const repository = componentComputed.salesChannelTypeRepository.call(component);
@@ -109,6 +114,24 @@ describe('sw-sales-channel-modal-grid', () => {
 
         expect(filteredCriteria).not.toBe(criteria);
         expect(criteria.filters).toEqual([]);
+        expect(filteredCriteria.filters).toEqual([
+            Criteria.not('AND', [
+                Criteria.equals('id', PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID),
+            ]),
+        ]);
+    });
+
+    it('should add one filter for PayPal Agentic Commerce below Shopware 6.6.9.0, even with a storefront with USA as default country', async () => {
+        Shopware.State.commit('context/addAppConfigValue', { key: 'version', value: '6.6.8.2' });
+        const { component, salesChannelTypeSearch, salesChannelSearchIds } = createComponent(true);
+
+        const repository = componentComputed.salesChannelTypeRepository.call(component);
+
+        await repository.search(new Criteria(1, 500), Shopware.Context.api);
+
+        const filteredCriteria = salesChannelTypeSearch.mock.calls[0][0] as TCriteria;
+
+        expect(salesChannelSearchIds).not.toHaveBeenCalled();
         expect(filteredCriteria.filters).toEqual([
             Criteria.not('AND', [
                 Criteria.equals('id', PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID),

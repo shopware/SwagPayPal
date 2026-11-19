@@ -8,6 +8,7 @@
 - Fixes an issue, where uninstalling the plugin without keeping user data left saved PayPal accounts and cards, transaction reports and PayPal order references in the database (shopware/SwagPayPal#846)
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 - Fixes an issue, where renewals of subscriptions paid with a saved PayPal account or card failed after the customer removed it, or used one added later instead
+- Fixes an issue, where the Administration offered the PayPal Agentic Commerce sales channel on Shopware versions before 6.6.9.0, on which it cannot work
 
 # 9.13.5
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed

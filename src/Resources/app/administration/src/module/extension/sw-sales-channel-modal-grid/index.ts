@@ -4,6 +4,7 @@ import {
     PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID,
     PAYPAL_POS_SALES_CHANNEL_TYPE_ID,
 } from '../../../constant/swag-paypal.constant';
+import { isAgenticCommerceSupported } from '../../swag-paypal-agentic-commerce/agentic-commerce-support';
 
 const { Criteria } = Shopware.Data;
 const { Defaults } = Shopware;
@@ -80,13 +81,13 @@ export default Shopware.Component.wrapComponentConfig<SalesChannelModalGrid>({
                 context?: SalesChannelTypeSearchContext,
                 ...args: []
             ) => {
-                if (await this.hasUsDefaultCountryStorefrontSalesChannel(context)) {
+                if (isAgenticCommerceSupported() && await this.hasUsDefaultCountryStorefrontSalesChannel(context)) {
                     return original(criteria, context, ...args);
                 }
 
                 const filteredCriteria = Criteria.fromCriteria(criteria);
 
-                // If no US sales channel exists, we will filter the agentic type
+                // Below Shopware 6.6.9.0 or if no US sales channel exists, we will filter the agentic type
                 filteredCriteria.addFilter(Criteria.not('AND', [
                     Criteria.equals('id', PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID),
                 ]));
