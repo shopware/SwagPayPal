@@ -76,11 +76,11 @@
         },
         "vault": {
             "account": {
-                "clear": "Konto entfernen",
+                "clear": "Anderes Konto verwenden",
                 "create": "Konto für zukünftige Käufe speichern"
             },
             "card": {
-                "clear": "Karte entfernen",
+                "clear": "Andere Karte verwenden",
                 "create": "Karte für zukünftige Käufe speichern"
             }
         },
