@@ -10,6 +10,8 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Trait;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct;
 use Shopware\Core\Framework\Context;
@@ -40,7 +42,7 @@ trait VaultableOrderBuildTrait
         $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
         $this->vaultTokenService->expects(static::once())->method('shouldRequestVaulting')->willReturn(true);
-        $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
+        $this->vaultTokenService->expects(static::once())->method('getTokenForPayment')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 
         $this->getBuilder()->getOrder(
@@ -59,7 +61,7 @@ trait VaultableOrderBuildTrait
         $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
         $this->vaultTokenService->expects(static::once())->method('shouldRequestVaulting')->willReturn(true);
-        $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
+        $this->vaultTokenService->expects(static::once())->method('getTokenForPayment')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 
         $this->getBuilder()->getOrder(
@@ -80,7 +82,7 @@ trait VaultableOrderBuildTrait
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setToken('testToken');
 
-        $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn($vaultToken);
+        $this->vaultTokenService->expects(static::once())->method('getTokenForPayment')->willReturn($vaultToken);
 
         $order = $this->getBuilder()->getOrder(
             $paymentTransaction,
@@ -95,13 +97,42 @@ trait VaultableOrderBuildTrait
         static::assertSame('testToken', $paymentSource['vault_id'] ?? null);
     }
 
+    public function testGetOrderUsesTheSavedTokenAndRenewalsTheOneOfTheSubscription(): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
+        $context = Context::createDefaultContext();
+
+        // the payer sees their saved token, while renewals keep the one the subscription was last paid with
+        $this->vaultTokenService
+            ->expects(static::exactly(2))
+            ->method('getTokenForPayment')
+            ->willReturnCallback(static function (PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, OrderEntity $order, Context $context, bool $isRecurring): VaultTokenEntity {
+                $vaultToken = new VaultTokenEntity();
+                $vaultToken->setToken($isRecurring ? 'subscriptionToken' : 'savedToken');
+
+                return $vaultToken;
+            });
+
+        $payerSource = $this->getBuilder()
+            ->getOrder($paymentTransaction, $orderTransaction, $order, $context, new Request())
+            ->getPaymentSource()?->first($this->getPaymentSourceClass())?->jsonSerialize();
+        $renewalSource = $this->getBuilder()
+            ->getRecurringOrder($paymentTransaction, $orderTransaction, $order, $context)
+            ->getPaymentSource()?->first($this->getPaymentSourceClass())?->jsonSerialize();
+
+        static::assertSame('savedToken', $payerSource['vault_id'] ?? null);
+        static::assertSame('subscriptionToken', $renewalSource['vault_id'] ?? null);
+    }
+
     public function testGetOrderNotUsesVaultTokenIfPreliminary(): void
     {
         $orderTransaction = $this->createOrderTransaction();
         $order = $this->createOrder();
         $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
-        $this->vaultTokenService->expects(static::never())->method('getAvailableToken');
+        $this->vaultTokenService->expects(static::never())->method('getTokenForPayment');
 
         $order = $this->getBuilder()->getOrder(
             $paymentTransaction,
