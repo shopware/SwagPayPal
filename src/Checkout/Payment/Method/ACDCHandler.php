@@ -62,7 +62,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
     {
         $transactionId = $transaction->getOrderTransaction()->getId();
         $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
-        $existingVault = $this->vaultTokenService->getAvailableToken($transaction, $salesChannelContext->getContext());
+        $existingVault = $this->vaultTokenService->getTokenForPayment($transaction, $salesChannelContext->getContext(), false);
 
         if (!$paypalOrderId && !$existingVault) {
             throw PaymentException::asyncProcessInterrupted($transactionId, 'Missing PayPal order id');
@@ -93,6 +93,9 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
                 PartnerAttributionId::PAYPAL_PPCP,
                 $salesChannelContext
             );
+
+            // the order builder pays a new order with this token, which must not be looked up again after a redirect
+            $this->transactionDataService->setVaultTokenId($transaction->getOrderTransaction(), $response ? $existingVault?->getId() : null, $salesChannelContext->getContext());
 
             if (!$response) {
                 $this->orderPatchService->patchOrder(
@@ -152,6 +155,9 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         }
 
         $this->vaultTokenService->saveToken($transaction, $card, $customerId, $salesChannelContext->getContext());
+
+        // a payment of the customer, e.g. at checkout, decides the token the following renewals keep, even if they save another one
+        $this->vaultTokenService->saveUsedTokenToSubscriptions($transaction, $salesChannelContext->getContext());
     }
 
     public function captureRecurring(RecurringPaymentTransactionStruct $transaction, Context $context): void

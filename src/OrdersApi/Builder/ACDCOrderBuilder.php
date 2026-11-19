@@ -62,7 +62,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
 
         $paymentSource->setCard($card);
 
-        if (!$requestDataBag->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
+        if (!$requestDataBag->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getTokenForPayment($paymentTransaction, $salesChannelContext->getContext(), $isRecurring)) {
             $card->setVaultId($token->getToken());
             $card->setStoredCredential($this->createStoredCredential(
                 $isRecurring ? StoredCredential::PAYMENT_INITIATOR_MERCHANT : StoredCredential::PAYMENT_INITIATOR_CUSTOMER,
