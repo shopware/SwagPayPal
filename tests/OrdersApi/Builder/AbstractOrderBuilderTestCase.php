@@ -539,7 +539,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $salesChannelContext;
     }
 
-    private function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
+    protected function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
     {
         $cart = new Cart(Uuid::randomHex());
         if ($withTransaction) {

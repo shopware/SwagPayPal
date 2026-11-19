@@ -150,6 +150,43 @@
                 }
             }
         },
+        "/subscription/paypal/vault/clear": {
+            "post": {
+                "tags": [
+                    "Store API",
+                    "PayPal"
+                ],
+                "description": "Clears the vault for the current customer and the payment method of the subscription selected by the subscription plan and interval headers",
+                "operationId": "paypalSubscriptionVaultClear",
+                "parameters": [
+                    {
+                        "name": "sw-subscription-plan",
+                        "in": "header",
+                        "description": "Identifier of the subscription plan",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    },
+                    {
+                        "name": "sw-subscription-interval",
+                        "in": "header",
+                        "description": "Identifier of the subscription interval",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Vault has been cleared successfully"
+                    }
+                }
+            }
+        },
         "/paypal/create-order": {
             "post": {
                 "tags": [
@@ -205,6 +242,55 @@
                 ],
                 "description": "Tries to get the customer vault token",
                 "operationId": "getPayPalCustomerVaultToken",
+                "responses": {
+                    "200": {
+                        "description": "The customer vault token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/subscription/paypal/vault-token": {
+            "get": {
+                "tags": [
+                    "Store API",
+                    "PayPal"
+                ],
+                "description": "Tries to get the customer vault token for the payment method of the subscription selected by the subscription plan and interval headers",
+                "operationId": "getPayPalSubscriptionCustomerVaultToken",
+                "parameters": [
+                    {
+                        "name": "sw-subscription-plan",
+                        "in": "header",
+                        "description": "Identifier of the subscription plan",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    },
+                    {
+                        "name": "sw-subscription-interval",
+                        "in": "header",
+                        "description": "Identifier of the subscription interval",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "The customer vault token",
