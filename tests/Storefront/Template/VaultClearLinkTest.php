@@ -182,9 +182,11 @@ class VaultClearLinkTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderClearRouteNames
+     * @param list<string> $expectedMethods
+     *
+     * @dataProvider dataProviderClearRoutes
      */
-    public function testClearRouteOnlyAcceptsPostOfLoggedInCustomers(string $routeName): void
+    public function testClearRouteOnlyAcceptsLoggedInCustomers(string $routeName, array $expectedMethods): void
     {
         $router = static::getContainer()->get('router');
         static::assertInstanceOf(RouterInterface::class, $router);
@@ -192,19 +194,19 @@ class VaultClearLinkTest extends TestCase
         $route = $router->getRouteCollection()->get($routeName);
         static::assertNotNull($route);
 
-        // browsers send the SameSite=Lax session cookie along with cross-site GET navigations, e.g. a link on another website
-        static::assertSame(['POST'], $route->getMethods());
+        static::assertSame($expectedMethods, $route->getMethods());
         static::assertTrue($route->getDefault('_loginRequired'));
         static::assertNull($route->getDefault('_loginRequiredAllowGuest'));
     }
 
     /**
-     * @return iterable<string, array{0: string}>
+     * @return iterable<string, array{0: string, 1: list<string>}>
      */
-    public static function dataProviderClearRouteNames(): iterable
+    public static function dataProviderClearRoutes(): iterable
     {
-        yield 'default' => ['frontend.paypal.vault.clear'];
-        yield 'subscription' => ['frontend.subscription.paypal.vault.clear'];
+        // @deprecated tag:v11.0.0 - only POST
+        yield 'default' => ['frontend.paypal.vault.clear', ['GET', 'POST']];
+        yield 'subscription' => ['frontend.subscription.paypal.vault.clear', ['POST']];
     }
 
     public function testSubscriptionClearRouteUsesSubscriptionContext(): void
