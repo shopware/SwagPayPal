@@ -23,6 +23,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Vault;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\VaultablePaymentSourceInterface;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 #[Package('checkout')]
@@ -48,9 +49,7 @@ class VaultTokenService
             return null;
         }
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('customerId', $customerId));
-        $criteria->addFilter(new EqualsFilter('paymentMethodId', $struct->getOrderTransaction()->getPaymentMethodId()));
+        $criteria = $this->createTokenCriteria($customerId, $struct->getOrderTransaction()->getPaymentMethodId());
 
         if ($subscription = $this->getSubscription($struct)) {
             // try to get the token from the subscription
@@ -65,6 +64,33 @@ class VaultTokenService
             // the first order of a subscription has no token yet, so the customer's main token is used, like outside of subscriptions
             $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
         }
+
+        /** @var VaultTokenEntity|null $token */
+        $token = $this->vaultTokenRepository->search($criteria, $context)->first();
+
+        return $token;
+    }
+
+    /**
+     * Renewals keep using the token of their subscription. A payment of the customer, e.g. of a failed renewal, uses
+     * the one they saved last for the payment method instead, as the storefront shows them that one, and their
+     * subscription keeps it afterwards.
+     *
+     * @internal
+     */
+    public function getTokenForPayment(SyncPaymentTransactionStruct $struct, Context $context, bool $isRecurring): ?VaultTokenEntity
+    {
+        if ($isRecurring) {
+            return $this->getAvailableToken($struct, $context);
+        }
+
+        $customerId = $struct->getOrder()->getOrderCustomer()?->getCustomerId();
+        if (!$customerId) {
+            return null;
+        }
+
+        $criteria = $this->createTokenCriteria($customerId, $struct->getOrderTransaction()->getPaymentMethodId());
+        $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
 
         /** @var VaultTokenEntity|null $token */
         $token = $this->vaultTokenRepository->search($criteria, $context)->first();
@@ -99,6 +125,35 @@ class VaultTokenService
         if ($subscription = $this->getSubscription($struct)) {
             $this->saveTokenToSubscription($subscription, $tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $context);
         }
+    }
+
+    /**
+     * PayPal returns no vault for a payment with an already saved payment method, so this saves its token to the
+     * subscription. Its renewals then keep using it, even after the customer removed it or saved another one.
+     *
+     * @internal
+     */
+    public function saveUsedTokenToSubscriptions(SyncPaymentTransactionStruct $struct, Context $context): void
+    {
+        $orderTransaction = $struct->getOrderTransaction();
+
+        // recorded when the PayPal order was created, as the customer's saved one may have changed since
+        $tokenId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID);
+        if (!\is_string($tokenId) || $tokenId === '') {
+            return;
+        }
+
+        $subscription = $this->getSubscription($struct);
+        if (!$subscription) {
+            return;
+        }
+
+        $paymentMethodId = $orderTransaction->getPaymentMethodId();
+        if ($subscription->getCustomFieldsValue($this->getSubscriptionCustomFieldKey($paymentMethodId)) === $tokenId) {
+            return;
+        }
+
+        $this->saveTokenToSubscription($subscription, $tokenId, $paymentMethodId, $context);
     }
 
     public function getSubscription(SyncPaymentTransactionStruct $struct): ?SubscriptionEntity
@@ -151,6 +206,15 @@ class VaultTokenService
                 'tokenId' => $tokenId,
             ]],
         ]], $context);
+    }
+
+    private function createTokenCriteria(string $customerId, string $paymentMethodId): Criteria
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('customerId', $customerId));
+        $criteria->addFilter(new EqualsFilter('paymentMethodId', $paymentMethodId));
+
+        return $criteria;
     }
 
     private function findTokenId(string $token, string $customerId, Context $context): ?string
