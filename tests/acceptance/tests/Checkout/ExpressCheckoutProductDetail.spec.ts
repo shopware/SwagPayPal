@@ -2,7 +2,7 @@ import { test } from '@fixtures/AcceptanceTest';
 import { paypalExpressButton } from '@page-objects/Storefront/PayPalExpressButton';
 
 // The PayPal order is only created once the product is in the cart.
-const CREATE_ORDER_URL = '**/paypal/express/create-order?addProductToCart=1';
+const CREATE_ORDER_URL = '**/paypal/express/create-order**';
 
 test('Express Checkout on the product detail page creates the PayPal order without the offcanvas cart', { tag: ['@Storefront'] }, async ({
     ShopCustomer,
