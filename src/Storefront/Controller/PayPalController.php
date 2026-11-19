@@ -143,10 +143,15 @@ class PayPalController extends StorefrontController
         return $this->expressShippingCallbackRoute->handleCallback($request, $context);
     }
 
-    #[Route(path: '/paypal/vault/clear', name: 'frontend.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true, 'XmlHttpRequest' => true, 'csrf_protected' => false])]
+    #[Route(path: '/paypal/vault/clear', name: 'frontend.paypal.vault.clear', methods: ['GET', 'POST'], defaults: ['_loginRequired' => true, 'XmlHttpRequest' => true, 'csrf_protected' => false])]
     #[Route(path: '/subscription/paypal/vault/clear/{subscriptionToken}', name: 'frontend.subscription.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true, 'XmlHttpRequest' => true, 'csrf_protected' => false, '_subscriptionCart' => true, '_subscriptionContext' => true])]
     public function clearVault(Request $request, SalesChannelContext $context): Response
     {
+        // @deprecated tag:v11.0.0 - GET requests will be rejected, use POST instead
+        if (!$request->isMethod(Request::METHOD_POST) && !$this->isRequestFromShop($request)) {
+            return $this->createActionResponse($request);
+        }
+
         $this->clearVaultRoute->clearVault($request, $context);
 
         return $this->createActionResponse($request);
@@ -241,5 +246,21 @@ class PayPalController extends StorefrontController
         );
 
         return new NoContentResponse();
+    }
+
+    /**
+     * Browsers send the session cookie along with GET navigations from other websites
+     */
+    private function isRequestFromShop(Request $request): bool
+    {
+        $fetchSite = $request->headers->get('Sec-Fetch-Site');
+        if ($fetchSite !== null) {
+            return $fetchSite === 'same-origin';
+        }
+
+        // older browsers, and all browsers on shops without HTTPS, send no fetch metadata, but the page of the link as referer
+        $referer = $request->headers->get('referer');
+
+        return $referer !== null && \parse_url($referer, \PHP_URL_HOST) === $request->getHost();
     }
 }
