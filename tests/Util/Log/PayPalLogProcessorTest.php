@@ -22,6 +22,7 @@ use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\PlatformRequest;
 use Shopware\PayPalSDK\Exception\ErrorApiException;
+use Shopware\PayPalSDK\Exception\ExceptionFactory;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
 use Shopware\PayPalSDK\Struct\Struct;
@@ -52,24 +53,42 @@ class PayPalLogProcessorTest extends TestCase
         static::assertSame(LogArea::OTHER, $record->extra['area']);
     }
 
-    public function testDebugIdAndIssueFromNestedException(): void
+    public function testPayPalErrorFromNestedSdkException(): void
     {
         $apiException = new ErrorApiException('UNPROCESSABLE_ENTITY', 'reason', new Response(422), 'debug-123');
         $exception = new \RuntimeException('outer', 0, PayPalApiException::from($apiException));
-        // the SDK exception has no issue, so its name is used
         $record = $this->createProcessor()($this->createRecord(['exception' => $exception]));
 
+        static::assertSame(422, $record->context['httpStatus']);
+        static::assertSame('UNPROCESSABLE_ENTITY', $record->context['paypalError']);
         static::assertSame('debug-123', $record->context['paypalDebugId']);
-        static::assertSame('UNPROCESSABLE_ENTITY', $record->context['paypalIssue']);
+        static::assertArrayNotHasKey('paypalIssues', $record->context);
     }
 
-    public function testIssueIsPreferredOverName(): void
+    public function testPayPalErrorFromTheWrapperWithoutSdkException(): void
     {
         $exception = new PayPalApiException('UNPROCESSABLE_ENTITY', 'message', 422, 'INSTRUMENT_DECLINED');
         $record = $this->createProcessor()($this->createRecord(['exception' => $exception]));
 
-        static::assertSame('INSTRUMENT_DECLINED', $record->context['paypalIssue']);
+        static::assertSame(422, $record->context['httpStatus']);
+        static::assertSame('UNPROCESSABLE_ENTITY', $record->context['paypalError']);
+        static::assertSame(['INSTRUMENT_DECLINED'], $record->context['paypalIssues']);
         static::assertArrayNotHasKey('paypalDebugId', $record->context);
+    }
+
+    public function testSdkExceptionLoggedDirectly(): void
+    {
+        $apiException = ExceptionFactory::createFromResponse(new Response(422, [], \json_encode([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'message' => 'Some reason',
+            'debug_id' => 'debug-123',
+            'details' => [['issue' => 'CARD_EXPIRED'], ['issue' => 'INSTRUMENT_DECLINED']],
+        ], \JSON_THROW_ON_ERROR)));
+        $record = $this->createProcessor()($this->createRecord(['exception' => $apiException]));
+
+        static::assertSame('SWAG_PAYPAL__API_INSTRUMENT_DECLINED', $record->context['errorCode']);
+        static::assertSame(['CARD_EXPIRED', 'INSTRUMENT_DECLINED'], $record->context['paypalIssues']);
+        static::assertSame('Some reason', $record->context['exception']['message'] ?? null);
     }
 
     public function testExistingContextIsKept(): void
@@ -78,11 +97,11 @@ class PayPalLogProcessorTest extends TestCase
         $record = $this->createProcessor()($this->createRecord([
             'exception' => PayPalApiException::from($apiException),
             'paypalDebugId' => 'mine',
-            'paypalIssue' => 'MINE',
+            'paypalIssues' => ['MINE'],
         ]));
 
         static::assertSame('mine', $record->context['paypalDebugId']);
-        static::assertSame('MINE', $record->context['paypalIssue']);
+        static::assertSame(['MINE'], $record->context['paypalIssues']);
     }
 
     public function testErrorCodeOfShopwareException(): void
@@ -135,6 +154,23 @@ class PayPalLogProcessorTest extends TestCase
                 'line' => $inner->getLine(),
             ],
         ], $record->context[LogKey::EXCEPTION]);
+    }
+
+    public function testSubmittedValuesOfRejectedFieldsAreNotLogged(): void
+    {
+        $iban = 'DE89370400440532013000';
+        $apiException = ExceptionFactory::createFromResponse(new Response(422, ['paypal-debug-id' => 'debug-123'], \json_encode([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'message' => 'The requested action could not be performed.',
+            'debug_id' => 'debug-123',
+            'details' => [['field' => '/payment_source/sepa_debit/iban', 'value' => $iban, 'issue' => 'INVALID_IBAN', 'description' => 'The IBAN is invalid.']],
+        ], \JSON_THROW_ON_ERROR)));
+        $record = $this->createProcessor()($this->createRecord([LogKey::EXCEPTION => PayPalApiException::from($apiException)]));
+
+        static::assertStringNotContainsString($iban, \json_encode($record->toArray(), \JSON_THROW_ON_ERROR));
+        static::assertSame(['INVALID_IBAN'], $record->context[LogKey::PAYPAL_ISSUES]);
+        static::assertSame('debug-123', $record->context[LogKey::PAYPAL_DEBUG_ID]);
+        static::assertStringContainsString('[INVALID_IBAN] (/payment_source/sepa_debit/iban) The IBAN is invalid.', $record->context[LogKey::EXCEPTION]['message'] ?? '');
     }
 
     public function testParametersOfTheExceptionAreRedacted(): void
@@ -285,9 +321,9 @@ class PayPalLogProcessorTest extends TestCase
         ]));
 
         static::assertSame([
-            LogKey::CODE => 'CODE',
-            LogKey::CAPTURE_ID => 'CAP-1',
             LogKey::ORDER_TRANSACTION_ID => 'transaction-id',
+            LogKey::CAPTURE_ID => 'CAP-1',
+            LogKey::CODE => 'CODE',
         ], $record->context);
     }
 

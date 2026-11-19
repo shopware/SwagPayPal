@@ -34,7 +34,7 @@ class PayPalLogTraitTest extends TestCase
             LogKey::PAYMENT => (new Capture())->assign(['id' => 'CAP-1']),
         ]);
 
-        static::assertSame([['code' => 'CODE', 'captureId' => 'CAP-1']], $this->getPayPalLogContexts('CODE'));
+        static::assertSame([['captureId' => 'CAP-1', 'code' => 'CODE']], $this->getPayPalLogContexts('CODE'));
     }
 
     public function testAssertLoggedComparesOnlyTheGivenKeys(): void

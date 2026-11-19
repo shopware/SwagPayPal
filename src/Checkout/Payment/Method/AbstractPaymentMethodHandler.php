@@ -65,7 +65,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
     ];
 
     /**
-     * @deprecated tag:v11.0.0 - Will be `LoggerInterface`, not nullable
+     * @deprecated tag:v11.0.0 - Will be removed, the handler logs through the logger injected via the constructor
      */
     protected ?LoggerInterface $logger = null;
 
@@ -81,19 +81,20 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         private readonly OrderResource $orderResource,
         private readonly VaultTokenService $vaultTokenService,
         private readonly EntityRepository $orderTransactionRepository,
-        LoggerInterface $logger,
+        private readonly LoggerInterface $paypalLogger,
         private readonly AbstractOrderBuilder $orderBuilder,
     ) {
-        $this->logger = $logger;
+        $this->logger = $paypalLogger;
     }
 
     /**
-     * Has no effect: only the injected `paypal` logger expands logged entities and redacts request data.
+     * The handler's own records keep using the injected logger, only the `paypal` channel's processor expands and redacts them.
      *
      * @deprecated tag:v11.0.0 - Will be removed, the logger is injected via the constructor
      */
     public function setLogger(LoggerInterface $logger): void
     {
+        $this->logger = $logger;
     }
 
     public function supports(PaymentHandlerType $type, string $paymentMethodId, Context $context): bool
@@ -396,7 +397,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
             );
         } catch (PayPalApiException|ClientExceptionInterface $confirmationException) {
             // logPaymentFailure() only sees the payer action exception, this line carries the cause's level
-            $this->logger?->log(
+            $this->paypalLogger->log(
                 FailureClassifier::isCausedByBuyer($confirmationException) ? LogLevel::NOTICE : LogLevel::ERROR,
                 'Could not send the buyer back to PayPal to approve the payment of order {orderNumber} again, the payment fails',
                 [...$logContext, LogKey::CODE => LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED, LogKey::EXCEPTION => $confirmationException],
@@ -410,7 +411,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
             throw $exception;
         }
 
-        $this->logger?->info(
+        $this->paypalLogger->info(
             'Redirected the buyer to PayPal to approve the payment of order {orderNumber} again',
             [...$logContext, LogKey::CODE => LogCode::CHECKOUT_PAYER_ACTION_REDIRECT],
         );
@@ -483,16 +484,16 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
 
         if ($orderTransaction === null) {
             // nothing reached PayPal yet, so it can't be the buyer's failure
-            $this->logger?->error(
+            $this->paypalLogger->error(
                 'Could not complete the payment of order transaction {orderTransactionId}: {errorCode}, the payment status of the order is now Failed',
                 [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_FAILED],
             );
         } elseif (FailureClassifier::isCancelledByBuyer($e)) {
-            $this->logger?->notice('The buyer cancelled the payment of order {orderNumber} at PayPal', [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_CANCELLED]);
+            $this->paypalLogger->notice('The buyer cancelled the payment of order {orderNumber} at PayPal', [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_CANCELLED]);
         } elseif (FailureClassifier::isCausedByBuyer($e)) {
-            $this->logger?->notice('Could not complete the payment of order {orderNumber}: {errorCode}', [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_DECLINED]);
+            $this->paypalLogger->notice('Could not complete the payment of order {orderNumber}: {errorCode}', [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_DECLINED]);
         } else {
-            $this->logger?->error(
+            $this->paypalLogger->error(
                 'Could not complete the payment of order {orderNumber}: {errorCode}, the payment status of the order is now Failed',
                 [...$context, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_FAILED],
             );

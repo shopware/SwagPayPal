@@ -105,6 +105,8 @@ class OrderExecuteServiceTest extends TestCase
         $finalized = $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
 
         static::assertTrue($finalized);
+        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_PENDING, Level::Info, [LogKey::CAPTURE_STATUS => ConstantsV2::ORDER_CAPTURE_PENDING]);
+        $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED);
     }
 
     public function testCheckFinalizedStatusSetsInProgressOnPendingAuthorization(): void

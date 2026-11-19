@@ -51,7 +51,7 @@ class PayPalLoggerWiringTest extends TestCase
 
         $record = $this->assertPayPalLogged('CODE', Level::Error, [
             LogKey::ERROR_CODE => 'SWAG_PAYPAL__API_INSTRUMENT_DECLINED',
-            LogKey::PAYPAL_ISSUE => 'INSTRUMENT_DECLINED',
+            LogKey::PAYPAL_ISSUES => ['INSTRUMENT_DECLINED'],
         ]);
         static::assertSame(PayPalApiException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
     }

@@ -82,9 +82,7 @@ class ClientTest extends TestCase
             'paypalDebugId' => 'some-debug-id',
             'paypalRequestId' => '1234567',
             'request' => $jsonBody,
-            'requestHeaders' => \array_map(static fn (string $value) => [$value], [...$requestHeader, 'Host' => 'example.com']),
             'response' => $jsonBody,
-            'responseHeaders' => \array_map(static fn (string $value) => [$value], $responseHeader),
         ], $logs[0]->context);
     }
 
@@ -160,7 +158,8 @@ class ClientTest extends TestCase
             'httpStatus' => 400,
             'paypalDebugId' => null,
             'paypalRequestId' => '1234567',
-            'paypalIssue' => null,
+            'paypalError' => null,
+            'paypalIssues' => null,
         ], $logs[0]->context);
         static::assertSame(Level::Debug, $logs[1]->level);
     }
@@ -177,7 +176,7 @@ class ClientTest extends TestCase
         static::assertSame('Requested the PayPal API: {httpMethod} {httpPath} returned {httpStatus}', $logs[0]->message);
         static::assertSame(Level::Critical, $logs[0]->level);
         static::assertSame(LogCode::API_MERCHANT_ACCOUNT_REJECTED, $logs[0]->context['code']);
-        static::assertSame('PAYEE_ACCOUNT_RESTRICTED', $logs[0]->context['paypalIssue']);
+        static::assertSame(['PAYEE_ACCOUNT_RESTRICTED'], $logs[0]->context['paypalIssues']);
     }
 
     public function testSendRequestPassesTheRawPath(): void
@@ -199,7 +198,8 @@ class ClientTest extends TestCase
         $this->client->sendRequest(new Request('POST', 'http://example.com/v2/checkout/orders?x=1'));
 
         $context = $this->logger->getRecords()[0]->context;
-        static::assertSame('INSTRUMENT_DECLINED', $context['paypalIssue']);
+        static::assertSame('UNPROCESSABLE_ENTITY', $context['paypalError']);
+        static::assertSame(['FIRST', 'INSTRUMENT_DECLINED'], $context['paypalIssues']);
         static::assertSame('dbg', $context['paypalDebugId']);
         static::assertSame('/v2/checkout/orders', $context['httpPath']);
         static::assertNull($context['paypalRequestId']);
@@ -215,7 +215,7 @@ class ClientTest extends TestCase
         $record = $this->logger->getRecords()[0];
         static::assertSame(Level::Critical, $record->level);
         static::assertSame(LogCode::API_MERCHANT_ACCOUNT_REJECTED, $record->context['code']);
-        static::assertSame('PAYEE_ACCOUNT_RESTRICTED', $record->context['paypalIssue']);
+        static::assertSame(['PAYEE_ACCOUNT_RESTRICTED'], $record->context['paypalIssues']);
     }
 
     public function testSendRequest400WithNameAndOAuthError(): void
@@ -227,7 +227,8 @@ class ClientTest extends TestCase
         $this->client->sendRequest(new Request('POST', 'http://example.com/v1/oauth2/token'));
 
         $logs = $this->logger->getRecords();
-        static::assertSame('RESOURCE_NOT_FOUND', $logs[0]->context['paypalIssue']);
-        static::assertSame('invalid_client', $logs[2]->context['paypalIssue']);
+        static::assertSame('RESOURCE_NOT_FOUND', $logs[0]->context['paypalError']);
+        static::assertNull($logs[0]->context['paypalIssues']);
+        static::assertSame('invalid_client', $logs[2]->context['paypalError']);
     }
 }

@@ -52,18 +52,12 @@ class Client implements ClientInterface
 
         if ($response->getStatusCode() >= 400) {
             ['name' => $name, 'issues' => $issues] = $this->extractError($responseBody);
-            $issue = \implode(', ', $issues) ?: $name;
+            $errorContext = [...$context, LogKey::PAYPAL_ERROR => $name, LogKey::PAYPAL_ISSUES => $issues ?: null];
 
             if (FailureClassifier::isMerchantAccountIssue($name, ...$issues)) {
-                $this->logger->critical(
-                    self::LOG_MESSAGE,
-                    [...$context, LogKey::CODE => LogCode::API_MERCHANT_ACCOUNT_REJECTED, LogKey::PAYPAL_ISSUE => $issue],
-                );
+                $this->logger->critical(self::LOG_MESSAGE, [...$errorContext, LogKey::CODE => LogCode::API_MERCHANT_ACCOUNT_REJECTED]);
             } else {
-                $this->logger->info(
-                    self::LOG_MESSAGE,
-                    [...$context, LogKey::CODE => LogCode::API_REQUEST_FAILED, LogKey::PAYPAL_ISSUE => $issue],
-                );
+                $this->logger->info(self::LOG_MESSAGE, [...$errorContext, LogKey::CODE => LogCode::API_REQUEST_FAILED]);
             }
         }
 

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util\Log;
 
+use GuzzleHttp\Psr7\Response as PsrResponse;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,7 @@ use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ExceptionFactory;
 use Swag\PayPal\Checkout\Exception\EmptyCartException;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -56,6 +58,20 @@ class FailureClassifierTest extends TestCase
         yield 'cart exception' => [CartException::deserializeFailed(), true];
         yield 'other http exception' => [self::httpException('SOMETHING_ELSE'), false];
         yield 'runtime exception' => [new \RuntimeException('message'), false];
+    }
+
+    public function testAllIssuesOfTheResponseDecide(): void
+    {
+        $response = static fn (string ...$issues): PsrResponse => new PsrResponse(422, [], \json_encode([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'message' => 'Some message',
+            'debug_id' => 'debug-123',
+            'details' => \array_map(static fn (string $issue): array => ['issue' => $issue], $issues),
+        ], \JSON_THROW_ON_ERROR));
+
+        static::assertTrue(FailureClassifier::isCausedByBuyer(PayPalApiException::from(ExceptionFactory::createFromResponse($response('INSTRUMENT_DECLINED')))));
+        // the merchant restriction wins, although the wrapper only knows the last issue
+        static::assertFalse(FailureClassifier::isCausedByBuyer(PayPalApiException::from(ExceptionFactory::createFromResponse($response('PAYEE_ACCOUNT_RESTRICTED', 'INSTRUMENT_DECLINED')))));
     }
 
     public function testIsCancelledByBuyer(): void

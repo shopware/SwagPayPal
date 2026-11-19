@@ -103,7 +103,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
 
         $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED, Level::Info, [
             LogKey::ORDER_TRANSACTION_ID => $transactionId,
-            LogKey::PAYPAL_ORDER_ID => GetOrderCapture::ID,
+            LogKey::PAYPAL_ORDER_ID => CaptureOrderCapture::ID,
             LogKey::CAPTURE_ID => CaptureOrderCapture::CAPTURE_ID,
             LogKey::CAPTURE_STATUS => 'COMPLETED',
         ]);
@@ -128,6 +128,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
             ]);
             static::assertNotSame('unknown', $record->context[LogKey::ORDER_NUMBER] ?? null);
             static::assertSame(OrderFailedException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+            $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED);
         }
     }
 

@@ -286,6 +286,12 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
         );
 
         static::assertSame($status, \json_decode((string) $response->getContent(), true)['status']);
+        $this->assertPayPalLogged(
+            $isApplied ? LogCode::ADMIN_AUTHORIZATION_CAPTURED : LogCode::ADMIN_AUTHORIZATION_CAPTURE_NOT_COMPLETED,
+            $isApplied ? Level::Info : Level::Notice,
+            [LogKey::CAPTURE_STATUS => $status],
+        );
+        $this->assertPayPalNotLogged($isApplied ? LogCode::ADMIN_AUTHORIZATION_CAPTURE_NOT_COMPLETED : LogCode::ADMIN_AUTHORIZATION_CAPTURED);
     }
 
     /**
@@ -323,6 +329,12 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
         );
 
         static::assertSame($status, \json_decode((string) $response->getContent(), true)['status']);
+        $this->assertPayPalLogged(
+            $isApplied ? LogCode::ADMIN_REFUND_CREATED : LogCode::ADMIN_REFUND_NOT_COMPLETED,
+            $isApplied ? Level::Info : Level::Notice,
+            [LogKey::REFUND_STATUS => $status],
+        );
+        $this->assertPayPalNotLogged($isApplied ? LogCode::ADMIN_REFUND_NOT_COMPLETED : LogCode::ADMIN_REFUND_CREATED);
     }
 
     /**

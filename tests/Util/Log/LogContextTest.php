@@ -126,12 +126,12 @@ class LogContextTest extends TestCase
     {
         static::assertSame([
             'paypalOrderId' => 'EXPLICIT',
-            'captureId' => 'CAP-1',
-            'captureStatus' => 'COMPLETED',
+            'intent' => 'CAPTURE',
             'amount' => '5.00',
             'currency' => 'EUR',
-            'intent' => 'CAPTURE',
             'invoiceId' => 'INV-1',
+            'captureId' => 'CAP-1',
+            'captureStatus' => 'COMPLETED',
         ], LogContext::expand([
             LogKey::PAYPAL_ORDER_ID => 'EXPLICIT',
             LogKey::PAYPAL_ORDER => $this->createPaypalOrder(),

@@ -80,14 +80,14 @@ class PaymentStatusChangeSubscriberTest extends TestCase
             message: 'Changed the payment status of order {orderNumber} from {fromState} to {toState}',
         );
         static::assertSame([
-            LogKey::CODE => LogCode::PAYMENT_STATUS_CHANGED,
-            LogKey::FROM_STATE => 'open',
-            LogKey::TO_STATE => 'paid',
             LogKey::ORDER_TRANSACTION_ID => 'id',
             LogKey::ORDER_ID => 'order-id',
             LogKey::ORDER_NUMBER => '10000',
             LogKey::SALES_CHANNEL_ID => 'sales-channel-id',
             LogKey::PAYMENT_METHOD => 'swag_paypal',
+            LogKey::CODE => LogCode::PAYMENT_STATUS_CHANGED,
+            LogKey::FROM_STATE => 'open',
+            LogKey::TO_STATE => 'paid',
         ], $record->context);
     }
 

@@ -50,7 +50,8 @@ final class LogKey
     public const PAYPAL_ORDER_ID = 'paypalOrderId';
     public const PAYPAL_DEBUG_ID = 'paypalDebugId';
     public const PAYPAL_REQUEST_ID = 'paypalRequestId';
-    public const PAYPAL_ISSUE = 'paypalIssue';
+    public const PAYPAL_ERROR = 'paypalError';
+    public const PAYPAL_ISSUES = 'paypalIssues';
     public const INTENT = 'intent';
     public const INVOICE_ID = 'invoiceId';
     public const PARTNER_ATTRIBUTION_ID = 'partnerAttributionId';

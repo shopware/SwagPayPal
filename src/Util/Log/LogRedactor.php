@@ -195,6 +195,12 @@ final class LogRedactor
             $data['value'] = self::REDACTED;
         }
 
+        // a patch sets a URL as value, e.g. the webhook update `{"op": "replace", "path": "/url", "value": "…"}`
+        if (\is_string($data['path'] ?? null) && \is_string($data['value'] ?? null)
+            && \in_array(\mb_strtolower(\basename($data['path'])), self::URL_KEYS, true)) {
+            $data['value'] = self::redactUrl($data['value']);
+        }
+
         foreach ($data as $key => $value) {
             if (!\is_string($key)) {
                 $data[$key] = self::redactLevel($value, $parentKey, false);

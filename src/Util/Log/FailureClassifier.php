@@ -40,7 +40,9 @@ final class FailureClassifier
         }
 
         if ($e instanceof PayPalApiException) {
-            $category = IssueClassifier::classifyCodes($e->getName(), $e->getIssue());
+            // the SDK exception has every issue of the response, the wrapper only the last one
+            $previous = $e->getPrevious();
+            $category = $previous instanceof ApiException ? IssueClassifier::classify($previous) : IssueClassifier::classifyCodes($e->getName(), $e->getIssue());
             if ($category === IssueCategory::BUYER || $category === IssueCategory::BUYER_RESOLVABLE) {
                 return true;
             }

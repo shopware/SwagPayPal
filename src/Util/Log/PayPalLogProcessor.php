@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\PlatformRequest;
+use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Exception\ErrorApiException;
 use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -98,18 +99,13 @@ final class PayPalLogProcessor implements ProcessorInterface
             return $context;
         }
 
-        $context[LogKey::ERROR_CODE] ??= $this->errorCode($exception);
+        $context[LogKey::ERROR_CODE] ??= match (true) {
+            $exception instanceof ShopwareHttpException => $exception->getErrorCode(),
+            $exception instanceof ApiException => PayPalApiException::from($exception)->getErrorCode(),
+            default => (new \ReflectionClass($exception))->getShortName(),
+        };
 
-        for ($e = $exception; $e instanceof \Throwable; $e = $e->getPrevious()) {
-            if ($e instanceof ErrorApiException) {
-                $context[LogKey::PAYPAL_DEBUG_ID] ??= $e->debugId;
-            }
-
-            if ($e instanceof PayPalApiException) {
-                $context[LogKey::PAYPAL_ISSUE] ??= $e->getIssue() ?? $e->getName();
-            }
-        }
-
+        $context = [...$this->paypalError($exception), ...$context];
         $context[LogKey::EXCEPTION] = $this->normalizeException($exception);
 
         return $context;
@@ -118,9 +114,44 @@ final class PayPalLogProcessor implements ProcessorInterface
     /**
      * @return array<string, mixed>
      */
+    private function paypalError(\Throwable $exception): array
+    {
+        $apiException = null;
+        $wrapper = null;
+        for ($e = $exception; $e instanceof \Throwable; $e = $e->getPrevious()) {
+            $apiException ??= $e instanceof ApiException ? $e : null;
+            $wrapper ??= $e instanceof PayPalApiException ? $e : null;
+        }
+
+        if ($apiException !== null) {
+            $issues = $apiException instanceof ErrorApiException ? $apiException->getDetails()->getIssues() : [];
+
+            return [
+                LogKey::HTTP_STATUS => $apiException->getStatusCode(),
+                LogKey::PAYPAL_ERROR => $apiException->getErrorCode(),
+                LogKey::PAYPAL_ISSUES => $issues ?: null,
+                LogKey::PAYPAL_DEBUG_ID => $apiException instanceof ErrorApiException ? $apiException->debugId : null,
+            ];
+        }
+
+        if ($wrapper !== null) {
+            return [
+                LogKey::HTTP_STATUS => $wrapper->getStatusCode(),
+                LogKey::PAYPAL_ERROR => $wrapper->getName(),
+                LogKey::PAYPAL_ISSUES => $wrapper->getIssue() !== null ? [$wrapper->getIssue()] : null,
+            ];
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     private function normalizeException(\Throwable $e): array
     {
-        $normalized = ['class' => $e::class, 'message' => $e->getMessage()];
+        // the SDK's message echoes the submitted value of a rejected field
+        $normalized = ['class' => $e::class, 'message' => $e instanceof ApiException ? $e->getReason() : $e->getMessage()];
 
         if ($e instanceof ShopwareHttpException) {
             $normalized['errorCode'] = $e->getErrorCode();
@@ -140,15 +171,12 @@ final class PayPalLogProcessor implements ProcessorInterface
         $normalized['file'] = $e->getFile();
         $normalized['line'] = $e->getLine();
 
-        if ($previous = $e->getPrevious()) {
+        // the SDK exception's facts are in the context already
+        $previous = $e->getPrevious();
+        if ($previous !== null && !$previous instanceof ApiException) {
             $normalized['previous'] = $this->normalizeException($previous);
         }
 
         return $normalized;
-    }
-
-    private function errorCode(\Throwable $e): string
-    {
-        return $e instanceof ShopwareHttpException ? $e->getErrorCode() : (new \ReflectionClass($e))->getShortName();
     }
 }

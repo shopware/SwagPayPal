@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Exception\ErrorApiException;
 use Shopware\PayPalSDK\Exception\RetryAfterApiException;
+use Shopware\PayPalSDK\Struct\Error\DetailCollection;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -104,15 +105,12 @@ class PayPalApiException extends PaymentException
         );
     }
 
-    /**
-     * @return array{message: string, issue: string|null}
-     */
     protected static function extractMessageAndIssue(ApiException $e): array
     {
         $message = $e->getReason();
         $issue = null;
 
-        if ($e instanceof ErrorApiException && ($detailMessage = (string) $e->getDetails())) {
+        if ($e instanceof ErrorApiException && ($detailMessage = self::describeDetails($e->getDetails()))) {
             $message .= ApiException::MESSAGE_DELIMITER . $detailMessage;
 
             $issue = \array_slice($e->getDetails()->getIssues(), -1)[0] ?? null;
@@ -122,5 +120,25 @@ class PayPalApiException extends PaymentException
             'message' => $message,
             'issue' => $issue,
         ];
+    }
+
+    /**
+     * @return array{message: string, issue: string|null}
+     */
+    /**
+     * The SDK's own rendering echoes the submitted value of a rejected field, often personal data.
+     */
+    private static function describeDetails(DetailCollection $details): string
+    {
+        $descriptions = [];
+        foreach ($details as $detail) {
+            $descriptions[] = \implode(' ', \array_filter([
+                $detail->getIssue() ? \sprintf('[%s]', $detail->getIssue()) : null,
+                $detail->getField() ? \sprintf('(%s)', $detail->getField()) : null,
+                $detail->getDescription(),
+            ]));
+        }
+
+        return \implode(ApiException::MESSAGE_DELIMITER, \array_filter($descriptions));
     }
 }

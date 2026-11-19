@@ -153,6 +153,14 @@ class LogRedactorTest extends TestCase
         ]));
     }
 
+    public function testUrlsSetByPatchesKeepOnlySchemeAndHost(): void
+    {
+        static::assertSame(
+            [['op' => 'replace', 'path' => '/url', 'value' => 'https://shop.example/<redacted>']],
+            LogRedactor::redactBody([['op' => 'replace', 'path' => '/url', 'value' => 'https://shop.example/api/_action/paypal/webhook/execute?sw-token=secret']]),
+        );
+    }
+
     public function testUrlKeysWithoutAUrlAreRedactedEntirely(): void
     {
         static::assertSame(['return_url' => '<redacted>'], LogRedactor::redactBody(['return_url' => '/relative?token=secret']));
