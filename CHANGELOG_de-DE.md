@@ -1,6 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem ein Link auf einer anderen Website das gespeicherte PayPal-Konto oder die gespeicherte Karte eines angemeldeten Kunden entfernen konnte. Template-Anpassungen gespeicherter PayPal-Konten und Karten im Checkout sollten bis Version 11 angepasst werden (shopware/SwagPayPal#847)
-- Ändert die Beschriftung "Konto entfernen" bzw. "Karte entfernen" gespeicherter PayPal-Konten und Karten zu "Anderes Konto verwenden" bzw. "Andere Karte verwenden", da Abonnements diese für ihre Verlängerungen weiterhin verwenden (shopware/SwagPayPal#847)
+- Ändert die Beschriftung "Konto entfernen" bzw. "Karte entfernen" gespeicherter PayPal-Konten und Karten zu "Nicht für zukünftige Käufe verwenden", da Abonnements diese für ihre Verlängerungen weiterhin verwenden (shopware/SwagPayPal#847)
 - Behebt ein Problem, bei dem die Schaltfläche "Später bezahlen" einen Fehler anzeigte, statt PayPal zu öffnen, wenn das PayPal JS SDK v6 aktiviert war (shopware/shopware#23097)
 - Behebt ein Problem, bei dem ein Einzug oder eine Rückerstattung in der Administration die Zahlung als bezahlt oder erstattet markierte, obwohl PayPal mit einem ausstehenden, abgelehnten oder fehlgeschlagenen Status antwortete (shopware/SwagPayPal#839)
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
