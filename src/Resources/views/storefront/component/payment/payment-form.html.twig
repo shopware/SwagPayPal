@@ -1,4 +1,32 @@
-{% sw_extends '@Storefront/storefront/component/payment/payment-form.html.twig' %}
+{% sw_extends {
+    template: '@Storefront/storefront/component/payment/payment-form.html.twig',
+    scopes: ['default', 'subscription']
+} %}
+
+{# `page_checkout_change_payment_form`, as `component_payment_form` is only available since Shopware 6.6.10.4 #}
+{% block page_checkout_change_payment_form %}
+    {{ parent() }}
+
+    {# submitted by the button of the saved payment method, see `component_payment_method_description_paypal_vault`. Forms cannot be nested, and inside the payment method form the button would also be submitted by pressing Enter #}
+    {% block component_payment_form_paypal_vault_clear %}
+        {# @var \Swag\PayPal\Storefront\Data\Struct\VaultData payPalVaultData #}
+        {% set payPalVaultData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\VaultSubscriber::VAULT_EXTENSION')] %}
+
+        {% if payPalVaultData and payPalVaultData.identifier %}
+            {# keeps the parameters of the current route, e.g. the subscription token of the subscription checkout #}
+            {% set payPalVaultClearRedirectParameters = (app.request.attributes.get('_route_params') ?? {})|merge(page.order.id ? { orderId: page.order.id } : {}) %}
+            {% set payPalVaultClearParameters = { redirectTo: activeRoute, redirectParameters: payPalVaultClearRedirectParameters|json_encode } %}
+            {# a subscription has its own context and payment method, which only the subscription route resolves #}
+            {% if context.extensions.subscription is defined %}
+                {% set payPalVaultClearUrl = path('frontend.subscription.paypal.vault.clear', payPalVaultClearParameters|merge({ subscriptionToken: context.token })) %}
+            {% else %}
+                {% set payPalVaultClearUrl = path('frontend.paypal.vault.clear', payPalVaultClearParameters) %}
+            {% endif %}
+
+            <form id="swagPayPalVaultClearForm" action="{{ payPalVaultClearUrl }}" method="post" hidden></form>
+        {% endif %}
+    {% endblock %}
+{% endblock %}
 
 {% block page_checkout_change_payment_form_redirect %}
     {{ parent() }}
