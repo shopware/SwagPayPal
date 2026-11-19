@@ -195,10 +195,6 @@ class PayPalController extends StorefrontController
         return $this->expressShippingCallbackRoute->handleCallback($request, $context);
     }
 
-    /**
-     * POST only, as browsers send the SameSite=Lax session cookie along with cross-site GET navigations,
-     * e.g. a link on another website
-     */
     #[Route(path: '/paypal/vault/clear', name: 'frontend.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true, 'XmlHttpRequest' => true, 'csrf_protected' => false])]
     #[Route(path: '/subscription/paypal/vault/clear/{subscriptionToken}', name: 'frontend.subscription.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true, 'XmlHttpRequest' => true, 'csrf_protected' => false, '_subscriptionCart' => true, '_subscriptionContext' => true])]
     public function clearVault(Request $request, SalesChannelContext $context): Response
