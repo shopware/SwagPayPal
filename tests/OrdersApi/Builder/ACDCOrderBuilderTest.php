@@ -104,7 +104,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
 
     public function testSubscriptionVaultingANewCardOpensTheRecurringSeries(): void
     {
-        $this->vaultTokenService->method('getAvailableToken')->willReturn(null);
+        $this->vaultTokenService->method('getTokenForPayment')->willReturn(null);
         $this->vaultTokenService->method('getSubscription')->willReturn($this->createSubscription());
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 
@@ -115,7 +115,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
 
     public function testVaultingANewCardOutsideASubscriptionSendsNoStoredCredential(): void
     {
-        $this->vaultTokenService->method('getAvailableToken')->willReturn(null);
+        $this->vaultTokenService->method('getTokenForPayment')->willReturn(null);
         $this->vaultTokenService->method('getSubscription')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 
@@ -168,7 +168,10 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setToken('testToken');
 
-        $this->vaultTokenService->method('getAvailableToken')->willReturn($vaultToken);
+        $this->vaultTokenService
+            ->method('getTokenForPayment')
+            ->with(static::isInstanceOf(SyncPaymentTransactionStruct::class), static::anything(), $isRecurring)
+            ->willReturn($vaultToken);
         $this->vaultTokenService->method('getSubscription')->willReturn($subscription);
 
         $card = $this->buildCard($isRecurring);

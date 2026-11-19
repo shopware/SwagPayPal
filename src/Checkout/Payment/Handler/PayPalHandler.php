@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\Payment\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
@@ -66,6 +67,12 @@ class PayPalHandler
             $requestDataBag,
         );
 
+        // the saved token the order builder pays a new order of the payer with, read before PayPal's response replaces the payment source
+        $isRecurring = $transaction instanceof RecurringPaymentTransactionStruct;
+        $vaultToken = !$isRecurring && $paypalOrder->getPaymentSource()?->getPaypal()?->isset('vaultId')
+            ? $this->vaultTokenService->getTokenForPayment($transaction, $salesChannelContext->getContext(), false)
+            : null;
+
         $transactionId = $transaction->getOrderTransaction()->getId();
         $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
 
@@ -101,6 +108,11 @@ class PayPalHandler
             PartnerAttributionId::PAYPAL_CLASSIC,
             $salesChannelContext
         );
+
+        // finalize() saves it to the subscription, so it must not be looked up again after a redirect
+        if (!$isRecurring) {
+            $this->transactionDataService->setVaultTokenId($transaction->getOrderTransaction(), $vaultToken?->getId(), $salesChannelContext->getContext());
+        }
 
         if ($paypalOrderResponse->getStatus() !== PaymentStatusV2::ORDER_PAYER_ACTION_REQUIRED
          && $paypalOrderResponse->getStatus() !== PaymentStatusV2::ORDER_CREATED) {
@@ -143,6 +155,9 @@ class PayPalHandler
             $partnerAttributionId,
             $salesChannelContext
         );
+
+        // the payer approved the prepared order, so it is paid without a saved token
+        $this->transactionDataService->setVaultTokenId($transaction->getOrderTransaction(), null, $salesChannelContext->getContext());
 
         $this->orderPatchService->patchOrder(
             $transaction->getOrder(),
@@ -219,6 +234,11 @@ class PayPalHandler
         }
 
         $this->vaultTokenService->saveToken($transaction, $paymentSource, $customerId, $context->getContext());
+
+        // a payment of the customer, e.g. at checkout, decides the token the following renewals keep, even if they save another one
+        if (!$transaction instanceof RecurringPaymentTransactionStruct) {
+            $this->vaultTokenService->saveUsedTokenToSubscriptions($transaction, $context->getContext());
+        }
     }
 
     /**

@@ -7,6 +7,7 @@
 - Fixes an issue, where uninstalling the plugin without keeping user data left saved PayPal accounts and cards, transaction reports and PayPal order references in the database (shopware/SwagPayPal#846)
 - Fixes an issue, where card payments of subscriptions could fail, at checkout with a saved card and on renewal if the issuer required 3D Secure
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
+- Fixes an issue, where renewals of subscriptions paid with a saved PayPal account or card failed after the customer removed it, or used one added later instead
 
 # 8.12.5
 - Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
