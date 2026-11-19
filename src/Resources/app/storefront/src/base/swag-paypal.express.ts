@@ -136,7 +136,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
 
         // Unsubscribing removes every listener of an event name, so each call uses its own suffix.
         addToCartCalls += 1;
-        const events = ADD_TO_CART_EVENTS.map((event) => `${event}.SwagPayPalExpress${addToCartCalls}`);
+        const events = ADD_TO_CART_EVENTS.map((event) => `${event}.SwagPayPalExpressV6-${addToCartCalls}`);
 
         return new Promise((resolve) => {
             const onAdded = () => {
