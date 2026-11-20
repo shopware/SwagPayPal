@@ -18,6 +18,7 @@ use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Storefront\Data\Struct\VaultData;
+use Swag\PayPal\Storefront\Data\VaultSubscriber;
 use Symfony\Bridge\Twig\AppVariable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -34,14 +35,34 @@ class VaultClearLinkTest extends TestCase
 
     private const TEMPLATE = '@SwagPayPal/storefront/component/payment/payment-method.html.twig';
     private const BLOCK = 'component_payment_method_description_paypal_vault';
+    private const FORM_TEMPLATE = '@SwagPayPal/storefront/component/payment/payment-form.html.twig';
+    private const FORM_BLOCK = 'component_payment_form_paypal_vault_clear';
+    private const FORM_ID = 'swagPayPalVaultClearForm';
     private const SUBSCRIPTION_TOKEN = 'Gm0aJ8xVbPq3sLtC7wZnR2kYdE5hU9fA';
+
+    public function testClearButtonSubmitsClearForm(): void
+    {
+        $vaultData = new VaultData();
+        $vaultData->setIdentifier('Visa **1881');
+        $vaultData->setSnippetType(VaultData::SNIPPET_TYPE_CARD);
+
+        $twig = static::getContainer()->get('twig');
+        static::assertInstanceOf(Environment::class, $twig);
+
+        $html = $twig->load(self::TEMPLATE)->renderBlock(self::BLOCK, ['payPalVaultData' => $vaultData]);
+
+        // a separate form, as pressing Enter on a payment method would submit the button inside the payment method form
+        static::assertSame(1, \preg_match('/<button\s[^>]*>/', $html, $button), $html);
+        static::assertStringContainsString('type="submit"', $button[0]);
+        static::assertStringContainsString('form="' . self::FORM_ID . '"', $button[0]);
+    }
 
     /**
      * @param array<string, string> $pathParameters
      *
      * @dataProvider dataProviderRoutes
      */
-    public function testClearLinkRedirectsBackToCurrentRoute(
+    public function testClearFormRedirectsBackToCurrentRoute(
         string $routeName,
         array $pathParameters,
         ?string $orderId,
@@ -83,6 +104,7 @@ class VaultClearLinkTest extends TestCase
         $vaultData = new VaultData();
         $vaultData->setIdentifier('Visa **1881');
         $vaultData->setSnippetType(VaultData::SNIPPET_TYPE_CARD);
+        $page->addExtension(VaultSubscriber::VAULT_EXTENSION, $vaultData);
 
         // the storefront app variable keeps the first request it returns, so every data set gets its own
         $requestStack = new RequestStack();
@@ -93,15 +115,16 @@ class VaultClearLinkTest extends TestCase
         $twig = static::getContainer()->get('twig');
         static::assertInstanceOf(Environment::class, $twig);
 
-        $html = $twig->load(self::TEMPLATE)->renderBlock(self::BLOCK, [
+        $html = $twig->load(self::FORM_TEMPLATE)->renderBlock(self::FORM_BLOCK, [
             'app' => $app,
             'context' => $context,
-            'payPalVaultData' => $vaultData,
             'activeRoute' => $routeName,
             'page' => $page,
         ]);
 
-        static::assertSame(1, \preg_match('/<a href="([^"]+)"/', $html, $matches), $html);
+        static::assertSame(1, \preg_match('/<form id="' . self::FORM_ID . '"[^>]*>/', $html, $form), $html);
+        static::assertStringContainsString('method="post"', $form[0]);
+        static::assertSame(1, \preg_match('/action="([^"]+)"/', $form[0], $matches), $form[0]);
         $clearUrl = \html_entity_decode($matches[1]);
         static::assertSame($expectedClearPath, \parse_url($clearUrl, \PHP_URL_PATH));
 
@@ -156,6 +179,34 @@ class VaultClearLinkTest extends TestCase
             '/subscription/paypal/vault/clear/' . self::SUBSCRIPTION_TOKEN,
             '/subscription/checkout/confirm/' . self::SUBSCRIPTION_TOKEN,
         ];
+    }
+
+    /**
+     * @param list<string> $expectedMethods
+     *
+     * @dataProvider dataProviderClearRoutes
+     */
+    public function testClearRouteOnlyAcceptsLoggedInCustomers(string $routeName, array $expectedMethods): void
+    {
+        $router = static::getContainer()->get('router');
+        static::assertInstanceOf(RouterInterface::class, $router);
+
+        $route = $router->getRouteCollection()->get($routeName);
+        static::assertNotNull($route);
+
+        static::assertSame($expectedMethods, $route->getMethods());
+        static::assertTrue($route->getDefault('_loginRequired'));
+        static::assertNull($route->getDefault('_loginRequiredAllowGuest'));
+    }
+
+    /**
+     * @return iterable<string, array{0: string, 1: list<string>}>
+     */
+    public static function dataProviderClearRoutes(): iterable
+    {
+        // @deprecated tag:v11.0.0 - only POST
+        yield 'default' => ['frontend.paypal.vault.clear', ['GET', 'POST']];
+        yield 'subscription' => ['frontend.subscription.paypal.vault.clear', ['POST']];
     }
 
     public function testSubscriptionClearRouteUsesSubscriptionContext(): void

@@ -43,6 +43,8 @@ class PayPalControllerTest extends TestCase
 {
     private AbstractCreateOrderRoute&MockObject $createOrderRoute;
 
+    private AbstractClearVaultRoute&MockObject $clearVaultRoute;
+
     private TestHandler $logHandler;
 
     private PayPalController&MockObject $controller;
@@ -50,6 +52,7 @@ class PayPalControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
+        $this->clearVaultRoute = $this->createMock(AbstractClearVaultRoute::class);
         $this->logHandler = new TestHandler();
 
         $this->controller = $this->getMockBuilder(PayPalController::class)
@@ -65,7 +68,7 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractCartDeleteRoute::class),
                 $this->createMock(CartService::class),
                 new CartPriceService(),
-                $this->createMock(AbstractClearVaultRoute::class),
+                $this->clearVaultRoute,
                 new Logger('test', [$this->logHandler]),
             ])
             ->getMock();
@@ -230,6 +233,36 @@ class PayPalControllerTest extends TestCase
         yield 'script not loaded' => ['SWAG_PAYPAL__SCRIPT_NOT_LOADED', false, Level::Error];
         yield 'generic error' => ['SWAG_PAYPAL__GENERIC_ERROR', false, Level::Warning];
         yield 'eligible error' => ['SWAG_PAYPAL__NOT_ELIGIBLE', false, Level::Warning];
+    }
+
+    /**
+     * @param array<string, string> $headers
+     *
+     * @dataProvider dataProviderClearVaultRequests
+     */
+    public function testClearVaultOnlyClearsGetRequestsFromTheShop(string $method, array $headers, bool $expectCleared): void
+    {
+        $request = Request::create('https://example.test/paypal/vault/clear', $method);
+        $request->headers->add($headers);
+
+        $this->clearVaultRoute
+            ->expects($expectCleared ? static::once() : static::never())
+            ->method('clearVault');
+
+        $this->controller->clearVault($request, $this->generateSalesChannelContext());
+    }
+
+    public static function dataProviderClearVaultRequests(): \Generator
+    {
+        yield 'POST' => [Request::METHOD_POST, [], true];
+        yield 'GET from the shop' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'same-origin'], true];
+        yield 'GET from another website' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'cross-site', 'Referer' => 'https://example.test/'], false];
+        yield 'GET from another subdomain' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'same-site'], false];
+        yield 'GET from the address bar' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'none'], false];
+        yield 'HEAD from another website' => [Request::METHOD_HEAD, ['Sec-Fetch-Site' => 'cross-site'], false];
+        yield 'GET without fetch metadata from the shop' => [Request::METHOD_GET, ['Referer' => 'https://example.test/checkout/confirm'], true];
+        yield 'GET without fetch metadata from another website' => [Request::METHOD_GET, ['Referer' => 'https://example.test.attacker.test/'], false];
+        yield 'GET without fetch metadata and referer' => [Request::METHOD_GET, [], false];
     }
 
     private function generateSalesChannelContext(): SalesChannelContext
