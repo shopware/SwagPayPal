@@ -77,5 +77,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(ApiCredentialService::class),
             service(WebhookSystemConfigHelper::class),
             service(SdkV6EligibilityService::class),
+            service('monolog.logger.paypal'),
         ]);
 };

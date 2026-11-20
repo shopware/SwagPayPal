@@ -27,6 +27,7 @@ use Shopware\Storefront\Checkout\Shipping\BlockedShippingMethodSwitcher;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
+use Swag\PayPal\Util\Log\LogKey;
 
 #[Package('checkout')]
 class ExpressShippingCallbackService
@@ -52,19 +53,17 @@ class ExpressShippingCallbackService
         OrderShippingCallback $callback,
         SalesChannelContext $salesChannelContext,
     ): Order {
-        if ($this->hasContextChanges($callback, $salesChannelContext)) {
+        $contextSwitched = $this->hasContextChanges($callback, $salesChannelContext);
+        if ($contextSwitched) {
             $salesChannelContext = $this->switchSalesChannelContext($callback, $salesChannelContext);
 
-            $this->logger->debug('Shipping callback: recalculating cart with new context');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false, true);
         } else {
-            $this->logger->debug('Shipping callback: use existing cart');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
         }
 
         $replacement = $this->blockedShippingMethodSwitcher->switch($cart->getErrors(), $salesChannelContext);
         if ($replacement->getId() !== $salesChannelContext->getShippingMethod()->getId()) {
-            $this->logger->debug('Shipping callback: selected shipping method blocked, switching to alternative', ['shippingMethodId' => $replacement->getId()]);
             $salesChannelContext = clone $salesChannelContext;
             $salesChannelContext->assign(['shippingMethod' => $replacement]);
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false, true);
@@ -82,17 +81,22 @@ class ExpressShippingCallbackService
         $order->getPurchaseUnits()->first()?->setShippingOptions($shippingOptions);
 
         if ($shippingOptions->count() === 0) {
-            $this->logger->debug('Shipping callback: no shipping methods available', ['order' => $order]);
             throw ExpressShippingCallbackException::addressError($callback);
         }
 
         if ($error = $cart->getErrors()->filterInstance(ShippingMethodBlockedError::class)->first()) {
-            $this->logger->debug('Shipping callback: selected shipping method blocked', ['order' => $order]);
             /** @var ShippingMethodBlockedError $error */
             throw ExpressShippingCallbackException::methodUnavailable($callback, $error);
         }
 
-        $this->logger->debug('Shipping callback: update order', ['order' => $order]);
+        $this->logger->debug('Answered the shipping callback with {shippingOptionCount} shipping options', [
+            LogKey::SALES_CHANNEL_ID => $salesChannelContext->getSalesChannelId(),
+            LogKey::PAYPAL_ORDER_ID => $callback->getId(),
+            LogKey::COUNTRY_CODE => $callback->getShippingAddress()->getCountryCode(),
+            LogKey::SHIPPING_OPTION_COUNT => $shippingOptions->count(),
+            LogKey::SELECTED_SHIPPING_METHOD_ID => $salesChannelContext->getShippingMethod()->getId(),
+            LogKey::CONTEXT_SWITCHED => $contextSwitched,
+        ]);
 
         return $order;
     }
@@ -128,7 +132,6 @@ class ExpressShippingCallbackService
 
         $country = $this->countryRepository->search($criteria, $salesChannelContext)->getEntities()->first();
         if (!$country) {
-            $this->logger->debug('Shipping callback: country not available');
             throw ExpressShippingCallbackException::countryError($callback);
         }
 
@@ -141,7 +144,6 @@ class ExpressShippingCallbackService
             SalesChannelContextService::SHIPPING_METHOD_ID => $callback->getShippingOption()?->getId(),
         ]);
 
-        $this->logger->debug('Shipping callback: switching context to new country', ['context_parameters' => $params]);
         $token = $this->contextSwitchRoute->switchContext(new RequestDataBag($params), $salesChannelContext)->getToken();
 
         return $this->salesChannelContextFactory->create($token, $salesChannelContext->getSalesChannelId(), $params);

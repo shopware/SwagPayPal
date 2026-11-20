@@ -121,6 +121,7 @@ class SettingsControllerTest extends TestCase
                 $apiCredentialsService,
                 $this->createMock(WebhookSystemConfigHelper::class),
                 $sdkV6EligibilityService,
+                new NullLogger(),
             )
         );
     }

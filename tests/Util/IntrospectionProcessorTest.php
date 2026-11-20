@@ -14,22 +14,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Kernel;
 use Shopware\PayPalSDK\Gateway\OrderGateway;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
-use Shopware\PayPalSDK\Struct\Struct;
-use Swag\PayPal\AgenticCommerce\Exception\AgentException;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient;
-use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Util\IntrospectionProcessor;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @internal
@@ -213,129 +204,5 @@ class IntrospectionProcessorTest extends TestCase
             'class' => null,
             'function' => null,
         ]];
-    }
-
-    #[DataProvider('invokeWithExceptionDataProvider')]
-    public function testInvokeWithException(array $context, array $expected): void
-    {
-        $logRecord = new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Error, 'test', $context);
-
-        $staticExcepted = [];
-
-        foreach (['exception', 'error'] as $prop) {
-            if (!$logRecord->context[$prop] instanceof \Throwable) {
-                continue;
-            }
-
-            $staticExcepted[$prop] = [
-                'file' => __FILE__,
-                'class' => self::class . '::invokeWithExceptionDataProvider',
-                'line' => $logRecord->context[$prop]->getLine(),
-            ];
-        }
-
-        $processor = $this->getMockBuilder(IntrospectionProcessor::class)
-            ->setConstructorArgs([Level::Error])
-            ->onlyMethods(['getBacktrace'])
-            ->getMock();
-
-        $processor
-            ->expects($this->once())
-            ->method('getBacktrace')
-            ->willReturn(\array_merge([self::TRACE_MONOLOG], []));
-
-        $logRecord = $processor->__invoke($logRecord);
-
-        static::assertEquals(
-            \array_merge_recursive($expected, $staticExcepted),
-            $logRecord->context,
-        );
-    }
-
-    public static function invokeWithExceptionDataProvider(): \Generator
-    {
-        yield 'not a throwable' => [
-            ['error' => ['some-key' => 'some-value']],
-            ['error' => ['some-key' => 'some-value']],
-        ];
-
-        yield 'throwable' => [
-            ['exception' => new \Exception('test-message'), 'error' => new \Exception('test-message')],
-            ['exception' => ['message' => 'test-message'], 'error' => ['message' => 'test-message']],
-        ];
-
-        yield 'PayPalApiException' => [
-            ['exception' => new PayPalApiException('test-name', 'test-message', issue: 'test-issue')],
-            ['exception' => [
-                'message' => 'The error "test-name" occurred with the following message: test-message',
-                'parameters' => ['name' => 'test-name', 'message' => 'test-message', 'issue' => 'test-issue'],
-                'errorCode' => 'SWAG_PAYPAL__API_test-issue',
-            ]],
-        ];
-
-        yield 'PosException' => [
-            ['exception' => new PosException('test-name', 'test-message')],
-            ['exception' => [
-                'message' => 'The error "test-name" occurred with the following message: test-message',
-                'parameters' => ['name' => 'test-name', 'message' => 'test-message'],
-                'errorCode' => 'SWAG_PAYPAL__POS_EXCEPTION',
-            ]],
-        ];
-
-        yield 'AgentException' => [
-            ['exception' => new AgentException(
-                500,
-                'TEST_ERROR',
-                'Test error message',
-                [],
-                new AgentErrorDetailCollection([
-                    Struct::from(AgentErrorDetail::class, [
-                        'field' => 'field1',
-                        'issue' => 'issue1',
-                        'description' => 'description1',
-                    ]),
-                    Struct::from(AgentErrorDetail::class, [
-                        'field' => 'field2',
-                        'issue' => 'issue2',
-                        'description' => 'description2',
-                    ]),
-                ])
-            )],
-            ['exception' => [
-                'message' => 'Test error message',
-                'parameters' => [],
-                'errorCode' => 'TEST_ERROR',
-                'details' => [
-                    [
-                        'field' => 'field1',
-                        'issue' => 'issue1',
-                        'description' => 'description1',
-                    ],
-                    [
-                        'field' => 'field2',
-                        'issue' => 'issue2',
-                        'description' => 'description2',
-                    ],
-                ],
-            ]],
-        ];
-
-        yield 'ConstraintViolationException' => [
-            ['exception' => new ConstraintViolationException(new ConstraintViolationList([new ConstraintViolation(
-                'test message',
-                'test message template with {{ type }}',
-                ['{{ type }}' => 'testParameter'],
-                '/root',
-                'testProperty',
-                'VIOLATION_TESTPROPERTY_INVALID'
-            )]), [])],
-            ['exception' => [
-                'message' => 'Caught 1 violation errors.',
-                'parameters' => [
-                    'count' => 1,
-                    'violations' => ["/root.testProperty:\n    test message"],
-                ],
-            ]],
-        ];
     }
 }

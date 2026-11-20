@@ -76,7 +76,7 @@ class ImageSyncer
                 $bulkUpload->addImageUpload($upload);
             } catch (InvalidMediaTypeException) {
                 $this->logger->warning(
-                    'Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.',
+                    'PayPal POS doesn\'t support media type {mimeType}, skipped image {fileName}',
                     [
                         'mimeType' => $media->getMimeType(),
                         'fileName' => $media->getFileName() . '.' . $media->getFileExtension(),
@@ -101,14 +101,14 @@ class ImageSyncer
 
         if (\count($updates) > 0) {
             $this->posMediaRepository->upsert($updates, $context);
-            $this->logger->info('Successfully uploaded {count} images.', [
+            $this->logger->info('Uploaded {count} images to PayPal POS', [
                 'count' => \count($updates),
             ]);
         }
 
         foreach ($response->getInvalid() as $invalid) {
-            $this->logger->warning('Upload was not accepted by Zettle (is the URL publicly available?): {invalid}', [
-                'invalid' => $invalid,
+            $this->logger->warning('PayPal POS didn\'t accept image {imageUrl}', [
+                'imageUrl' => $invalid,
             ]);
         }
     }

@@ -6,6 +6,7 @@
  */
 
 use Doctrine\DBAL\Connection;
+use Monolog\Processor\UidProcessor;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
@@ -39,6 +40,8 @@ use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber;
+use Swag\PayPal\Util\Log\PayPalLogProcessor;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
@@ -86,15 +89,33 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set('monolog.processor.paypal.introspection', IntrospectionProcessor::class)
         ->tag('monolog.processor', ['channel' => 'paypal']);
 
+    // no `url`: paths and queries carry tokens, e.g. the restore token or the webhook's `sw-token`, the `PayPalLogProcessor` adds the route instead
     $services->set('monolog.processor.paypal.web', WebProcessor::class)
         ->args([
             [
-                'url' => 'REQUEST_URI',
                 'http_method' => 'REQUEST_METHOD',
                 'server' => 'SERVER_NAME',
             ],
         ])
         ->tag('monolog.processor', ['channel' => 'paypal']);
+
+    $services->set('monolog.processor.paypal.uid', UidProcessor::class)
+        ->tag('monolog.processor', ['channel' => 'paypal'])
+        ->tag('kernel.reset', ['method' => 'reset']);
+
+    $services->set(PayPalLogProcessor::class)
+        ->args([
+            service('request_stack'),
+        ])
+        ->tag('monolog.processor', ['channel' => 'paypal']);
+
+    $services->set(PaymentStatusChangeSubscriber::class)
+        ->args([
+            service('monolog.logger.paypal'),
+            service('order_transaction.repository'),
+            service(PaymentMethodDataRegistry::class),
+        ])
+        ->tag('kernel.event_subscriber');
 
     $services->set(ActivateDeactivate::class)
         ->args([

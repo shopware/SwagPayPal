@@ -104,7 +104,7 @@ class RunService
 
     public function abortRun(string $runId, Context $context): void
     {
-        $this->logger->emergency('This sync has been aborted.');
+        $this->logger->info('The sync was aborted');
         $this->writeLog($runId, $context);
         $this->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_CANCELLED);
     }

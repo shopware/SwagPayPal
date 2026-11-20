@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Webhook\Registration;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,6 +17,10 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Webhook\Exception\WebhookValidationError;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
@@ -26,6 +31,8 @@ use Swag\PayPal\Webhook\WebhookServiceInterface;
 #[CoversClass(WebhookSystemConfigHelper::class)]
 class WebhookSystemConfigHelperTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private const WEBHOOK_KEYS = [
         Settings::CLIENT_ID,
         Settings::CLIENT_SECRET,
@@ -128,6 +135,29 @@ class WebhookSystemConfigHelperTest extends TestCase
             ->method('registerWebhook');
 
         $this->helper->checkWebhookAfter([null]);
+    }
+
+    public function testRegistrationFailureIsLoggedWithoutTheWebhookToken(): void
+    {
+        $this->systemConfigService->setMultiple(self::VALID_SETTINGS);
+        $this->webhookService
+            ->method('registerWebhook')
+            ->willThrowException(new WebhookValidationError('https://shop.example/api/_action/paypal/webhook/execute?sw-token=0123456789abcdef0123456789abcdef'));
+
+        $helper = new WebhookSystemConfigHelper(
+            $this->createPayPalLogger(),
+            $this->webhookService,
+            $this->systemConfigService,
+            new SettingsValidationService($this->systemConfigService, new NullLogger()),
+        );
+        $helper->checkWebhookAfter([null]);
+
+        $record = $this->assertPayPalLogged(LogCode::WEBHOOK_REGISTRATION_FAILED, Level::Error);
+        static::assertStringNotContainsString('0123456789abcdef', \json_encode($record->toArray(), \JSON_THROW_ON_ERROR));
+        static::assertSame(
+            'https://shop.example/api/_action/paypal/webhook/execute',
+            $record->context[LogKey::EXCEPTION]['parameters']['webhookUrl'] ?? null,
+        );
     }
 
     public static function providerCheckWebhookAfter(): \Generator

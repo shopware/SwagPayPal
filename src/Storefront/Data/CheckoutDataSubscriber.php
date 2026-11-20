@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Storefront\Data;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
@@ -33,7 +32,6 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class CheckoutDataSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly LoggerInterface $logger,
         private readonly SettingsValidationServiceInterface $settingsValidationService,
         private readonly RequestStack $requestStack,
         private readonly EventDispatcherInterface $eventDispatcher,
@@ -123,7 +121,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->logger->debug('Adding data');
         $checkoutData = $methodData->getCheckoutDataService()->buildCheckoutData($event->getSalesChannelContext(), $cart, $order);
 
         if (!$checkoutData) {
@@ -134,8 +131,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
 
         $page->addExtension($methodData->getCheckoutTemplateExtensionId(), $checkoutData);
         $this->eventDispatcher->dispatch(new PayPalPageExtensionAddedEvent($page, $methodData, $checkoutData));
-
-        $this->logger->debug('Added data');
     }
 
     /**

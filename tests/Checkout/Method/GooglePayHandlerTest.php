@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -70,6 +71,7 @@ class GooglePayHandlerTest extends TestCase
             $this->orderResource,
             $this->createMock(VaultTokenService::class),
             $this->orderTransactionRepo,
+            new NullLogger(),
             $this->createMock(AbstractOrderBuilder::class),
             $this->cardValidator,
         );

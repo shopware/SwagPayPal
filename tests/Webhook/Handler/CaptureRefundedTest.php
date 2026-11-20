@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
@@ -65,7 +66,7 @@ class CaptureRefundedTest extends AbstractWebhookHandlerTestCase
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->getContainer()->get(PaymentStatusUtilV2::class),
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
         );
     }
 }

@@ -22,6 +22,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -99,11 +101,11 @@ class TurnoverReportingTaskHandler extends ScheduledTaskHandler
                 continue;
             }
 
-            $this->logger->warning(\sprintf(
-                'Failed to report turnover for "%s": %s',
-                $currency,
-                $response['reason']->getMessage()
-            ));
+            $this->logger->warning('Could not report the PayPal turnover in {currency}', [
+                LogKey::CODE => LogCode::REPORTING_TURNOVER_FAILED,
+                LogKey::CURRENCY => (string) $currency,
+                LogKey::EXCEPTION => $response['reason'],
+            ]);
 
             $rejectedCurrencies[] = $currency;
         }

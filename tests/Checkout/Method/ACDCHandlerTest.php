@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
@@ -100,6 +101,7 @@ class ACDCHandlerTest extends TestCase
             $this->orderResource = $this->createMock(OrderResource::class),
             $this->vaultTokenService = $this->createMock(VaultTokenService::class),
             $this->orderTransactionRepository = new StaticEntityRepository([], new OrderTransactionDefinition()),
+            new NullLogger(),
             $this->orderBuilder = $this->createMock(ACDCOrderBuilder::class),
             $this->acdcValidator = $this->createMock(CardValidatorInterface::class),
         );
@@ -110,7 +112,7 @@ class ACDCHandlerTest extends TestCase
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
         $context = Context::createDefaultContext();
         $paypalOrder = $this->createOrderObject();
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
@@ -195,7 +197,7 @@ class ACDCHandlerTest extends TestCase
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
         $context = Context::createDefaultContext();
         $paypalOrder = $this->createOrderObject();
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
@@ -248,7 +250,7 @@ class ACDCHandlerTest extends TestCase
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
         $context = Context::createDefaultContext();
         $request = new Request();
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
@@ -443,7 +445,7 @@ class ACDCHandlerTest extends TestCase
     {
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
         $context = Context::createDefaultContext();
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
@@ -494,7 +496,7 @@ class ACDCHandlerTest extends TestCase
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $transaction->setOrder(new OrderEntity());
+        $transaction->setOrder((new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']));
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->expectException(CheckoutException::class);
@@ -508,7 +510,7 @@ class ACDCHandlerTest extends TestCase
         $context = Context::createDefaultContext();
         $paypalOrder = $this->createOrderObject();
 
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
@@ -541,7 +543,7 @@ class ACDCHandlerTest extends TestCase
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $transaction->setOrder(new OrderEntity());
+        $transaction->setOrder((new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']));
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->expectException(CheckoutException::class);
@@ -554,7 +556,7 @@ class ACDCHandlerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
@@ -600,7 +602,7 @@ class ACDCHandlerTest extends TestCase
     {
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $transaction->setOrder(new OrderEntity());
+        $transaction->setOrder((new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']));
         $state = new StateMachineStateEntity();
         $state->setTechnicalName($stateName);
         $transaction->setStateMachineState($state);
@@ -622,7 +624,7 @@ class ACDCHandlerTest extends TestCase
     {
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $transaction->setOrder(new OrderEntity());
+        $transaction->setOrder((new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']));
         $transaction->setCustomFields([
             SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
         ]);
@@ -646,7 +648,7 @@ class ACDCHandlerTest extends TestCase
     {
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
         $context = Context::createDefaultContext();
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setCustomerId('customerId');
@@ -713,7 +715,7 @@ class ACDCHandlerTest extends TestCase
     {
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
         $context = Context::createDefaultContext();
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setCustomerId('customerId');
@@ -774,7 +776,7 @@ class ACDCHandlerTest extends TestCase
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setCustomerId('customerId');
@@ -888,7 +890,7 @@ class ACDCHandlerTest extends TestCase
         $context = Context::createDefaultContext();
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null);
         $paypalOrder = $this->createOrderObject();
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setCustomerId('customerId');
@@ -949,7 +951,7 @@ class ACDCHandlerTest extends TestCase
 
         $context = Context::createDefaultContext();
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null);
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
@@ -991,7 +993,7 @@ class ACDCHandlerTest extends TestCase
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $order = new OrderEntity();
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction->setOrder($order);
         $subscription = new SubscriptionEntity();

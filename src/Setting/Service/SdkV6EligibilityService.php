@@ -13,6 +13,9 @@ use Shopware\PayPalSDK\Context\CredentialsOAuthContext;
 use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
 use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\RestApi\Context\UncachedOAuthContext;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 
 #[Package('checkout')]
 class SdkV6EligibilityService implements SdkV6EligibilityServiceInterface
@@ -55,8 +58,15 @@ class SdkV6EligibilityService implements SdkV6EligibilityServiceInterface
             $clientTokenContext = new UncachedOAuthContext($oauthContext->intoClientTokenContext());
 
             $token = $this->tokenGateway->getToken($context->withOAuthContext($clientTokenContext));
+        } catch (PayPalSettingsInvalidException) {
+            // not onboarded yet, the Administration asks on every visit of the PayPal settings
+            return null;
         } catch (\Throwable $e) {
-            $this->logger->info('Could not determine the PayPal SDK v6 eligibility: {message}', ['message' => $e->getMessage(), 'salesChannelId' => $salesChannelId]);
+            $this->logger->warning('Could not check whether the PayPal account can use the JS SDK v6, treating it as not eligible', [
+                LogKey::CODE => LogCode::SETTINGS_SDK_V6_ELIGIBILITY_UNKNOWN,
+                LogKey::SALES_CHANNEL_ID => $salesChannelId,
+                LogKey::EXCEPTION => $e,
+            ]);
 
             return null;
         }

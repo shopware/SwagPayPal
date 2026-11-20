@@ -9,8 +9,6 @@ namespace Swag\PayPal\Test\Checkout\PUI;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
@@ -60,8 +58,6 @@ class PUISubscriberTest extends TestCase
      */
     private PUIPaymentInstructionDataService $puiPaymentInstructionDataService;
 
-    private LoggerInterface $logger;
-
     private SalesChannelContext $salesChannelContext;
 
     protected function setUp(): void
@@ -69,7 +65,6 @@ class PUISubscriberTest extends TestCase
         $this->settingsValidationService = $this->createMock(SettingsValidationServiceInterface::class);
         $this->puiFraudNetDataService = $this->createMock(PUIFraudNetDataService::class);
         $this->puiPaymentInstructionDataService = $this->createMock(PUIPaymentInstructionDataService::class);
-        $this->logger = new NullLogger();
 
         $this->salesChannelContext = Generator::generateSalesChannelContext();
 
@@ -77,7 +72,6 @@ class PUISubscriberTest extends TestCase
             $this->settingsValidationService,
             $this->puiFraudNetDataService,
             $this->puiPaymentInstructionDataService,
-            $this->logger
         );
     }
 

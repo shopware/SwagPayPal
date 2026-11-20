@@ -130,7 +130,7 @@ class CreateOrderRouteTest extends TestCase
             $applePayOrderBuilder,
             $googlePayOrderBuilder,
             $venmoOrderBuilder,
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
             new NullLogger(),
             new PaymentTransactionStructFactory(),
             $this->paymentOrderRoute = $this->createMock(AbstractSetPaymentOrderRoute::class),

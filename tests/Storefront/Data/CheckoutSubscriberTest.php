@@ -384,7 +384,6 @@ class CheckoutSubscriberTest extends TestCase
         $spbMethodDataMock->method('getHandler')->willReturn(PayPalPaymentHandler::class);
 
         return new CheckoutDataSubscriber(
-            new NullLogger(),
             new SettingsValidationService($settings, new NullLogger()),
             $requestStack,
             $this->eventDispatcher,

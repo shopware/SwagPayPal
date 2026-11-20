@@ -154,7 +154,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
                 new NullLogger()
             ),
             $this->getContainer()->get(SalesChannelContextFactory::class),
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
             $cartService,
             $this->getContainer()->get(CartPriceService::class),
             new NullLogger()

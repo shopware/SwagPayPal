@@ -93,6 +93,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
             $this->orderResource = $this->createMock(OrderResource::class),
             $this->vaultTokenService = $this->createMock(VaultTokenService::class),
             $this->orderTransactionRepository = new StaticEntityRepository([], new OrderTransactionDefinition()),
+            new NullLogger(),
             $this->orderBuilder = $this->createMock(VenmoOrderBuilder::class),
         );
     }
@@ -220,11 +221,11 @@ Subscription not found', '/') . '\z/');
     protected function createPaymentHandler(array $settings = []): AbstractPaymentMethodHandler
     {
         $systemConfig = self::createSystemConfigServiceMock($settings);
-        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
+        $logger = $this->createPayPalLogger();
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), $logger);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
-        $logger = new NullLogger();
 
-        return new VenmoHandler(
+        $handler = new VenmoHandler(
             new SettingsValidationService($systemConfig, new NullLogger()),
             $this->stateMachineRegistry,
             new OrderExecuteService(
@@ -262,8 +263,11 @@ Subscription not found', '/') . '\z/');
                 null,
             ),
             $this->orderTransactionRepo,
+            $logger,
             $this->createMock(VenmoOrderBuilder::class),
         );
+
+        return $handler;
     }
 
     private function createOrderObject(): Order

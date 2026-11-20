@@ -18,9 +18,13 @@ use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionInvalidIdException;
+use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -142,9 +146,15 @@ class WebhookController extends AbstractController
         $token = $request->query->getAlnum(WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME);
         if (!$this->validateShopwareToken($token, $context)) {
             if ($id = $request->request->get('id')) {
+                // unauthenticated input: context only, cut
+                $eventType = $request->request->get('event_type');
                 $this->logger->warning(
-                    '[PayPal Webhook] Shopware token of webhook "{webhookId}" is invalid. Please check for stale webhooks.',
-                    ['webhookId' => $id],
+                    'Rejected a PayPal webhook event with a token that doesn\'t match this shop',
+                    [
+                        LogKey::CODE => LogCode::WEBHOOK_TOKEN_INVALID,
+                        LogKey::WEBHOOK_EVENT_ID => \mb_substr((string) $id, 0, 100),
+                        LogKey::WEBHOOK_EVENT_TYPE => \is_string($eventType) ? \mb_substr($eventType, 0, 100) : null,
+                    ],
                 );
             }
 
@@ -169,14 +179,18 @@ class WebhookController extends AbstractController
     protected function createWebhookFromPostData(Request $request): Event
     {
         $postData = $request->request->all();
-        $this->logger->debug('Received webhook', ['payload' => $postData]);
+
+        $webhook = new Event();
+        $webhook->assign($postData);
+
+        $this->logger->debug('Received a PayPal webhook event', [
+            LogKey::WEBHOOK_EVENT => $webhook,
+            LogKey::PAYLOAD => $postData,
+        ]);
 
         if ($postData === []) {
             throw new BadRequestHttpException('No webhook data sent');
         }
-
-        $webhook = new Event();
-        $webhook->assign($postData);
 
         return $webhook;
     }
@@ -187,27 +201,52 @@ class WebhookController extends AbstractController
      */
     protected function tryToExecuteWebhook(Context $context, Event $webhook): void
     {
-        $logContext = ['type' => $webhook->getEventType(), 'webhook' => \json_encode($webhook)];
+        $logContext = [LogKey::WEBHOOK_EVENT => $webhook];
 
         try {
             $this->webhookService->executeWebhook($webhook, $context);
-            $this->logger->info('[PayPal Webhook] Webhook successfully executed', $logContext);
-        } catch (WebhookHandlerNotFoundException|WebhookOrderTransactionInvalidIdException $exception) {
-            $this->logger->info(\sprintf('[PayPal Webhook] %s', $exception->getMessage()), $logContext);
+
+            $this->logger->info('Processed PayPal webhook event {webhookEventType}', [
+                ...$logContext,
+                LogKey::CODE => LogCode::WEBHOOK_EVENT_PROCESSED,
+            ]);
+        } catch (WebhookHandlerNotFoundException $exception) {
+            $this->logger->debug(
+                'Ignored PayPal webhook event {webhookEventType}: the plugin doesn\'t handle this event type',
+                [...$logContext, LogKey::EXCEPTION => $exception],
+            );
+        } catch (WebhookOrderTransactionInvalidIdException $exception) {
+            $this->logger->notice(
+                'Ignored PayPal webhook event {webhookEventType}: it belongs to a PayPal order this shop didn\'t create',
+                [...$logContext, LogKey::CODE => LogCode::WEBHOOK_EVENT_UNRELATED, LogKey::EXCEPTION => $exception],
+            );
+        } catch (WebhookOrderTransactionNotFoundException|ParentPaymentNotFoundException $webhookException) {
+            $this->logger->warning(
+                'Could not match PayPal webhook event {webhookEventType} to an order of this shop, PayPal sends it again up to 25 times over 3 days',
+                [...$logContext, LogKey::CODE => LogCode::WEBHOOK_TRANSACTION_UNKNOWN, LogKey::EXCEPTION => $webhookException],
+            );
+
+            throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (WebhookException $webhookException) {
-            $this->logger->error(\sprintf('[PayPal Webhook] %s', $webhookException->getMessage()), $logContext);
+            $this->logger->error(
+                'Could not process PayPal webhook event {webhookEventType}: the event lacks the data the plugin needs',
+                [...$logContext, LogKey::CODE => LogCode::WEBHOOK_EVENT_INVALID, LogKey::EXCEPTION => $webhookException],
+            );
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (\Exception $e) {
             if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
-                $this->logger->warning(\sprintf('[PayPal Webhook] %s', $e->getMessage()), $logContext);
+                $this->logger->warning(
+                    'Could not process PayPal webhook event {webhookEventType}: PayPal couldn\'t find the referenced resource',
+                    [...$logContext, LogKey::CODE => LogCode::WEBHOOK_RESOURCE_NOT_FOUND, LogKey::EXCEPTION => $e],
+                );
 
                 return;
             }
 
             $this->logger->error(
-                \sprintf('[PayPal Webhook] %s', $e->getMessage()),
-                [...$logContext, 'error' => $e],
+                'Could not process PayPal webhook event {webhookEventType}, PayPal sends it again up to 25 times over 3 days',
+                [...$logContext, LogKey::CODE => LogCode::WEBHOOK_EVENT_FAILED, LogKey::EXCEPTION => $e],
             );
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');

@@ -61,6 +61,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service('order_transaction.repository'),
             service(PaymentStatusUtilV2::class),
             service(CaptureRefundCreator::class),
+            service('monolog.logger.paypal'),
         ])
         ->call('setContainer', [service('service_container')]);
 

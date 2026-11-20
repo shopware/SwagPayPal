@@ -182,8 +182,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(OrderResource::class),
             service(VaultTokenService::class),
             service('order_transaction.repository'),
-        ])
-        ->call('setLogger', [service('monolog.logger.paypal')]);
+            service('monolog.logger.paypal'),
+        ]);
 
     $services->set(ACDCHandler::class)
         ->parent(AbstractPaymentMethodHandler::class)
@@ -287,7 +287,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set(OrderTransactionsCleanupTaskHandler::class)
         ->args([
             service('scheduled_task.repository'),
-            service('logger'),
+            service('monolog.logger.paypal'),
             service(Connection::class),
             service(ClockInterface::class),
         ])
@@ -296,7 +296,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set(TransactionStatusSyncTaskHandler::class)
         ->args([
             service('scheduled_task.repository'),
-            service('logger'),
+            service('monolog.logger.paypal'),
             service('order_transaction.repository'),
             service(PaymentMethodDataRegistry::class),
             service('messenger.default_bus'),

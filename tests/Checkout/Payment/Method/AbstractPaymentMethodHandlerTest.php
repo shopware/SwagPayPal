@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment\Method;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,6 +24,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
@@ -40,6 +42,9 @@ use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -50,6 +55,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[CoversClass(AbstractPaymentMethodHandler::class)]
 class AbstractPaymentMethodHandlerTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private const TRANSACTION_ID = '0199633a7f147221b5db96bf83dfc774';
     private const PAYPAL_ORDER_ID = 'paypalOrderId';
     private const RETURN_URL = 'https://example.com/payment/finalize-transaction';
@@ -62,19 +69,19 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     private TransactionDataService&MockObject $transactionDataService;
 
-    private LoggerInterface&MockObject $logger;
-
     private PayPalPaymentHandler $handler;
 
-    private PayerActionRequiredException $payerActionRequired;
-
     private OrderTransactionEntity $orderTransaction;
+
+    private PayerActionRequiredException $payerActionRequired;
 
     private Order $paypalOrder;
 
     protected function setUp(): void
     {
         $order = new OrderEntity();
+        $order->setId('order-id');
+        $order->setOrderNumber('10000');
         $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setCustomerId('customerId');
@@ -102,9 +109,6 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         $this->payerActionRequired = PayerActionRequiredException::payerActionRequired(self::PAYPAL_ORDER_ID, previous: $captureRejection);
 
         $this->handler = $this->createHandler(PayPalPaymentHandler::class);
-
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $this->handler->setLogger($this->logger);
     }
 
     /**
@@ -164,17 +168,9 @@ class AbstractPaymentMethodHandlerTest extends TestCase
             'UNPROCESSABLE_ENTITY',
             'The order cannot be confirmed.',
             Response::HTTP_UNPROCESSABLE_ENTITY,
-            'ORDER_NOT_APPROVED',
+            'ORDER_ALREADY_COMPLETED',
         );
         $this->orderResource->expects($this->once())->method('confirm')->willThrowException($confirmationException);
-        $this->logger->expects($this->once())->method('warning')->with(
-            'Could not reopen the PayPal order for payer approval.',
-            [
-                'orderTransactionId' => self::TRANSACTION_ID,
-                'payPalOrderId' => self::PAYPAL_ORDER_ID,
-                'exception' => $confirmationException,
-            ],
-        );
 
         try {
             $this->handler->pay(
@@ -186,6 +182,14 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         } catch (PayerActionRequiredException $exception) {
             static::assertSame($this->payerActionRequired, $exception);
             static::assertSame('SWAG_PAYPAL__API_PAYER_ACTION_REQUIRED', $exception->getErrorCode());
+
+            $record = $this->assertPayPalLogged(
+                LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED,
+                Level::Error,
+                [LogKey::ORDER_TRANSACTION_ID => self::TRANSACTION_ID, LogKey::PAYPAL_ORDER_ID => self::PAYPAL_ORDER_ID],
+                'Could not send the buyer back to PayPal to approve the payment of order {orderNumber} again, the payment fails',
+            );
+            static::assertSame($confirmationException::class, $record->context[LogKey::EXCEPTION]['class']);
 
             return;
         }
@@ -199,23 +203,82 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
         $confirmationException = new class('Connection timed out') extends \RuntimeException implements ClientExceptionInterface {};
         $this->orderResource->expects($this->once())->method('confirm')->willThrowException($confirmationException);
-        $this->logger->expects($this->once())->method('warning')->with(
-            'Could not reopen the PayPal order for payer approval.',
-            [
-                'orderTransactionId' => self::TRANSACTION_ID,
-                'payPalOrderId' => self::PAYPAL_ORDER_ID,
-                'exception' => $confirmationException,
-            ],
-        );
 
-        $this->expectExceptionObject($this->payerActionRequired);
+        try {
+            $this->handler->pay(
+                new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),
+                new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL),
+                Context::createDefaultContext(),
+                null,
+            );
+            static::fail('Expected the original payer action exception.');
+        } catch (PayerActionRequiredException $exception) {
+            static::assertSame($this->payerActionRequired, $exception);
+        }
 
-        $this->handler->pay(
-            new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),
-            new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL),
-            Context::createDefaultContext(),
-            null,
+        $record = $this->assertPayPalLogged(
+            LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED,
+            Level::Error,
+            [LogKey::ORDER_TRANSACTION_ID => self::TRANSACTION_ID, LogKey::PAYPAL_ORDER_ID => self::PAYPAL_ORDER_ID],
+            'Could not send the buyer back to PayPal to approve the payment of order {orderNumber} again, the payment fails',
         );
+        static::assertSame($confirmationException::class, $record->context[LogKey::EXCEPTION]['class']);
+    }
+
+    public function testPayLogsBuyerCausedConfirmationFailureAsNotice(): void
+    {
+        $this->expectCaptureRequiringPayerAction();
+
+        $confirmationException = new PayPalApiException(
+            'UNPROCESSABLE_ENTITY',
+            'The instrument was declined.',
+            Response::HTTP_UNPROCESSABLE_ENTITY,
+            ApiException::CODE_INSTRUMENT_DECLINED,
+        );
+        $this->orderResource->expects($this->once())->method('confirm')->willThrowException($confirmationException);
+
+        try {
+            $this->handler->pay(
+                new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),
+                new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL),
+                Context::createDefaultContext(),
+                null,
+            );
+            static::fail('Expected the original payer action exception.');
+        } catch (PayerActionRequiredException $exception) {
+            static::assertSame($this->payerActionRequired, $exception);
+        }
+
+        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED, Level::Notice);
+    }
+
+    public function testSetLoggerKeepsTheInjectedLogger(): void
+    {
+        $this->expectCaptureRequiringPayerAction();
+
+        $otherLogger = $this->createMock(LoggerInterface::class);
+        $otherLogger->expects($this->never())->method(static::anything());
+        $this->handler->setLogger($otherLogger);
+
+        $this->orderResource->expects($this->once())->method('confirm')->willThrowException(new PayPalApiException(
+            'UNPROCESSABLE_ENTITY',
+            'The instrument was declined.',
+            Response::HTTP_UNPROCESSABLE_ENTITY,
+            ApiException::CODE_INSTRUMENT_DECLINED,
+        ));
+        try {
+            $this->handler->pay(
+                new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),
+                new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL),
+                Context::createDefaultContext(),
+                null,
+            );
+            static::fail('Expected the original payer action exception.');
+        } catch (PayerActionRequiredException $exception) {
+            static::assertSame($this->payerActionRequired, $exception);
+        }
+
+        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED, Level::Notice);
     }
 
     public function testPayDoesNotHideUnexpectedConfirmationErrors(): void
@@ -224,16 +287,19 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
         $confirmationException = new \LogicException('Unexpected confirmation response');
         $this->orderResource->expects($this->once())->method('confirm')->willThrowException($confirmationException);
-        $this->logger->expects($this->never())->method('warning');
+        try {
+            $this->handler->pay(
+                new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),
+                new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL),
+                Context::createDefaultContext(),
+                null,
+            );
+            static::fail('Expected the unexpected confirmation exception.');
+        } catch (\LogicException $exception) {
+            static::assertSame($confirmationException, $exception);
+        }
 
-        $this->expectExceptionObject($confirmationException);
-
-        $this->handler->pay(
-            new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),
-            new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL),
-            Context::createDefaultContext(),
-            null,
-        );
+        $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED);
     }
 
     /**
@@ -257,6 +323,7 @@ class AbstractPaymentMethodHandlerTest extends TestCase
             $this->orderResource,
             $this->vaultTokenService,
             new StaticEntityRepository([new OrderTransactionCollection([$this->orderTransaction])]),
+            $this->createPayPalLogger(),
             $orderBuilder,
         );
     }

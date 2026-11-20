@@ -21,6 +21,7 @@ use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -109,7 +110,7 @@ class SyncManagerHandler
 
             $this->messageBus->bulkDispatch($messages, $runId);
         } catch (\Throwable $e) {
-            $this->logger->critical($e->getMessage(), ['error' => $e]);
+            $this->logger->error('Could not start the PayPal POS sync', [LogKey::EXCEPTION => $e]);
             $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_FAILED);
         } finally {
             $this->runService->writeLog($runId, $context);

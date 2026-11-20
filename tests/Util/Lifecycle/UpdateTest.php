@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -675,6 +676,7 @@ class UpdateTest extends TestCase
             new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]),
             $systemConfigService,
             $this->createMock(RouterInterface::class),
+            new NullLogger(),
         );
     }
 

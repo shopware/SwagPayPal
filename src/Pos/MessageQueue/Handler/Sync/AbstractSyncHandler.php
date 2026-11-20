@@ -15,6 +15,7 @@ use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
+use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -57,7 +58,7 @@ abstract class AbstractSyncHandler
             $this->messageHydrator->hydrateMessage($message);
             $this->sync($message);
         } catch (\Throwable $e) {
-            $this->logger->critical($e->getMessage(), ['error' => $e]);
+            $this->logger->error('The PayPal POS sync step failed', [LogKey::EXCEPTION => $e]);
             $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_CANCELLED);
         } finally {
             $this->runService->decrementMessageCount($runId);

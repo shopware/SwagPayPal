@@ -8,21 +8,25 @@
 namespace Swag\PayPal\RestApi\Client;
 
 use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ErrorApiException;
+use Shopware\PayPalSDK\Exception\ExceptionFactory;
+use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\LogRedactor;
 use Symfony\Component\HttpClient\Psr18Client;
 
 #[Package('checkout')]
 class Client implements ClientInterface
 {
-    private const HEADER_ALLOWLIST = [
-        'paypal-request-id',
-        'content-type',
-        'date',
-    ];
+    private const TOKEN_PATH_SUFFIX = '/v1/oauth2/token';
+
+    // one message for every request, level and code tell failures apart
+    private const LOG_MESSAGE = 'Requested the PayPal API: {httpMethod} {httpPath} returned {httpStatus}';
 
     /**
      * @internal
@@ -37,69 +41,36 @@ class Client implements ClientInterface
     {
         $response = $this->client->sendRequest($request);
 
+        $path = $request->getUri()->getPath();
+        $isTokenRequest = \str_ends_with($path, self::TOKEN_PATH_SUFFIX);
+        $responseBody = (string) $response->getBody();
+        $context = [
+            LogKey::HTTP_METHOD => \mb_strtoupper($request->getMethod()),
+            LogKey::HTTP_PATH => $path,
+            LogKey::HTTP_STATUS => $response->getStatusCode(),
+            LogKey::PAYPAL_DEBUG_ID => $response->getHeaderLine('paypal-debug-id') ?: null,
+            LogKey::PAYPAL_REQUEST_ID => $request->getHeaderLine('paypal-request-id') ?: null,
+        ];
+
         if ($response->getStatusCode() >= 400) {
-            $this->logger->error(
-                'Requesting PayPal: [{debugId}] {method} {target} {code}',
-                [
-                    'method' => \mb_strtoupper($request->getMethod()),
-                    'target' => (string) $request->getUri(),
-                    'code' => $response->getStatusCode(),
-                    'debugId' => $response->getHeaderLine('paypal-debug-id'),
-                    'requestId' => $request->getHeaderLine('paypal-request-id') ?: null,
-                ],
-            );
-        }
+            // the exception the SDK throws for this response, so the line names the same error as the caller's
+            $error = ExceptionFactory::createFromResponse($response);
+            $issues = $error instanceof ErrorApiException ? \array_values($error->getDetails()->getIssues()) : [];
+            $errorContext = [...$context, LogKey::PAYPAL_ERROR => $error->getErrorCode(), LogKey::PAYPAL_ISSUES => $issues ?: null];
 
-        $this->logger->debug(
-            'Requesting PayPal: [{debugId}] {method} {target} {code}',
-            [
-                'method' => \mb_strtoupper($request->getMethod()),
-                'target' => (string) $request->getUri(),
-                'code' => $response->getStatusCode(),
-                'debugId' => $response->getHeaderLine('paypal-debug-id'),
-                'requestId' => $request->getHeaderLine('paypal-request-id') ?: null,
-                'request' => \json_decode((string) $request->getBody(), true) ?: (string) $request->getBody(),
-                'requestHeaders' => $this->getHeaders($request),
-                'response' => \json_decode((string) $response->getBody(), true) ?: (string) $response->getBody(),
-                'responseHeaders' => $this->getHeaders($request),
-            ],
-        );
-
-        return $response;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function getHeaders(MessageInterface $message): array
-    {
-        $headers = \array_filter(
-            \array_keys($message->getHeaders()),
-            static fn (string $name) => \in_array(\mb_strtolower($name), self::HEADER_ALLOWLIST, true),
-        );
-
-        $headers = \array_combine(
-            $headers,
-            \array_map(
-                static fn (string $name) => $message->getHeaderLine($name),
-                $headers,
-            ),
-        );
-
-        if ($message->getHeaderLine('paypal-auth-assertion')) {
-            $headers['paypal-auth-assertion'] = '<redacted>';
-        }
-
-        if ($authorization = \mb_strtolower($message->getHeaderLine('authorization'))) {
-            if (\str_starts_with($authorization, 'bearer')) {
-                $headers['authorization'] = 'Bearer <redacted>';
-            } elseif (\str_starts_with($authorization, 'basic')) {
-                $headers['authorization'] = 'Basic <redacted>';
+            if (FailureClassifier::isMerchantAccountIssue($error->getErrorCode(), ...$issues)) {
+                $this->logger->critical(self::LOG_MESSAGE, [...$errorContext, LogKey::CODE => LogCode::API_MERCHANT_ACCOUNT_REJECTED]);
             } else {
-                $headers['authorization'] = '<redacted>';
+                $this->logger->info(self::LOG_MESSAGE, [...$errorContext, LogKey::CODE => LogCode::API_REQUEST_FAILED]);
             }
         }
 
-        return $headers;
+        $this->logger->debug(self::LOG_MESSAGE, [
+            ...$context,
+            LogKey::REQUEST => $isTokenRequest ? LogRedactor::REDACTED : (string) $request->getBody(),
+            LogKey::RESPONSE => $isTokenRequest ? LogRedactor::REDACTED : $responseBody,
+        ]);
+
+        return $response;
     }
 }

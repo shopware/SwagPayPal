@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
@@ -47,10 +48,11 @@ class PUIHandler extends AbstractPaymentMethodHandler
         OrderResource $orderResource,
         VaultTokenService $vaultTokenService,
         EntityRepository $orderTransactionRepository,
+        LoggerInterface $logger,
         AbstractOrderBuilder $orderBuilder,
         private readonly PUICustomerDataService $puiCustomerDataService,
     ) {
-        parent::__construct($settingsValidationService, $stateMachineRegistry, $orderExecuteService, $orderPatchService, $transactionDataService, $orderResource, $vaultTokenService, $orderTransactionRepository, $orderBuilder);
+        parent::__construct($settingsValidationService, $stateMachineRegistry, $orderExecuteService, $orderPatchService, $transactionDataService, $orderResource, $vaultTokenService, $orderTransactionRepository, $logger, $orderBuilder);
     }
 
     public function pay(
@@ -61,7 +63,10 @@ class PUIHandler extends AbstractPaymentMethodHandler
     ): ?RedirectResponse {
         $fraudnetSessionId = $request->request->get(self::PUI_FRAUD_NET_SESSION_ID);
         if (!$fraudnetSessionId) {
-            throw PaymentException::syncProcessInterrupted($transaction->getOrderTransactionId(), 'Missing Fraudnet session id');
+            $exception = PaymentException::syncProcessInterrupted($transaction->getOrderTransactionId(), 'Missing Fraudnet session id');
+            $this->logPaymentFailure($exception, $transaction, null, null);
+
+            throw $exception;
         }
 
         $dataBag = new RequestDataBag($request->request->all());
