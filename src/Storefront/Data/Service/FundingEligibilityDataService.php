@@ -10,13 +10,11 @@ namespace Swag\PayPal\Storefront\Data\Service;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -33,7 +31,6 @@ class FundingEligibilityDataService extends AbstractScriptDataService
         RouterInterface $router,
         private readonly RequestStack $requestStack,
         private readonly MethodEligibilityStateService $methodEligibilityStateService,
-        private readonly PaymentMethodUtil $paymentMethodUtil,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
     }
@@ -44,8 +41,6 @@ class FundingEligibilityDataService extends AbstractScriptDataService
             ...parent::getBaseData($context),
             'methodEligibilityUrl' => $this->router->generate('frontend.paypal.payment-method-eligibility'),
             'filteredPaymentMethods' => $this->getFilteredPaymentMethods($context),
-            // @deprecated tag:v11.0.0 - Will be removed, SEPA eligibility will be checked via SDK v6.
-            'sepaActive' => $this->paymentMethodUtil->isPaymentMethodActive($context, [SEPAHandler::class]),
         ]);
     }
 

@@ -104,7 +104,6 @@ class FundingSubscriberTest extends TestCase
                 $router,
                 $this->requestStack,
                 new MethodEligibilityStateService($this->createMock(SalesChannelContextPersister::class)),
-                $paymentMethodUtil,
             ),
             $paymentMethodUtil,
         );
@@ -202,7 +201,6 @@ class FundingSubscriberTest extends TestCase
         static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $extension->getIntent());
         static::assertSame('/paypal/payment-method-eligibility', $extension->getMethodEligibilityUrl());
         static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
-        static::assertTrue($extension->isSepaActive());
     }
 
     /**
@@ -227,7 +225,6 @@ class FundingSubscriberTest extends TestCase
                 $this->router,
                 $this->requestStack,
                 new MethodEligibilityStateService($this->createMock(SalesChannelContextPersister::class)),
-                $paymentMethodUtil,
             ),
             $paymentMethodUtil,
         );
@@ -238,7 +235,6 @@ class FundingSubscriberTest extends TestCase
         $extension = $event->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
 
         static::assertInstanceOf(FundingEligibilityData::class, $extension);
-        static::assertFalse($extension->isSepaActive());
     }
 
     public function testAddFundingAvailabilityDataToPageWithoutSession(): void
