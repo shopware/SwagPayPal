@@ -12,6 +12,8 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ErrorApiException;
+use Shopware\PayPalSDK\Exception\ExceptionFactory;
 use Swag\PayPal\Util\Log\FailureClassifier;
 use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Util\Log\LogKey;
@@ -51,10 +53,12 @@ class Client implements ClientInterface
         ];
 
         if ($response->getStatusCode() >= 400) {
-            ['name' => $name, 'issues' => $issues] = $this->extractError($responseBody);
-            $errorContext = [...$context, LogKey::PAYPAL_ERROR => $name, LogKey::PAYPAL_ISSUES => $issues ?: null];
+            // the exception the SDK throws for this response, so the line names the same error as the caller's
+            $error = ExceptionFactory::createFromResponse($response);
+            $issues = $error instanceof ErrorApiException ? \array_values($error->getDetails()->getIssues()) : [];
+            $errorContext = [...$context, LogKey::PAYPAL_ERROR => $error->getErrorCode(), LogKey::PAYPAL_ISSUES => $issues ?: null];
 
-            if (FailureClassifier::isMerchantAccountIssue($name, ...$issues)) {
+            if (FailureClassifier::isMerchantAccountIssue($error->getErrorCode(), ...$issues)) {
                 $this->logger->critical(self::LOG_MESSAGE, [...$errorContext, LogKey::CODE => LogCode::API_MERCHANT_ACCOUNT_REJECTED]);
             } else {
                 $this->logger->info(self::LOG_MESSAGE, [...$errorContext, LogKey::CODE => LogCode::API_REQUEST_FAILED]);
@@ -68,20 +72,5 @@ class Client implements ClientInterface
         ]);
 
         return $response;
-    }
-
-    /**
-     * @return array{name: string|null, issues: list<string>}
-     */
-    private function extractError(string $responseBody): array
-    {
-        $body = \json_decode($responseBody, true);
-        $name = \is_array($body) ? ($body['name'] ?? $body['error'] ?? null) : null;
-        $details = \is_array($body) && \is_array($body['details'] ?? null) ? $body['details'] : [];
-
-        return [
-            'name' => \is_string($name) && $name !== '' ? $name : null,
-            'issues' => \array_values(\array_filter(\array_column($details, 'issue'), static fn (mixed $issue): bool => \is_string($issue) && $issue !== '')),
-        ];
     }
 }

@@ -110,7 +110,6 @@ class WebhookControllerPaymentStatusTest extends TestCase
             LogKey::FROM_STATE => OrderTransactionStates::STATE_OPEN,
             LogKey::TO_STATE => OrderTransactionStates::STATE_PAID,
         ]);
-        static::assertSame('webhook', $record->extra[LogKey::AREA]);
         static::assertArrayHasKey(LogKey::ORDER_NUMBER, $record->context);
         static::assertCount(1, $this->getPayPalLogRecords(LogCode::WEBHOOK_EVENT_PROCESSED));
     }

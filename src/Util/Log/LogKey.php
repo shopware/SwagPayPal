@@ -20,7 +20,6 @@ final class LogKey
     public const EXCEPTION = 'exception';
     public const ERROR_CODE = 'errorCode';
     public const SALES_CHANNEL_ID = 'salesChannelId';
-    public const AREA = 'area';
     public const ROUTE = 'route';
 
     // Objects the `PayPalLogProcessor` expands into the keys below

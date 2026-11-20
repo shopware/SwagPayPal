@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Expands logged objects, redacts request data, normalizes the exception and adds its error code, PayPal issue and debug ID,
- * the sales channel and Admin user of the request, `extra.route` and `extra.area`, and drops `null` values; call site values win.
+ * the sales channel and Admin user of the request and `extra.route`, and drops `null` values; call site values win.
  * Handlers interpolate placeholders afterwards, so messages can use the added keys, e.g. `{errorCode}`.
  *
  * @internal
@@ -31,8 +31,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 #[Package('checkout')]
 final class PayPalLogProcessor implements ProcessorInterface
 {
-    private const NAMESPACE_PREFIX = 'Swag\PayPal\\';
-
     public function __construct(
         private readonly RequestStack $requestStack
     ) {
@@ -61,7 +59,6 @@ final class PayPalLogProcessor implements ProcessorInterface
             return $record->with(context: $context, extra: [
                 ...$record->extra,
                 ...(\is_string($route) ? [LogKey::ROUTE => $route] : []),
-                LogKey::AREA => $this->detectArea(),
             ]);
         } catch (\Throwable) {
             // raw request data and objects must never pass: a formatter writes objects whole, including the buyer's address
@@ -74,22 +71,6 @@ final class PayPalLogProcessor implements ProcessorInterface
 
             return $record->with(context: $context);
         }
-    }
-
-    private function detectArea(): string
-    {
-        foreach (\debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, 40) as $frame) {
-            $class = $frame['class'] ?? '';
-
-            if (!\str_starts_with($class, self::NAMESPACE_PREFIX)
-                || \str_starts_with($class, self::NAMESPACE_PREFIX . 'Util\\')) {
-                continue;
-            }
-
-            return LogArea::forClass($class);
-        }
-
-        return LogArea::OTHER;
     }
 
     /**
@@ -129,7 +110,7 @@ final class PayPalLogProcessor implements ProcessorInterface
         }
 
         if ($apiException !== null) {
-            $issues = $apiException instanceof ErrorApiException ? $apiException->getDetails()->getIssues() : [];
+            $issues = $apiException instanceof ErrorApiException ? \array_values($apiException->getDetails()->getIssues()) : [];
 
             return [
                 LogKey::HTTP_STATUS => $apiException->getStatusCode(),

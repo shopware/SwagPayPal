@@ -31,7 +31,6 @@ use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\AgenticCommerce\Exception\AgentException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\Util\Log\LogArea;
 use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\Log\PayPalLogProcessor;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,14 +46,6 @@ use Symfony\Component\Validator\ConstraintViolationList;
 class PayPalLogProcessorTest extends TestCase
 {
     private const ECHOED_IBAN = 'DE89370400440532013000';
-
-    public function testAreaIsAdded(): void
-    {
-        $record = $this->createProcessor()($this->createRecord());
-
-        // the caller is a test class, which is not part of a known area
-        static::assertSame(LogArea::OTHER, $record->extra['area']);
-    }
 
     public function testPayPalErrorFromNestedSdkException(): void
     {
