@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where payments with alternative payment methods like Bancontact or eps stayed unconfirmed after the customer returned to the shop, until a webhook or the transaction status synchronisation updated them
+- Fixes an issue, where completed payments with alternative payment methods like eps were not marked as paid right away
 - Fixes an issue, where a link on another website could remove the saved PayPal account or card of a logged-in customer. Template customisations of saved PayPal accounts and cards in the checkout should be adapted before version 11 (shopware/SwagPayPal#847)
 - Changed the label "Remove account" or "Remove card" of saved PayPal accounts and cards to "Don't use for future purchases", as subscriptions keep using them for their renewals (shopware/SwagPayPal#847)
 - Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
