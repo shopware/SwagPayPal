@@ -169,7 +169,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
     private function tryToSetTransactionState(Order $paypalOrder, string $transactionId, Context $context): void
     {
         $purchaseUnits = $paypalOrder->getPurchaseUnits();
-        if ($purchaseUnits->count()) {
+        if ($purchaseUnits->count() === 0) {
             return;
         }
         $payments = $purchaseUnits->first()?->getPayments();
