@@ -78,11 +78,11 @@
         },
         "vault": {
           "account": {
-            "clear": "Remove account",
+            "clear": "Don't use for future purchases",
             "create": "Remember account for future purchases"
           },
           "card": {
-            "clear": "Remove card",
+            "clear": "Don't use for future purchases",
             "create": "Remember card for future purchases"
           }
         }
