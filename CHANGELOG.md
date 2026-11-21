@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where payments with alternative payment methods like Bancontact or eps stayed unconfirmed after the customer returned to the shop, until a webhook or the transaction status synchronisation updated them
+- Fixes an issue, where completed payments with alternative payment methods like eps were not marked as paid right away
 - Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 - Fixes an issue, where failed or cancelled PayPal refunds were deducted from the refundable amount in the Administration and could disable the refund button (shopware/SwagPayPal#878)
