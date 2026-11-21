@@ -29,8 +29,10 @@ class APMHandler extends AbstractPaymentMethodHandler
 
     protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
     {
-        // Orders of APMs are created with `ORDER_COMPLETE_ON_PAYMENT_APPROVAL`
-        // Therefore it will automatically capture the payment
+        // PayPal captures APM orders itself (`ORDER_COMPLETE_ON_PAYMENT_APPROVAL`), the webhook or status sync handles a later capture
+        $this->orderExecuteService->checkFinalizedStatus($paypalOrder, $order->getSalesChannelId(), $transaction->getOrderTransactionId(), $context, refetch: false);
+        $this->transactionDataService->setResourceId($paypalOrder, $transaction->getOrderTransactionId(), $context);
+
         return $paypalOrder;
     }
 }

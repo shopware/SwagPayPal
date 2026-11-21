@@ -65,9 +65,9 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
     public function __construct(
         private readonly SettingsValidationServiceInterface $settingsValidationService,
         private readonly StateMachineRegistry $stateMachineRegistry,
-        private readonly OrderExecuteService $orderExecuteService,
+        protected readonly OrderExecuteService $orderExecuteService,
         private readonly OrderPatchService $orderPatchService,
-        private readonly TransactionDataService $transactionDataService,
+        protected readonly TransactionDataService $transactionDataService,
         private readonly OrderResource $orderResource,
         private readonly VaultTokenService $vaultTokenService,
         private readonly EntityRepository $orderTransactionRepository,
