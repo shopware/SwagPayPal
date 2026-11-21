@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem Zahlungen mit alternativen Zahlungsarten wie Bancontact oder eps nach der Rückkehr des Kunden in den Shop unbestätigt blieben, bis ein Webhook oder die Synchronisierung des Transaktionsstatus sie aktualisierte
 - Behebt ein Problem, bei dem ein Einzug oder eine Rückerstattung in der Administration die Zahlung als bezahlt oder erstattet markierte, obwohl PayPal mit einem ausstehenden, abgelehnten oder fehlgeschlagenen Status antwortete (shopware/SwagPayPal#839)
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
 - Behebt ein Problem, bei dem fehlgeschlagene oder abgebrochene PayPal-Rückerstattungen in der Administration vom erstattbaren Betrag abgezogen wurden und die Schaltfläche für Rückerstattungen deaktivieren konnten (shopware/SwagPayPal#878)
