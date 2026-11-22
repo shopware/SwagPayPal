@@ -1,4 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem eine abgebrochene Zahlung nicht als teilweise bezahlt markiert wurde, wenn danach ein Teilbetrag eingezogen wurde (shopware/SwagPayPal#841)
+- Behebt ein Problem, bei dem das Abbrechen der Autorisierung in der Administration eine bezahlte oder teilweise bezahlte Zahlung als abgebrochen markierte (shopware/SwagPayPal#841)
 - Behebt ein Problem, bei dem abgeschlossene Zahlungen mit alternativen Zahlungsarten wie eps nicht sofort als bezahlt markiert wurden
 - Behebt ein Problem, bei dem ein Link auf einer anderen Website das gespeicherte PayPal-Konto oder die gespeicherte Karte eines angemeldeten Kunden entfernen konnte. Template-Anpassungen gespeicherter PayPal-Konten und Karten im Checkout sollten bis Version 11 angepasst werden (shopware/SwagPayPal#847)
 - Ändert die Beschriftung "Konto entfernen" bzw. "Karte entfernen" gespeicherter PayPal-Konten und Karten zu "Nicht für zukünftige Käufe verwenden", da Abonnements diese für ihre Verlängerungen weiterhin verwenden (shopware/SwagPayPal#847)

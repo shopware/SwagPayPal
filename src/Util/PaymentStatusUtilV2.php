@@ -109,6 +109,10 @@ class PaymentStatusUtilV2
         // TODO PPI-59 - Do transition even if transaction is already partially paid.
         if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_PAID) {
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
+            // If the previous state is "cancelled", "paid_partially" is currently not allowed as direct transition
+            if ($stateMachineState->getTechnicalName() === OrderTransactionStates::STATE_CANCELLED) {
+                $this->orderTransactionStateHandler->reopen($transactionId, $context);
+            }
             $this->orderTransactionStateHandler->paidPartially($transactionId, $context);
         }
     }
@@ -116,6 +120,19 @@ class PaymentStatusUtilV2
     public function applyVoidState(string $orderTransactionId, Context $context): void
     {
         $transaction = $this->getOrderTransaction($orderTransactionId, $context);
+
+        // A void only releases the amount that was not captured, so captured or refunded payments keep their state.
+        // These are the states the webhooks keep as well, see AbstractWebhookHandler::isCancellationAllowed
+        $protectedStates = [
+            OrderTransactionStates::STATE_CANCELLED,
+            OrderTransactionStates::STATE_PAID,
+            OrderTransactionStates::STATE_PARTIALLY_PAID,
+            OrderTransactionStates::STATE_PARTIALLY_REFUNDED,
+            OrderTransactionStates::STATE_REFUNDED,
+        ];
+        if (\in_array($transaction->getStateMachineState()?->getTechnicalName(), $protectedStates, true)) {
+            return;
+        }
 
         $this->orderTransactionStateHandler->cancel($transaction->getId(), $context);
     }
