@@ -1,5 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where a denied capture or a cancelled authorization marked a paid, partially paid or refunded payment as cancelled (shopware/SwagPayPal#841)
+- Fixes an issue, where a cancelled payment was not marked as partially paid when a partial amount was captured afterwards (shopware/SwagPayPal#841)
+- Fixes an issue, where cancelling the authorization in the Administration marked a paid or partially paid payment as cancelled (shopware/SwagPayPal#841)
 - Fixes an issue, where completed payments with alternative payment methods like eps were not marked as paid right away
 - Fixes an issue, where a link on another website could remove the saved PayPal account or card of a logged-in customer. Template customisations of saved PayPal accounts and cards in the checkout should be adapted before version 11 (shopware/SwagPayPal#847)
 - Changed the label "Remove account" or "Remove card" of saved PayPal accounts and cards to "Don't use for future purchases", as subscriptions keep using them for their renewals (shopware/SwagPayPal#847)
