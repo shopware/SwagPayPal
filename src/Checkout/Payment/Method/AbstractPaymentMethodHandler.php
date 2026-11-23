@@ -265,10 +265,11 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
                 false,
                 $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
             );
+            $paypalOrderId = $response->getId();
 
             $this->transactionDataService->setOrderId(
                 $transaction->getOrderTransactionId(),
-                $response->getId(),
+                $paypalOrderId,
                 PartnerAttributionId::PAYPAL_PPCP,
                 $order->getSalesChannelId(),
                 $context,

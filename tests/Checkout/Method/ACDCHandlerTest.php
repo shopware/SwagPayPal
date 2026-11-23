@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -57,6 +58,9 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -65,6 +69,8 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 class ACDCHandlerTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private ACDCHandler $handler;
 
     private OrderExecuteService&MockObject $orderExecuteService;
@@ -993,7 +999,7 @@ class ACDCHandlerTest extends TestCase
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $order = (new OrderEntity())->assign(['id' => 'orderId', 'salesChannelId' => 'salesChannelId']);
+        $order = (new OrderEntity())->assign(['id' => 'orderId', 'orderNumber' => '10001', 'salesChannelId' => 'salesChannelId']);
         $order->setSalesChannelId('salesChannelId');
         $transaction->setOrder($order);
         $subscription = new SubscriptionEntity();
@@ -1036,7 +1042,13 @@ class ACDCHandlerTest extends TestCase
             PayerActionRequiredException::payerActionRequired('paypalOrderId')->getMessage(),
         ));
 
-        $this->handler->recurring($paymentTransaction, $context);
+        $this->handler->setLogger($this->createPayPalLogger());
+
+        try {
+            $this->handler->recurring($paymentTransaction, $context);
+        } finally {
+            $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_FAILED, Level::Error, [Log::PAYPAL_ORDER_ID => 'paypalOrderId']);
+        }
     }
 
     public function testRecurringWithoutSubscription(): void
