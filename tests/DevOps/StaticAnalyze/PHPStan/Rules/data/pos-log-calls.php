@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\LogCallRuleFixture;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 class Calls
 {
@@ -16,13 +16,11 @@ class Calls
     {
     }
 
-    public function run(\Throwable $e): void
+    public function run(\Throwable $e, string $dynamic): void
     {
         $this->logger->info('The POS run log needs no code');
-        $this->logger->error('Could not do it', [LogKey::EXCEPTION => $e, 'product' => $this->product, 'productName' => 'name']);
-        $this->logger->error('Could not do it', ['exception' => $e]);
-        $this->logger->debug('Object', ['order' => $this->product]);
+        $this->logger->error('Its handler reads the exception and the product', [Log::EXCEPTION => $e, 'product' => $this->product, 'productName' => 'name']);
         $this->logger->alert('Alert');
-        $this->logger->debug('Object key', [LogKey::PAYPAL_ORDER => $this->product]);
+        $this->logger->debug('Concat ' . $dynamic);
     }
 }

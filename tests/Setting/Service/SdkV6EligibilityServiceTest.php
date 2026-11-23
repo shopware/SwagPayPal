@@ -23,8 +23,8 @@ use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 
 /**
  * @internal
@@ -76,10 +76,10 @@ class SdkV6EligibilityServiceTest extends TestCase
         $record = $this->assertPayPalLogged(
             LogCode::SETTINGS_SDK_V6_ELIGIBILITY_UNKNOWN,
             Level::Warning,
-            [LogKey::SALES_CHANNEL_ID => 'sales-channel-id'],
+            [Log::SALES_CHANNEL_ID => 'sales-channel-id'],
         );
-        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
-        static::assertSame($exception->getMessage(), $record->context[LogKey::EXCEPTION]['message'] ?? null);
+        static::assertSame($exception::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        static::assertSame($exception->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
     }
 
     public function testUndeterminedWithoutCredentials(): void

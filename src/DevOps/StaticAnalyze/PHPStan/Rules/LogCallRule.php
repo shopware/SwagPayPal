@@ -10,12 +10,11 @@ namespace Swag\PayPal\DevOps\StaticAnalyze\PHPStan\Rules;
 use Monolog\Level;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Expr;
-use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
@@ -26,16 +25,14 @@ use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\ObjectWithoutClassType;
-use PHPStan\Type\TypeCombinator;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogContext;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 /**
- * Checks every log call of the plugin: level, static message, log code from `info` up, `LogKey` context keys and no objects outside the object keys.
+ * Values must go through `Log::context()`, which redacts them, not into the message, and lines from `info` up need a log code.
+ * PHPStan checks the context's keys and types itself, they are the parameters of `Log::context()`.
+ * The POS run log isn't checked, it has its own logger and handler.
  *
  * @internal
  *
@@ -46,12 +43,11 @@ final class LogCallRule implements Rule
 {
     private const NAMESPACE_PREFIX = 'Swag\\PayPal\\';
     private const IGNORED_NAMESPACE_PREFIXES = ['Swag\\PayPal\\DevOps\\', 'Swag\\PayPal\\Test\\'];
-    private const POS_NAMESPACE_PREFIX = 'Swag\\PayPal\\Pos\\';
+    private const POS_RUN_LOG_NAMESPACE_PREFIX = 'Swag\\PayPal\\Pos\\';
     private const POS_WEBHOOK_NAMESPACE_PREFIX = 'Swag\\PayPal\\Pos\\Webhook\\';
 
     private const LEVEL_METHODS = ['debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'];
-    private const LEVELS_WITH_CODE = ['info', 'notice', 'warning', 'error', 'critical'];
-    private const FORBIDDEN_LEVELS = ['alert', 'emergency'];
+    private const LEVELS_WITHOUT_CODE = ['debug'];
 
     public function getNodeType(): string
     {
@@ -70,11 +66,8 @@ final class LogCallRule implements Rule
         }
 
         $className = $scope->getClassReflection()?->getName();
-        if ($className === null || !$this->isChecked($className)) {
-            return [];
-        }
-
-        if (!(new ObjectType(LoggerInterface::class))->isSuperTypeOf($scope->getType($node->var))->yes()) {
+        if ($className === null || !$this->isChecked($className)
+            || !(new ObjectType(LoggerInterface::class))->isSuperTypeOf($scope->getType($node->var))->yes()) {
             return [];
         }
 
@@ -83,105 +76,27 @@ final class LogCallRule implements Rule
             return [];
         }
 
-        if ($method === 'log') {
-            $levels = $this->resolveLevels($args[0]->value, $scope);
-            $messageIndex = 1;
-        } else {
-            $levels = [$method];
-            $messageIndex = 0;
-        }
-
+        $levels = $method === 'log' ? $this->resolveLevels($args[0]->value, $scope) : [$method];
+        $messageIndex = $method === 'log' ? 1 : 0;
+        $context = ($args[$messageIndex + 1] ?? null)?->value;
         $errors = [];
-
-        foreach (\array_intersect($levels ?? [], self::FORBIDDEN_LEVELS) as $level) {
-            $errors[] = $this->error(
-                \sprintf('Do not log with level "%s"; use "critical" at most.', $level),
-                'swagPayPal.logCall.level',
-                $node,
-            );
-        }
 
         if (!isset($args[$messageIndex]) || !$this->isConstantMessage($args[$messageIndex]->value, $scope)) {
             $errors[] = $this->error(
-                'The log message must be a static string literal with {placeholders}; put the values into the context.',
+                'The log message must be a static string with {placeholders}, put the values into Log::context(), which redacts them.',
                 'swagPayPal.logCall.message',
                 $node,
             );
-        } elseif ($this->hasBadMessageStyle($args[$messageIndex]->value, $scope)) {
-            $errors[] = $this->error(
-                'Log messages are one sentence without a trailing period; join clauses with a comma.',
-                'swagPayPal.logCall.messageStyle',
-                $node,
-            );
         }
 
-        $context = ($args[$messageIndex + 1] ?? null)?->value;
+        if ($context !== null && !$this->isLogContextCall($context, $scope)) {
+            $errors[] = $this->error('Build the log context with Log::context(), which redacts the values.', 'swagPayPal.logCall.context', $node);
+        }
 
         // an unknown level may be "info" or higher
-        $needsCode = $levels === null || \array_intersect($levels, self::LEVELS_WITH_CODE) !== [];
-        if ($needsCode && !$this->isInPosRunLog($className)
-            && ($context === null || !$this->containsCode($context, $scope))) {
-            $errors[] = $this->error(
-                'Log calls from "info" up need \'code\' => LogCode::X in the context.',
-                'swagPayPal.logCall.code',
-                $node,
-            );
-        }
-
-        if ($context !== null) {
-            $isPosRunLog = $this->isInPosRunLog($className);
-            foreach ($this->collectArrays($context) as $array) {
-                foreach ($array->items as $item) {
-                    if ($item->unpack) {
-                        continue;
-                    }
-
-                    // the run log has its own placeholder keys, but its handler reads the exception by LogKey
-                    if ($this->isInvalidKey($item, $scope)
-                        && (!$isPosRunLog || $this->resolveKey($item, $scope) === LogKey::EXCEPTION)) {
-                        $errors[] = $this->error(
-                            'Use a LogKey constant as log context key.',
-                            'swagPayPal.logCall.contextKey',
-                            $item,
-                        );
-                    }
-
-                    $key = $this->resolveKey($item, $scope);
-                    $valueType = TypeCombinator::removeNull($scope->getType($item->value));
-
-                    // the run log has no processor that turns the objects into scalars
-                    if (!$isPosRunLog && $key !== null && isset(LogContext::OBJECT_KEYS[$key])) {
-                        $classes = LogContext::OBJECT_KEYS[$key];
-                        if (!TypeCombinator::union(...\array_map(static fn (string $class) => new ObjectType($class), $classes))->isSuperTypeOf($valueType)->yes()) {
-                            $errors[] = $this->error(
-                                \sprintf(
-                                    'The log context key "%s" takes %s.',
-                                    $key,
-                                    \implode('|', \array_map(static fn (string $class) => \basename(\str_replace('\\', '/', $class)), $classes)),
-                                ),
-                                'swagPayPal.logCall.objectKey',
-                                $item,
-                            );
-                        }
-
-                        continue;
-                    }
-
-                    if (!(new ObjectWithoutClassType())->isSuperTypeOf($valueType)->yes()) {
-                        continue;
-                    }
-
-                    if ($this->isAllowedObject($key, $valueType, $className)) {
-                        continue;
-                    }
-
-                    $errors[] = $this->error(
-                        \sprintf('Do not put objects into the log context%s; use scalars, an object key of LogContext::OBJECT_KEYS or the exception under \'exception\'.', $key === null ? '' : \sprintf(' (key "%s")', $key)),
-                        'swagPayPal.logCall.contextObject',
-                        $item,
-                    );
-                }
-            }
+        $needsCode = $levels === null || \array_diff($levels, self::LEVELS_WITHOUT_CODE) !== [];
+        if ($needsCode && !$this->hasCode($context, $scope)) {
+            $errors[] = $this->error('Log calls from "info" up need Log::context(code: LogCode::X).', 'swagPayPal.logCall.code', $node);
         }
 
         return $errors;
@@ -199,22 +114,8 @@ final class LogCallRule implements Rule
             }
         }
 
-        return true;
-    }
-
-    private function isInPosRunLog(string $className): bool
-    {
-        return \str_starts_with($className, self::POS_NAMESPACE_PREFIX)
-            && !\str_starts_with($className, self::POS_WEBHOOK_NAMESPACE_PREFIX);
-    }
-
-    private function isAllowedObject(?string $key, \PHPStan\Type\Type $type, string $className): bool
-    {
-        if ($key === 'exception' && (new ObjectType(\Throwable::class))->isSuperTypeOf($type)->yes()) {
-            return true;
-        }
-
-        return $key === 'product' && $this->isInPosRunLog($className);
+        return !\str_starts_with($className, self::POS_RUN_LOG_NAMESPACE_PREFIX)
+            || \str_starts_with($className, self::POS_WEBHOOK_NAMESPACE_PREFIX);
     }
 
     /**
@@ -243,95 +144,33 @@ final class LogCallRule implements Rule
             return true;
         }
 
-        if (!$expr instanceof ClassConstFetch && !$expr instanceof ConstFetch) {
-            return false;
-        }
-
-        return \count($scope->getType($expr)->getConstantStrings()) === 1;
-    }
-
-    private function hasBadMessageStyle(Expr $expr, Scope $scope): bool
-    {
-        $strings = $scope->getType($expr)->getConstantStrings();
-        if (\count($strings) !== 1) {
-            return false;
-        }
-
-        $message = $strings[0]->getValue();
-
-        return \str_ends_with($message, '.') || \str_contains($message, '. ') || \str_contains($message, '; ');
-    }
-
-    private function resolveKey(ArrayItem $item, Scope $scope): ?string
-    {
-        if ($item->key === null) {
-            return null;
-        }
-
-        $strings = $scope->getType($item->key)->getConstantStrings();
-
-        return \count($strings) === 1 ? $strings[0]->getValue() : null;
-    }
-
-    private function isInvalidKey(ArrayItem $item, Scope $scope): bool
-    {
-        $key = $item->key;
-        if ($key instanceof String_) {
-            return true;
-        }
-
-        if ($key instanceof ClassConstFetch) {
-            return !$key->class instanceof Name || $scope->resolveName($key->class) !== LogKey::class;
-        }
-
-        return $key instanceof ConstFetch;
-    }
-
-    private function containsCode(Expr $expr, Scope $scope): bool
-    {
-        foreach ($this->collectArrays($expr) as $array) {
-            foreach ($array->items as $item) {
-                if ($item->unpack || $this->resolveKey($item, $scope) !== 'code') {
-                    continue;
-                }
-
-                if ($item->value instanceof ClassConstFetch
-                    && $item->value->class instanceof Name
-                    && $scope->resolveName($item->value->class) === LogCode::class) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return ($expr instanceof ClassConstFetch || $expr instanceof ConstFetch)
+            && \count($scope->getType($expr)->getConstantStrings()) === 1;
     }
 
     /**
-     * Includes arrays spread into the literal.
-     *
-     * @return list<Array_>
+     * @phpstan-assert-if-true StaticCall $expr
      */
-    private function collectArrays(Expr $expr): array
+    private function isLogContextCall(Expr $expr, Scope $scope): bool
     {
-        if ($expr instanceof Array_) {
-            $arrays = [$expr];
-            foreach ($expr->items as $item) {
-                if ($item->unpack) {
-                    \array_push($arrays, ...$this->collectArrays($item->value));
-                }
-            }
+        return $expr instanceof StaticCall
+            && $expr->class instanceof Name
+            && $scope->resolveName($expr->class) === Log::class
+            && $expr->name instanceof Identifier
+            && $expr->name->toLowerString() === 'context';
+    }
 
-            return $arrays;
+    private function hasCode(?Expr $context, Scope $scope): bool
+    {
+        if ($context === null || !$this->isLogContextCall($context, $scope)) {
+            return false;
         }
 
-        return [];
+        return \array_filter($context->getArgs(), static fn (Arg $arg) => $arg->name?->toString() === 'code') !== [];
     }
 
     private function error(string $message, string $identifier, Node $node): IdentifierRuleError
     {
-        return RuleErrorBuilder::message($message)
-            ->identifier($identifier)
-            ->line($node->getStartLine())
-            ->build();
+        return RuleErrorBuilder::message($message)->identifier($identifier)->line($node->getStartLine())->build();
     }
 }

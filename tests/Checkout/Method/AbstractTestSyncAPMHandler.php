@@ -59,8 +59,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -103,10 +103,10 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         $this->assertPatchData($transactionId);
 
         $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED, Level::Info, [
-            LogKey::ORDER_TRANSACTION_ID => $transactionId,
-            LogKey::PAYPAL_ORDER_ID => CaptureOrderCapture::ID,
-            LogKey::CAPTURE_ID => CaptureOrderCapture::CAPTURE_ID,
-            LogKey::CAPTURE_STATUS => 'COMPLETED',
+            Log::ORDER_TRANSACTION_ID => $transactionId,
+            Log::PAYPAL_ORDER_ID => CaptureOrderCapture::ID,
+            Log::CAPTURE_ID => CaptureOrderCapture::CAPTURE_ID,
+            Log::CAPTURE_STATUS => 'COMPLETED',
         ]);
         $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
     }
@@ -124,12 +124,12 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
             $handler->pay($this->createRequest(CaptureOrderDeclined::ID), $paymentTransaction, Context::createDefaultContext(), null);
         } finally {
             $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [
-                LogKey::ORDER_TRANSACTION_ID => $transactionId,
-                LogKey::PAYPAL_ORDER_ID => CaptureOrderDeclined::ID,
+                Log::ORDER_TRANSACTION_ID => $transactionId,
+                Log::PAYPAL_ORDER_ID => CaptureOrderDeclined::ID,
             ]);
-            static::assertNotSame('unknown', $record->context[LogKey::ORDER_NUMBER] ?? null);
-            static::assertSame(OrderFailedException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
-            static::assertSame(ConstantsV2::ORDER_CAPTURE_DECLINED, $record->context[LogKey::EXCEPTION]['parameters']['status'] ?? null);
+            static::assertNotSame('unknown', $record->context[Log::ORDER_NUMBER] ?? null);
+            static::assertSame(OrderFailedException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+            static::assertSame(ConstantsV2::ORDER_CAPTURE_DECLINED, $record->context[Log::EXCEPTION]['parameters']['status'] ?? null);
             $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
             $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED);
         }
@@ -161,8 +161,8 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         try {
             $handler->pay($this->createRequest(AuthorizeOrderDenied::ID), $paymentTransaction, Context::createDefaultContext(), null);
         } finally {
-            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [LogKey::ORDER_TRANSACTION_ID => $transactionId]);
-            static::assertSame(ConstantsV2::ORDER_AUTHORIZATION_DENIED, $record->context[LogKey::EXCEPTION]['parameters']['status'] ?? null);
+            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [Log::ORDER_TRANSACTION_ID => $transactionId]);
+            static::assertSame(ConstantsV2::ORDER_AUTHORIZATION_DENIED, $record->context[Log::EXCEPTION]['parameters']['status'] ?? null);
             $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_AUTHORIZED);
         }
     }
@@ -179,7 +179,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         try {
             $handler->pay($this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $paymentTransaction, Context::createDefaultContext(), null);
         } finally {
-            $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [LogKey::ORDER_TRANSACTION_ID => $transactionId]);
+            $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [Log::ORDER_TRANSACTION_ID => $transactionId]);
             $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
         }
     }

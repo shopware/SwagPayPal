@@ -14,8 +14,8 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -27,34 +27,32 @@ class PayPalLogTraitTest extends TestCase
     use KernelTestBehaviour;
     use PayPalLogTrait;
 
-    public function testCreatedLoggerRunsTheProcessor(): void
+    public function testCreatedLoggerRecordsTheContextAsGiven(): void
     {
-        $this->createPayPalLogger()->info('Captured {captureId}', [
-            LogKey::CODE => 'CODE',
-            LogKey::PAYMENT => (new Capture())->assign(['id' => 'CAP-1']),
-        ]);
+        // without a request, the processor has nothing to add
+        $this->createPayPalLogger()->info('Could not do it: {errorCode}', Log::context(code: LogCode::API_REQUEST_FAILED, exception: new \RuntimeException('message')));
 
-        static::assertSame([['captureId' => 'CAP-1', 'code' => 'CODE']], $this->getPayPalLogContexts('CODE'));
+        static::assertSame('RuntimeException', $this->getPayPalLogContexts(LogCode::API_REQUEST_FAILED)[0][Log::ERROR_CODE] ?? null);
     }
 
     public function testAssertLoggedComparesOnlyTheGivenKeys(): void
     {
-        $this->createPayPalLogger()->warning('Something {orderNumber}', [LogKey::CODE => 'CODE', LogKey::ORDER_NUMBER => '10023', LogKey::ORDER_ID => 'id']);
+        $this->createPayPalLogger()->warning('Something {orderNumber}', [Log::CODE => LogCode::API_REQUEST_FAILED, Log::ORDER_NUMBER => '10023', Log::ORDER_ID => 'id']);
 
-        $record = $this->assertPayPalLogged('CODE', Level::Warning, [LogKey::ORDER_NUMBER => '10023'], 'Something {orderNumber}');
+        $record = $this->assertPayPalLogged(LogCode::API_REQUEST_FAILED, Level::Warning, [Log::ORDER_NUMBER => '10023'], 'Something {orderNumber}');
 
-        static::assertSame('id', $record->context[LogKey::ORDER_ID]);
+        static::assertSame('id', $record->context[Log::ORDER_ID]);
         $this->assertPayPalNotLogged('OTHER');
     }
 
     public function testAssertLoggedNeedsExactlyOneLine(): void
     {
         $logger = $this->createPayPalLogger();
-        $logger->info('First', [LogKey::CODE => 'CODE']);
-        $logger->info('Second', [LogKey::CODE => 'CODE']);
+        $logger->info('First', [Log::CODE => LogCode::API_REQUEST_FAILED]);
+        $logger->info('Second', [Log::CODE => LogCode::API_REQUEST_FAILED]);
 
         $this->expectException(AssertionFailedError::class);
-        $this->assertPayPalLogged('CODE', Level::Info);
+        $this->assertPayPalLogged(LogCode::API_REQUEST_FAILED, Level::Info);
     }
 
     public function testLinesWithoutCodeCanBeAsserted(): void
@@ -66,7 +64,7 @@ class PayPalLogTraitTest extends TestCase
 
     public function testPlaceholdersWithoutValueAreFound(): void
     {
-        $this->createPayPalLogger()->error('Could not pay order {orderNumber}', [LogKey::CODE => 'CODE']);
+        $this->createPayPalLogger()->error('Could not pay order {orderNumber}', [Log::CODE => LogCode::API_REQUEST_FAILED]);
 
         static::assertSame(['Could not pay order {orderNumber}'], $this->getPayPalLogMessagesWithUnfilledPlaceholders());
 
@@ -81,8 +79,8 @@ class PayPalLogTraitTest extends TestCase
         static::assertInstanceOf(Logger::class, $logger);
         $handlerCount = \count($logger->getHandlers());
 
-        $logger->notice('Container line', [LogKey::CODE => 'CODE']);
-        $this->assertPayPalLogged('CODE', Level::Notice);
+        $logger->notice('Container line', [Log::CODE => LogCode::API_REQUEST_FAILED]);
+        $this->assertPayPalLogged(LogCode::API_REQUEST_FAILED, Level::Notice);
 
         $this->finishPayPalLogRecording();
         static::assertCount($handlerCount - 1, $logger->getHandlers());

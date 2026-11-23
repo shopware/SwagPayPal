@@ -13,14 +13,22 @@ use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Api\Context\AdminApiSource;
+use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
+use Shopware\Core\Framework\Api\Context\SystemSource;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Kernel;
+use Shopware\Core\PlatformRequest;
 use Shopware\PayPalSDK\Gateway\OrderGateway;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Client\AbstractClient;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Util\IntrospectionProcessor;
+use Swag\PayPal\Util\Log\Log;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @internal
@@ -77,6 +85,8 @@ class IntrospectionProcessorTest extends TestCase
         'class' => Kernel::class,
         'type' => '->',
     ];
+
+    private RequestStack $requestStack;
 
     #[DataProvider('invokeDataProvider')]
     public function testInvoke(array $backtrace, array $expected): void
@@ -204,5 +214,73 @@ class IntrospectionProcessorTest extends TestCase
             'class' => null,
             'function' => null,
         ]];
+    }
+
+    public function testSalesChannelFromRequestUnlessTheCallSitePassedOne(): void
+    {
+        $processor = $this->createProcessor(new Request(attributes: [PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID => 'sales-channel-id']));
+
+        static::assertSame('sales-channel-id', $processor($this->createRecord())->context[Log::SALES_CHANNEL_ID]);
+        static::assertSame('from-context', $processor($this->createRecord([Log::SALES_CHANNEL_ID => 'from-context']))->context[Log::SALES_CHANNEL_ID]);
+    }
+
+    public function testUserFromAdminApiRequest(): void
+    {
+        $processor = $this->createProcessor(new Request(attributes: [
+            PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT => new Context(new AdminApiSource('user-id')),
+        ]));
+
+        static::assertSame('user-id', $processor($this->createRecord())->context[Log::USER_ID]);
+        static::assertSame('from-context', $processor($this->createRecord([Log::USER_ID => 'from-context']))->context[Log::USER_ID]);
+    }
+
+    public function testNoUserWithoutAdminApiUser(): void
+    {
+        foreach ([new AdminApiSource(null), new SystemSource(), new SalesChannelApiSource('sales-channel-id')] as $source) {
+            $processor = $this->createProcessor(new Request(attributes: [PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT => new Context($source)]));
+
+            static::assertArrayNotHasKey(Log::USER_ID, $processor($this->createRecord())->context);
+        }
+    }
+
+    public function testMethodHostAndRouteOfTheMainRequestButNotItsUrl(): void
+    {
+        // paths and queries carry tokens, e.g. the restore token or the webhook's `sw-token`
+        $request = Request::create('https://shop.example/paypal/restore-context/restore-token?sw-token=webhook-token');
+        $request->attributes->set('_route', 'frontend.paypal.restore_context');
+        $processor = $this->createProcessor($request);
+        $this->requestStack->push(new Request(attributes: ['_route' => 'sub.request']));
+
+        static::assertSame(
+            ['uid' => 'abc', 'http_method' => 'GET', 'server' => 'shop.example', Log::ROUTE => 'frontend.paypal.restore_context'],
+            $processor($this->createRecord(extra: ['uid' => 'abc']))->extra,
+        );
+    }
+
+    public function testWithoutRequestTheRecordStaysAsItIs(): void
+    {
+        $record = $this->createRecord([Log::CODE => 'CODE']);
+
+        static::assertSame($record, (new IntrospectionProcessor(Level::Error, new RequestStack()))($record));
+        static::assertSame($record, (new IntrospectionProcessor())($record));
+    }
+
+    private function createProcessor(Request $mainRequest): IntrospectionProcessor
+    {
+        $this->requestStack = new RequestStack();
+        $this->requestStack->push($mainRequest);
+
+        return new IntrospectionProcessor(Level::Error, $this->requestStack);
+    }
+
+    /**
+     * Below the level of the backtrace, so only the request is added.
+     *
+     * @param array<string, mixed> $context
+     * @param array<string, mixed> $extra
+     */
+    private function createRecord(array $context = [], array $extra = []): LogRecord
+    {
+        return new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Info, 'message', $context, $extra);
     }
 }

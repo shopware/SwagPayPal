@@ -20,8 +20,8 @@ use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -70,13 +70,13 @@ class OrderExecuteService
                     throw $e;
                 }
 
-                $this->logger->warning('PayPal already has a payment with the same invoice ID, retried without it', [
-                    LogKey::CODE => LogCode::CHECKOUT_INVOICE_ID_DUPLICATE,
-                    LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                    LogKey::PAYPAL_ORDER => $paypalOrder,
-                    LogKey::ORDER_TRANSACTION_ID => $transactionId,
-                    LogKey::EXCEPTION => $e,
-                ]);
+                $this->logger->warning('PayPal already has a payment with the same invoice ID, retried without it', Log::context(
+                    code: LogCode::CHECKOUT_INVOICE_ID_DUPLICATE,
+                    exception: $e,
+                    paypalOrder: $paypalOrder,
+                    salesChannelId: $salesChannelId,
+                    orderTransactionId: $transactionId,
+                ));
 
                 $this->orderResource->update(
                     [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
@@ -104,12 +104,12 @@ class OrderExecuteService
         try {
             $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
         } catch (\Throwable $e) {
-            $this->logger->warning('Could not check PayPal order {paypalOrderId} before cancelling the payment, the payment status stays unchanged', [
-                LogKey::CODE => LogCode::CHECKOUT_CANCELLATION_UNVERIFIED,
-                LogKey::PAYPAL_ORDER_ID => $paypalOrderId,
-                LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                LogKey::EXCEPTION => $e,
-            ]);
+            $this->logger->warning('Could not check PayPal order {paypalOrderId} before cancelling the payment, the payment status stays unchanged', Log::context(
+                code: LogCode::CHECKOUT_CANCELLATION_UNVERIFIED,
+                exception: $e,
+                salesChannelId: $salesChannelId,
+                paypalOrderId: $paypalOrderId,
+            ));
 
             return false;
         }
@@ -142,9 +142,9 @@ class OrderExecuteService
     public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
     {
         $logContext = [
-            LogKey::SALES_CHANNEL_ID => $salesChannelId,
-            LogKey::ORDER_TRANSACTION_ID => $transactionId,
-            LogKey::PAYPAL_ORDER_ID => $order->getId(),
+            Log::SALES_CHANNEL_ID => $salesChannelId,
+            Log::ORDER_TRANSACTION_ID => $transactionId,
+            Log::PAYPAL_ORDER_ID => $order->getId(),
         ];
 
         if ($order->getIntent() === ConstantsV2::INTENT_CAPTURE) {
@@ -154,7 +154,7 @@ class OrderExecuteService
             }
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_PENDING) {
-                $this->logger->info('PayPal hasn\'t completed the payment for PayPal order {paypalOrderId} yet', [...$logContext, LogKey::PAYMENT => $capture, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_PENDING]);
+                $this->logger->info('PayPal hasn\'t completed the payment for PayPal order {paypalOrderId} yet', Log::context(...$logContext, payment: $capture, code: LogCode::CHECKOUT_PAYMENT_PENDING));
 
                 try {
                     $this->orderTransactionStateHandler->process($transactionId, $context);
@@ -165,7 +165,7 @@ class OrderExecuteService
             }
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
-                $this->logger->info('Captured the payment for PayPal order {paypalOrderId}', [...$logContext, LogKey::PAYMENT => $capture, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_CAPTURED]);
+                $this->logger->info('Captured the payment for PayPal order {paypalOrderId}', Log::context(...$logContext, payment: $capture, code: LogCode::CHECKOUT_PAYMENT_CAPTURED));
 
                 $this->orderTransactionStateHandler->paid($transactionId, $context);
 
@@ -186,7 +186,7 @@ class OrderExecuteService
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_PENDING) {
-            $this->logger->info('PayPal hasn\'t completed the payment for PayPal order {paypalOrderId} yet', [...$logContext, LogKey::PAYMENT => $authorization, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_PENDING]);
+            $this->logger->info('PayPal hasn\'t completed the payment for PayPal order {paypalOrderId} yet', Log::context(...$logContext, payment: $authorization, code: LogCode::CHECKOUT_PAYMENT_PENDING));
 
             try {
                 $this->orderTransactionStateHandler->process($transactionId, $context);
@@ -197,7 +197,7 @@ class OrderExecuteService
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_CREATED) {
-            $this->logger->info('Authorized the payment for PayPal order {paypalOrderId}', [...$logContext, LogKey::PAYMENT => $authorization, LogKey::CODE => LogCode::CHECKOUT_PAYMENT_AUTHORIZED]);
+            $this->logger->info('Authorized the payment for PayPal order {paypalOrderId}', Log::context(...$logContext, payment: $authorization, code: LogCode::CHECKOUT_PAYMENT_AUTHORIZED));
 
             $this->orderTransactionStateHandler->authorize($transactionId, $context);
 

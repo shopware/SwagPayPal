@@ -16,8 +16,8 @@ use Shopware\Core\System\SystemConfig\Event\SystemConfigMultipleChangedEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsSaver;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -57,15 +57,12 @@ class WebhookSubscriber implements EventSubscriberInterface
                     $this->webhookService->deregisterWebhook($salesChannelId);
                 }
             } catch (\Throwable $e) {
-                $this->logger->warning(
-                    'Could not remove the PayPal webhook {webhookId}, it stays registered at PayPal',
-                    [
-                        LogKey::CODE => LogCode::WEBHOOK_DEREGISTRATION_FAILED,
-                        LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                        LogKey::WEBHOOK_ID => $webhookId ?: null,
-                        LogKey::EXCEPTION => $e,
-                    ],
-                );
+                $this->logger->warning('Could not remove the PayPal webhook, it stays registered at PayPal', Log::context(
+                    code: LogCode::WEBHOOK_DEREGISTRATION_FAILED,
+                    salesChannelId: $salesChannelId,
+                    webhookId: $webhookId,
+                    exception: $e,
+                ));
             }
         }
     }

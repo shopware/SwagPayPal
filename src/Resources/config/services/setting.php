@@ -56,6 +56,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(CredentialsUtil::class),
             service(PaymentMethodDataRegistry::class),
             service(SdkV6EligibilityService::class),
+            service('monolog.logger.paypal'),
         ]);
 
     $services->set(SdkV6EligibilityService::class)

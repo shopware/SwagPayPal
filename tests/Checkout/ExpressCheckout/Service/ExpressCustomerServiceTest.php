@@ -31,8 +31,8 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 
 /**
  * @internal
@@ -87,10 +87,10 @@ class ExpressCustomerServiceTest extends TestCase
         static::assertSame(GetOrderCapture::PAYER_PHONE_NUMBER, $address->getPhoneNumber());
 
         $this->assertPayPalLogged(LogCode::EXPRESS_CUSTOMER_CREATED, Level::Info, [
-            LogKey::CUSTOMER_ID => $customer->getId(),
-            LogKey::CUSTOMER_NUMBER => $customer->getCustomerNumber(),
-            LogKey::GUEST => true,
-            LogKey::PAYPAL_ORDER_ID => $order->getId(),
+            Log::CUSTOMER_ID => $customer->getId(),
+            Log::CUSTOMER_NUMBER => $customer->getCustomerNumber(),
+            Log::GUEST => true,
+            Log::PAYPAL_ORDER_ID => $order->getId(),
         ]);
         $this->assertPayPalNotLogged(LogCode::EXPRESS_CUSTOMER_LOGGED_IN);
     }
@@ -111,9 +111,9 @@ class ExpressCustomerServiceTest extends TestCase
 
         $this->assertPayPalLogged(LogCode::EXPRESS_CUSTOMER_CREATED, Level::Info);
         $this->assertPayPalLogged(LogCode::EXPRESS_CUSTOMER_LOGGED_IN, Level::Info, [
-            LogKey::CUSTOMER_ID => $secondCustomer->getId(),
-            LogKey::CUSTOMER_NUMBER => $secondCustomer->getCustomerNumber(),
-            LogKey::PAYPAL_ORDER_ID => $order->getId(),
+            Log::CUSTOMER_ID => $secondCustomer->getId(),
+            Log::CUSTOMER_NUMBER => $secondCustomer->getCustomerNumber(),
+            Log::PAYPAL_ORDER_ID => $order->getId(),
         ]);
     }
 

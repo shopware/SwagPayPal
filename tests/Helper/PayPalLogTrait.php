@@ -14,13 +14,13 @@ use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\After;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Util\Log\LogKey;
-use Swag\PayPal\Util\Log\PayPalLogProcessor;
+use Swag\PayPal\Util\IntrospectionProcessor;
+use Swag\PayPal\Util\Log\Log;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Records log lines as the `paypal` channel writes them, after the `PayPalLogProcessor`.
+ * Records log lines as the `paypal` channel writes them, after the `IntrospectionProcessor`.
  * Every recorded message must have a context value for each of its placeholders.
  *
  * @internal
@@ -37,7 +37,7 @@ trait PayPalLogTrait
      */
     protected function createPayPalLogger(): LoggerInterface
     {
-        return new Logger('paypal', [$this->getPayPalLogHandler()], [new PayPalLogProcessor(new RequestStack())]);
+        return new Logger('paypal', [$this->getPayPalLogHandler()], [new IntrospectionProcessor(requestStack: new RequestStack())]);
     }
 
     /**
@@ -59,7 +59,7 @@ trait PayPalLogTrait
     {
         return \array_values(\array_filter(
             $this->getPayPalLogHandler()->getRecords(),
-            static fn (LogRecord $record): bool => $code === null || ($record->context[LogKey::CODE] ?? null) === $code,
+            static fn (LogRecord $record): bool => $code === null || ($record->context[Log::CODE] ?? null) === $code,
         ));
     }
 
@@ -80,7 +80,7 @@ trait PayPalLogTrait
     {
         $records = \array_values(\array_filter(
             $this->getPayPalLogHandler()->getRecords(),
-            static fn (LogRecord $record): bool => ($record->context[LogKey::CODE] ?? null) === $code && $record->level === $level,
+            static fn (LogRecord $record): bool => ($record->context[Log::CODE] ?? null) === $code && $record->level === $level,
         ));
         static::assertCount(1, $records, \sprintf('Expected one %s line with code "%s"', $level->getName(), $code ?? 'none'));
 

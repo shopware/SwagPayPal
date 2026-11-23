@@ -19,8 +19,8 @@ use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Service\SettingsSaver;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 
 /**
@@ -436,10 +436,18 @@ class SettingsSaverTest extends TestCase
             ->method('testApiCredentials')
             ->willThrowException(new \RuntimeException('error'));
 
-        $information = $this->settingsSaver->save($newSettings, $salesChannelId);
+        $saver = new SettingsSaver(
+            $this->systemConfigService,
+            $this->apiCredentialService,
+            $this->webhookSystemConfigHelper,
+            $this->sdkV6EligibilityService,
+            $this->createPayPalLogger(),
+        );
+        $information = $saver->save($newSettings, $salesChannelId);
 
         static::assertTrue($information->getLiveCredentialsChanged());
         static::assertFalse($information->getLiveCredentialsValid());
+        $this->assertPayPalLogged(LogCode::SETTINGS_CREDENTIALS_UNVERIFIED, Level::Warning, [Log::SANDBOX => false]);
     }
 
     public function testSdkV6StaysEnabledWhenItIsActivatedInThePayPalAccount(): void
@@ -599,9 +607,9 @@ class SettingsSaverTest extends TestCase
             LogCode::SETTINGS_SAVED,
             Level::Info,
             [
-                LogKey::CHANGED_KEYS => 'brandName',
-                LogKey::SALES_CHANNEL_ID => 'sales-channel-id',
-                LogKey::SANDBOX => true,
+                Log::CHANGED_KEYS => 'brandName',
+                Log::SALES_CHANNEL_ID => 'sales-channel-id',
+                Log::SANDBOX => true,
             ],
             'Saved the PayPal settings, changed: {changedKeys}',
         );
@@ -628,7 +636,7 @@ class SettingsSaverTest extends TestCase
         // the Administration sends null for every inherited value
         $saver->save([Settings::BRAND_NAME => null, Settings::INTENT => null], 'sales-channel-id');
 
-        $this->assertPayPalLogged(LogCode::SETTINGS_SAVED, Level::Info, [LogKey::CHANGED_KEYS => 'intent']);
+        $this->assertPayPalLogged(LogCode::SETTINGS_SAVED, Level::Info, [Log::CHANGED_KEYS => 'intent']);
     }
 
     public function testSaveLogsNothingWithoutChanges(): void

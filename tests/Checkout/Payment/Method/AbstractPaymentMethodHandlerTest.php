@@ -13,7 +13,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -43,8 +42,8 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -186,10 +185,10 @@ class AbstractPaymentMethodHandlerTest extends TestCase
             $record = $this->assertPayPalLogged(
                 LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED,
                 Level::Error,
-                [LogKey::ORDER_TRANSACTION_ID => self::TRANSACTION_ID, LogKey::PAYPAL_ORDER_ID => self::PAYPAL_ORDER_ID],
+                [Log::ORDER_TRANSACTION_ID => self::TRANSACTION_ID, Log::PAYPAL_ORDER_ID => self::PAYPAL_ORDER_ID],
                 'Could not send the buyer back to PayPal to approve the payment of order {orderNumber} again, the payment fails',
             );
-            static::assertSame($confirmationException::class, $record->context[LogKey::EXCEPTION]['class']);
+            static::assertSame($confirmationException::class, $record->context[Log::EXCEPTION]['class']);
 
             return;
         }
@@ -219,10 +218,10 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         $record = $this->assertPayPalLogged(
             LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED,
             Level::Error,
-            [LogKey::ORDER_TRANSACTION_ID => self::TRANSACTION_ID, LogKey::PAYPAL_ORDER_ID => self::PAYPAL_ORDER_ID],
+            [Log::ORDER_TRANSACTION_ID => self::TRANSACTION_ID, Log::PAYPAL_ORDER_ID => self::PAYPAL_ORDER_ID],
             'Could not send the buyer back to PayPal to approve the payment of order {orderNumber} again, the payment fails',
         );
-        static::assertSame($confirmationException::class, $record->context[LogKey::EXCEPTION]['class']);
+        static::assertSame($confirmationException::class, $record->context[Log::EXCEPTION]['class']);
     }
 
     public function testPayLogsBuyerCausedConfirmationFailureAsNotice(): void
@@ -237,35 +236,6 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         );
         $this->orderResource->expects($this->once())->method('confirm')->willThrowException($confirmationException);
 
-        try {
-            $this->handler->pay(
-                new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),
-                new PaymentTransactionStruct(self::TRANSACTION_ID, self::RETURN_URL),
-                Context::createDefaultContext(),
-                null,
-            );
-            static::fail('Expected the original payer action exception.');
-        } catch (PayerActionRequiredException $exception) {
-            static::assertSame($this->payerActionRequired, $exception);
-        }
-
-        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED, Level::Notice);
-    }
-
-    public function testSetLoggerKeepsTheInjectedLogger(): void
-    {
-        $this->expectCaptureRequiringPayerAction();
-
-        $otherLogger = $this->createMock(LoggerInterface::class);
-        $otherLogger->expects($this->never())->method(static::anything());
-        $this->handler->setLogger($otherLogger);
-
-        $this->orderResource->expects($this->once())->method('confirm')->willThrowException(new PayPalApiException(
-            'UNPROCESSABLE_ENTITY',
-            'The instrument was declined.',
-            Response::HTTP_UNPROCESSABLE_ENTITY,
-            ApiException::CODE_INSTRUMENT_DECLINED,
-        ));
         try {
             $this->handler->pay(
                 new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID]),

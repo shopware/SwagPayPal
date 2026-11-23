@@ -11,7 +11,7 @@ use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\LogRecord;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class LogHandler extends AbstractProcessingHandler
@@ -46,7 +46,7 @@ class LogHandler extends AbstractProcessingHandler
     protected function write(LogRecord $record): void
     {
         $message = $record->message;
-        $exception = $record->context[LogKey::EXCEPTION] ?? null;
+        $exception = $record->context[Log::EXCEPTION] ?? null;
         if ($exception instanceof \Throwable) {
             // the run log stores only the message
             $message .= ': ' . $exception->getMessage();

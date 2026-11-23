@@ -41,12 +41,10 @@ use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber;
-use Swag\PayPal\Util\Log\PayPalLogProcessor;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Bridge\Monolog\Processor\WebProcessor;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -87,27 +85,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->tag('kernel.reset', ['method' => 'reset']);
 
     $services->set('monolog.processor.paypal.introspection', IntrospectionProcessor::class)
-        ->tag('monolog.processor', ['channel' => 'paypal']);
-
-    // no `url`: paths and queries carry tokens, e.g. the restore token or the webhook's `sw-token`, the `PayPalLogProcessor` adds the route instead
-    $services->set('monolog.processor.paypal.web', WebProcessor::class)
-        ->args([
-            [
-                'http_method' => 'REQUEST_METHOD',
-                'server' => 'SERVER_NAME',
-            ],
-        ])
+        ->arg('$requestStack', service('request_stack'))
         ->tag('monolog.processor', ['channel' => 'paypal']);
 
     $services->set('monolog.processor.paypal.uid', UidProcessor::class)
         ->tag('monolog.processor', ['channel' => 'paypal'])
         ->tag('kernel.reset', ['method' => 'reset']);
-
-    $services->set(PayPalLogProcessor::class)
-        ->args([
-            service('request_stack'),
-        ])
-        ->tag('monolog.processor', ['channel' => 'paypal']);
 
     $services->set(PaymentStatusChangeSubscriber::class)
         ->args([

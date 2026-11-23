@@ -27,7 +27,7 @@ use Shopware\Storefront\Checkout\Shipping\BlockedShippingMethodSwitcher;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class ExpressShippingCallbackService
@@ -89,14 +89,14 @@ class ExpressShippingCallbackService
             throw ExpressShippingCallbackException::methodUnavailable($callback, $error);
         }
 
-        $this->logger->debug('Answered the shipping callback with {shippingOptionCount} shipping options', [
-            LogKey::SALES_CHANNEL_ID => $salesChannelContext->getSalesChannelId(),
-            LogKey::PAYPAL_ORDER_ID => $callback->getId(),
-            LogKey::COUNTRY_CODE => $callback->getShippingAddress()->getCountryCode(),
-            LogKey::SHIPPING_OPTION_COUNT => $shippingOptions->count(),
-            LogKey::SELECTED_SHIPPING_METHOD_ID => $salesChannelContext->getShippingMethod()->getId(),
-            LogKey::CONTEXT_SWITCHED => $contextSwitched,
-        ]);
+        $this->logger->debug('Answered the shipping callback with {shippingOptionCount} shipping options', Log::context(
+            salesChannelId: $salesChannelContext->getSalesChannelId(),
+            paypalOrderId: $callback->getId(),
+            countryCode: $callback->getShippingAddress()->getCountryCode(),
+            shippingOptionCount: $shippingOptions->count(),
+            selectedShippingMethodId: $salesChannelContext->getShippingMethod()->getId(),
+            contextSwitched: $contextSwitched,
+        ));
 
         return $order;
     }

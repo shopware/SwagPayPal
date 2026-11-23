@@ -13,7 +13,7 @@ use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class DeletedUpdater
@@ -64,7 +64,7 @@ class DeletedUpdater
             $this->productResource->deleteProducts($productContext->getPosSalesChannel(), $productUuids);
             $this->logger->info('Deleted products at PayPal POS: {productIds}', ['productIds' => \implode(', ', \array_keys($deletions))]);
         } catch (PosApiException $e) {
-            $this->logger->error('Could not delete the products at PayPal POS', [LogKey::EXCEPTION => $e]);
+            $this->logger->error('Could not delete the products at PayPal POS', [Log::EXCEPTION => $e]);
         }
 
         foreach ($deletions as $deletion) {

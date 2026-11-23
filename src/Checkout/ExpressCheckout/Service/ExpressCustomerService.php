@@ -30,8 +30,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 
 #[Package('checkout')]
 class ExpressCustomerService
@@ -103,12 +103,12 @@ class ExpressCustomerService
 
         $token = $this->accountService->loginById($customer->getId(), $salesChannelContext);
 
-        $this->logger->info('Logged in existing customer {customerNumber} after the Express Checkout approval', [
-            LogKey::CODE => LogCode::EXPRESS_CUSTOMER_LOGGED_IN,
-            LogKey::CUSTOMER_ID => $customer->getId(),
-            LogKey::CUSTOMER_NUMBER => $customer->getCustomerNumber(),
-            LogKey::PAYPAL_ORDER_ID => $paypalOrder->getId(),
-        ]);
+        $this->logger->info('Logged in existing customer {customerNumber} after the Express Checkout approval', Log::context(
+            code: LogCode::EXPRESS_CUSTOMER_LOGGED_IN,
+            customerId: $customer->getId(),
+            customerNumber: $customer->getCustomerNumber(),
+            paypalOrderId: $paypalOrder->getId(),
+        ));
 
         return $token;
     }
@@ -127,13 +127,13 @@ class ExpressCustomerService
         }
 
         $customer = $response->getCustomer();
-        $this->logger->info('Created customer {customerNumber} after the Express Checkout approval', [
-            LogKey::CODE => LogCode::EXPRESS_CUSTOMER_CREATED,
-            LogKey::CUSTOMER_ID => $customer->getId(),
-            LogKey::CUSTOMER_NUMBER => $customer->getCustomerNumber(),
-            LogKey::GUEST => $customer->getGuest(),
-            LogKey::PAYPAL_ORDER_ID => $paypalOrder->getId(),
-        ]);
+        $this->logger->info('Created customer {customerNumber} after the Express Checkout approval', Log::context(
+            code: LogCode::EXPRESS_CUSTOMER_CREATED,
+            customerId: $customer->getId(),
+            customerNumber: $customer->getCustomerNumber(),
+            guest: $customer->getGuest(),
+            paypalOrderId: $paypalOrder->getId(),
+        ));
 
         return $newToken;
     }

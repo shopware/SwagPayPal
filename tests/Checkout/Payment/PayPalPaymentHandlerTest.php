@@ -74,8 +74,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\PayPalSDK\MockRequestHandler;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -242,10 +242,10 @@ class PayPalPaymentHandlerTest extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, Context::createDefaultContext());
 
         $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYER_ACTION_REDIRECT, Level::Info, [
-            LogKey::ORDER_TRANSACTION_ID => $transactionId,
-            LogKey::PAYPAL_ORDER_ID => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+            Log::ORDER_TRANSACTION_ID => $transactionId,
+            Log::PAYPAL_ORDER_ID => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
         ]);
-        static::assertArrayHasKey(LogKey::ORDER_NUMBER, $record->context);
+        static::assertArrayHasKey(Log::ORDER_NUMBER, $record->context);
         $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
     }
 
@@ -624,9 +624,9 @@ class PayPalPaymentHandlerTest extends TestCase
             );
             static::fail('Expected the cancellation to be rethrown');
         } catch (PaymentException $e) {
-            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_CANCELLED, Level::Notice, [LogKey::ORDER_TRANSACTION_ID => $transactionId]);
-            static::assertSame($e::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
-            static::assertSame($e->getMessage(), $record->context[LogKey::EXCEPTION]['message'] ?? null);
+            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_CANCELLED, Level::Notice, [Log::ORDER_TRANSACTION_ID => $transactionId]);
+            static::assertSame($e::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+            static::assertSame($e->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
             $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
             $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_DECLINED);
         }

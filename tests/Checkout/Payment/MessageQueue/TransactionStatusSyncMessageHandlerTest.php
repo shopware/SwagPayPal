@@ -33,8 +33,8 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 
 /**
  * @internal
@@ -212,10 +212,10 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $record = $this->assertPayPalLogged(
             LogCode::STATUS_SYNC_TRANSITION_FAILED,
             Level::Error,
-            [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id', LogKey::ORDER_TRANSACTION_ID => 'transaction-id'],
+            [Log::PAYPAL_ORDER_ID => 'paypal-order-id', Log::ORDER_TRANSACTION_ID => 'transaction-id'],
             'The status sync could not change the payment status for PayPal order {paypalOrderId}: {errorCode}, the payment status stays unchanged',
         );
-        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class']);
+        static::assertSame($exception::class, $record->context[Log::EXCEPTION]['class']);
     }
 
     public function testInvokeThrowsPayPalApiException(): void
@@ -253,10 +253,10 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $record = $this->assertPayPalLogged(
             LogCode::STATUS_SYNC_REQUEST_FAILED,
             Level::Warning,
-            [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id'],
+            [Log::PAYPAL_ORDER_ID => 'paypal-order-id'],
             'The status sync could not fetch PayPal order {paypalOrderId}, it tries again with the next run',
         );
-        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class']);
+        static::assertSame($exception::class, $record->context[Log::EXCEPTION]['class']);
     }
 
     public function testInvokeThrowsPayPalApiExceptionResourceNotFound(): void
@@ -297,10 +297,10 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $record = $this->assertPayPalLogged(
             LogCode::STATUS_SYNC_PAYPAL_ORDER_EXPIRED,
             Level::Info,
-            [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id'],
+            [Log::PAYPAL_ORDER_ID => 'paypal-order-id'],
             'The status sync set the payment of PayPal order {paypalOrderId} to Failed, because PayPal no longer knows the order',
         );
-        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class']);
+        static::assertSame($exception::class, $record->context[Log::EXCEPTION]['class']);
     }
 
     public function testInvokeWithoutUnconfirmedTransaction(): void
@@ -357,7 +357,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $this->assertPayPalLogged(
             LogCode::STATUS_SYNC_PAYPAL_ORDER_MISSING,
             Level::Info,
-            [LogKey::ORDER_TRANSACTION_ID => 'transaction-id'],
+            [Log::ORDER_TRANSACTION_ID => 'transaction-id'],
             'The status sync cancelled a payment that never got a PayPal order',
         );
     }

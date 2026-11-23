@@ -12,8 +12,8 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\Struct\SettingsInformationStruct;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 
 #[Package('checkout')]
@@ -70,12 +70,12 @@ class SettingsSaver implements SettingsSaverInterface
         $this->guardSdkV6Setting($salesChannelId);
 
         if ($changedKeys !== []) {
-            $this->logger->info('Saved the PayPal settings, changed: {changedKeys}', [
-                LogKey::CODE => LogCode::SETTINGS_SAVED,
-                LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                LogKey::CHANGED_KEYS => \str_replace(Settings::SYSTEM_CONFIG_DOMAIN, '', \implode(', ', $changedKeys)),
-                LogKey::SANDBOX => $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId),
-            ]);
+            $this->logger->info('Saved the PayPal settings, changed: {changedKeys}', Log::context(
+                code: LogCode::SETTINGS_SAVED,
+                salesChannelId: $salesChannelId,
+                changedKeys: \str_replace(Settings::SYSTEM_CONFIG_DOMAIN, '', \implode(', ', $changedKeys)),
+                sandbox: $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId),
+            ));
         }
 
         if ($information->getLiveCredentialsValid() || $information->getSandboxCredentialsValid()) {
@@ -143,6 +143,7 @@ class SettingsSaver implements SettingsSaverInterface
             $credentials[Settings::CLIENT_SECRET] ?? '',
             $credentials[Settings::MERCHANT_PAYER_ID] ?? '',
             false,
+            $salesChannelId,
         );
     }
 
@@ -165,14 +166,22 @@ class SettingsSaver implements SettingsSaverInterface
             $credentials[Settings::CLIENT_SECRET_SANDBOX] ?? '',
             $credentials[Settings::MERCHANT_PAYER_ID_SANDBOX] ?? '',
             true,
+            $salesChannelId,
         );
     }
 
-    private function testCredentials(string $clientId, string $clientSecret, string $merchantId, bool $sandbox): bool
+    private function testCredentials(string $clientId, string $clientSecret, string $merchantId, bool $sandbox, ?string $salesChannelId): bool
     {
         try {
             return $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandbox, $merchantId);
         } catch (\Exception $e) {
+            $this->logger->warning('Could not verify the PayPal credentials, the Administration shows them as invalid', Log::context(
+                code: LogCode::SETTINGS_CREDENTIALS_UNVERIFIED,
+                salesChannelId: $salesChannelId,
+                sandbox: $sandbox,
+                exception: $e,
+            ));
+
             return false;
         }
     }

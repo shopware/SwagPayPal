@@ -14,7 +14,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class UnsyncedChecker
@@ -73,7 +73,7 @@ class UnsyncedChecker
             $this->productResource->deleteProducts($productContext->getPosSalesChannel(), $deletions);
             $this->logger->info('Removed unsynced products at PayPal POS: {productIds}', ['productIds' => \implode(', ', $deletions)]);
         } catch (PosApiException $e) {
-            $this->logger->warning('Could not remove products from PayPal POS that are no longer synced', [LogKey::EXCEPTION => $e]);
+            $this->logger->warning('Could not remove products from PayPal POS that are no longer synced', [Log::EXCEPTION => $e]);
         }
     }
 }

@@ -22,8 +22,8 @@ use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookRegistry;
@@ -335,7 +335,7 @@ class WebhookServiceTest extends TestCase
     private function assertSingleLog(string $message, string $code, string $webhookId): void
     {
         static::assertCount(1, $this->getPayPalLogRecords());
-        $record = $this->assertPayPalLogged($code, Level::Info, [LogKey::WEBHOOK_ID => $webhookId], $message);
+        $record = $this->assertPayPalLogged($code, Level::Info, [Log::WEBHOOK_ID => $webhookId], $message);
 
         $encoded = \json_encode($record->context, \JSON_THROW_ON_ERROR);
         static::assertStringNotContainsString(self::WEBHOOK_URL, $encoded);

@@ -14,7 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 use Symfony\Contracts\Service\ResetInterface;
 
 #[Package('checkout')]
@@ -73,7 +73,7 @@ class LocaleCodeProvider implements ResetInterface
             if (!$matched) {
                 $this->logger->debug(
                     'PayPal doesn\'t support locale {localeCode}, used {fallbackLocaleCode} instead',
-                    [LogKey::LOCALE_CODE => $localeCode, LogKey::FALLBACK_LOCALE_CODE => self::DEFAULT_LOCALE_CODE]
+                    Log::context(localeCode: $localeCode, fallbackLocaleCode: self::DEFAULT_LOCALE_CODE)
                 );
 
                 return self::DEFAULT_LOCALE_CODE;
@@ -81,7 +81,7 @@ class LocaleCodeProvider implements ResetInterface
 
             $this->logger->debug(
                 'PayPal doesn\'t support locale {localeCode}, used {fallbackLocaleCode} instead',
-                [LogKey::LOCALE_CODE => $localeCode, LogKey::FALLBACK_LOCALE_CODE => $matched]
+                Log::context(localeCode: $localeCode, fallbackLocaleCode: $matched)
             );
 
             return $matched;

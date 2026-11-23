@@ -29,8 +29,8 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Swag\PayPal\Webhook\WebhookRegistry;
@@ -113,13 +113,13 @@ class WebhookSubscriberTest extends TestCase
             LogCode::WEBHOOK_DEREGISTRATION_FAILED,
             Level::Warning,
             [
-                LogKey::WEBHOOK_ID => self::WEBHOOK_ID,
-                LogKey::SALES_CHANNEL_ID => TestDefaults::SALES_CHANNEL,
+                Log::WEBHOOK_ID => self::WEBHOOK_ID,
+                Log::SALES_CHANNEL_ID => TestDefaults::SALES_CHANNEL,
             ],
-            'Could not remove the PayPal webhook {webhookId}, it stays registered at PayPal',
+            'Could not remove the PayPal webhook, it stays registered at PayPal',
         );
-        static::assertSame($exception::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
-        static::assertSame($exception->getMessage(), $record->context[LogKey::EXCEPTION]['message'] ?? null);
+        static::assertSame($exception::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        static::assertSame($exception->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
     }
 
     public function testCheckWebhookBefore(): void

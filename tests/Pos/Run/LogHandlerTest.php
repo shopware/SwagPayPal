@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Run\LogHandler;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 /**
  * @internal
@@ -29,7 +29,7 @@ class LogHandlerTest extends TestCase
         $handler = new LogHandler();
         $logger = new Logger('test', [$handler], [new PsrLogMessageProcessor()]);
 
-        $logger->error('Could not update the product at PayPal POS', [LogKey::EXCEPTION => new \RuntimeException('The product is locked')]);
+        $logger->error('Could not update the product at PayPal POS', [Log::EXCEPTION => new \RuntimeException('The product is locked')]);
 
         static::assertSame(
             [['level' => Level::Error->value, 'message' => 'Could not update the product at PayPal POS: The product is locked']],

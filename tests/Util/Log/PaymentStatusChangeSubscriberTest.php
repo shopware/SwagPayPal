@@ -24,8 +24,8 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Shopware\Core\System\StateMachine\Event\StateMachineTransitionEvent;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber;
 
 /**
@@ -80,14 +80,14 @@ class PaymentStatusChangeSubscriberTest extends TestCase
             message: 'Changed the payment status of order {orderNumber} from {fromState} to {toState}',
         );
         static::assertSame([
-            LogKey::ORDER_TRANSACTION_ID => 'id',
-            LogKey::ORDER_ID => 'order-id',
-            LogKey::ORDER_NUMBER => '10000',
-            LogKey::SALES_CHANNEL_ID => 'sales-channel-id',
-            LogKey::PAYMENT_METHOD => 'swag_paypal',
-            LogKey::CODE => LogCode::PAYMENT_STATUS_CHANGED,
-            LogKey::FROM_STATE => 'open',
-            LogKey::TO_STATE => 'paid',
+            Log::ORDER_TRANSACTION_ID => 'id',
+            Log::ORDER_ID => 'order-id',
+            Log::ORDER_NUMBER => '10000',
+            Log::SALES_CHANNEL_ID => 'sales-channel-id',
+            Log::PAYMENT_METHOD => 'swag_paypal',
+            Log::CODE => LogCode::PAYMENT_STATUS_CHANGED,
+            Log::FROM_STATE => 'open',
+            Log::TO_STATE => 'paid',
         ], $record->context);
     }
 
@@ -113,6 +113,20 @@ class PaymentStatusChangeSubscriberTest extends TestCase
         $this->subscriber->onTransition($this->createEvent('order_transaction'));
 
         static::assertSame([], $this->getPayPalLogRecords());
+    }
+
+    public function testFailingLookupDoesNotFailTheTransition(): void
+    {
+        $this->repository->method('search')->willThrowException(new \RuntimeException('Lock wait timeout exceeded'));
+        $this->paymentMethodDataRegistry->expects($this->never())->method('isPayPalPaymentMethod');
+
+        $this->subscriber->onTransition($this->createEvent('order_transaction'));
+
+        $this->assertPayPalLogged(LogCode::PAYMENT_STATUS_LOOKUP_FAILED, Level::Warning, [
+            Log::ORDER_TRANSACTION_ID => 'id',
+            Log::FROM_STATE => 'open',
+            Log::TO_STATE => 'paid',
+        ]);
     }
 
     public function testIgnoresOtherEntities(): void

@@ -43,8 +43,8 @@ use Swag\PayPal\Storefront\BrowserErrorCode;
 use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Storefront\Service\ReturnToken;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -110,10 +110,7 @@ class PayPalController extends StorefrontController
         } catch (JWTException $e) {
             $this->logger->warning(
                 'Could not restore the buyer\'s session after the return from PayPal, because the return token is invalid or expired',
-                [
-                    LogKey::CODE => LogCode::STOREFRONT_RETURN_TOKEN_INVALID,
-                    LogKey::EXCEPTION => $e,
-                ],
+                Log::context(code: LogCode::STOREFRONT_RETURN_TOKEN_INVALID, exception: $e),
             );
 
             return $this->redirectToRoute('frontend.checkout.confirm.page');
@@ -285,14 +282,14 @@ class PayPalController extends StorefrontController
 
     private function logBrowserError(SalesChannelContext $context, ?string $code, ?string $step, ?string $pageType, bool $fatal, ?string $error): void
     {
-        // untrusted browser input: context only, cut
+        // untrusted browser input, `Log::context()` cuts it
         $logContext = [
-            LogKey::PAYMENT_METHOD => $context->getPaymentMethod()->getTechnicalName(),
-            LogKey::CLIENT_CODE => \mb_substr($code ?? '', 0, 200) ?: null,
-            LogKey::CLIENT_STEP => \mb_substr($step ?? '', 0, 200) ?: null,
-            LogKey::PAGE_TYPE => \mb_substr($pageType ?? '', 0, 200) ?: null,
-            LogKey::CLIENT_ERROR => \mb_substr($error ?? '', 0, 200) ?: null,
-            LogKey::FATAL => $fatal,
+            Log::PAYMENT_METHOD => $context->getPaymentMethod()->getTechnicalName(),
+            Log::CLIENT_CODE => $code,
+            Log::CLIENT_STEP => $step,
+            Log::PAGE_TYPE => $pageType,
+            Log::CLIENT_ERROR => $error,
+            Log::FATAL => $fatal,
         ];
 
         $isScriptLoad = $code === BrowserErrorCode::GENERIC && $step === BrowserErrorCode::STEP_SCRIPT_LOAD;
@@ -300,25 +297,25 @@ class PayPalController extends StorefrontController
         switch ($isScriptLoad ? BrowserErrorCode::SCRIPT : $code) {
             case BrowserErrorCode::USER_CANCELLED:
             case BrowserErrorCode::EXPRESS_USER_CANCELLED:
-                $this->logger->notice('The browser reported that the buyer closed the PayPal window', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_BUYER_CANCELLED]);
+                $this->logger->notice('The browser reported that the buyer closed the PayPal window', Log::context(...$logContext, code: LogCode::STOREFRONT_BUYER_CANCELLED));
 
                 break;
             case BrowserErrorCode::DECLINED:
-                $this->logger->notice('The browser reported that PayPal declined the payment method', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_PAYMENT_DECLINED]);
+                $this->logger->notice('The browser reported that PayPal declined the payment method', Log::context(...$logContext, code: LogCode::STOREFRONT_PAYMENT_DECLINED));
 
                 break;
             case BrowserErrorCode::SCRIPT:
             case BrowserErrorCode::SCRIPT_NOT_LOADED:
-                $this->logger->warning('The browser reported that the PayPal script failed', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_SCRIPT_FAILED]);
+                $this->logger->warning('The browser reported that the PayPal script failed', Log::context(...$logContext, code: LogCode::STOREFRONT_SCRIPT_FAILED));
 
                 break;
             case BrowserErrorCode::BROWSER_UNSUPPORTED:
             case BrowserErrorCode::NOT_ELIGIBLE:
-                $this->logger->debug('The browser reported that PayPal is unavailable for this buyer', $logContext);
+                $this->logger->debug('The browser reported that PayPal is unavailable for this buyer', Log::context(...$logContext));
 
                 break;
             default:
-                $this->logger->warning('The browser reported a PayPal error', [...$logContext, LogKey::CODE => LogCode::STOREFRONT_ERROR_REPORTED]);
+                $this->logger->warning('The browser reported a PayPal error', Log::context(...$logContext, code: LogCode::STOREFRONT_ERROR_REPORTED));
         }
     }
 

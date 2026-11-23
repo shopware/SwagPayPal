@@ -35,8 +35,8 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 
 /**
  * @internal
@@ -136,21 +136,21 @@ class ShippingInformationMessageHandlerTest extends TestCase
         }
 
         $expected = [
-            LogKey::ORDER_NUMBER => '10000',
-            LogKey::ORDER_DELIVERY_ID => 'order-delivery-id',
-            LogKey::PAYPAL_ORDER_ID => 'paypal-order-id',
+            Log::ORDER_NUMBER => '10000',
+            Log::ORDER_DELIVERY_ID => 'order-delivery-id',
+            Log::PAYPAL_ORDER_ID => 'paypal-order-id',
         ];
 
         if ($hasAdded) {
             $record = $this->assertPayPalLogged(LogCode::TRACKING_CODES_ADDED, Level::Info, $expected);
-            static::assertIsString($record->context[LogKey::TRACKING_CODES]);
+            static::assertIsString($record->context[Log::TRACKING_CODES]);
         } else {
             $this->assertPayPalNotLogged(LogCode::TRACKING_CODES_ADDED);
         }
 
         if ($hasRemoved) {
             $record = $this->assertPayPalLogged(LogCode::TRACKING_CODES_REMOVED, Level::Info, $expected);
-            static::assertIsString($record->context[LogKey::TRACKING_CODES]);
+            static::assertIsString($record->context[Log::TRACKING_CODES]);
         } else {
             $this->assertPayPalNotLogged(LogCode::TRACKING_CODES_REMOVED);
         }
@@ -331,8 +331,8 @@ class ShippingInformationMessageHandlerTest extends TestCase
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
 
         $this->assertPayPalLogged(LogCode::TRACKING_CARRIER_UNSUPPORTED, Level::Warning, [
-            LogKey::CARRIER => 'invalid-carrier',
-            LogKey::ORDER_NUMBER => '10000',
+            Log::CARRIER => 'invalid-carrier',
+            Log::ORDER_NUMBER => '10000',
         ]);
     }
 
@@ -402,8 +402,8 @@ class ShippingInformationMessageHandlerTest extends TestCase
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
 
         $this->assertPayPalLogged(LogCode::TRACKING_PAYPAL_ORDER_NOT_FOUND, Level::Warning, [
-            LogKey::ORDER_NUMBER => '10000',
-            LogKey::PAYPAL_ORDER_ID => 'paypal-order-id',
+            Log::ORDER_NUMBER => '10000',
+            Log::PAYPAL_ORDER_ID => 'paypal-order-id',
         ]);
     }
 

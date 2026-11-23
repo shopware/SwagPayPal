@@ -14,7 +14,7 @@ use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class OutdatedUpdater
@@ -52,7 +52,7 @@ class OutdatedUpdater
                         $productContext->removeProduct($shopwareProduct);
                         $this->logger->notice('The product was marked as synced but is missing at PayPal POS, the next sync recreates it', ['product' => $shopwareProduct]);
                     } else {
-                        $this->logger->error('Could not update the product at PayPal POS', ['product' => $shopwareProduct, LogKey::EXCEPTION => $e]);
+                        $this->logger->error('Could not update the product at PayPal POS', ['product' => $shopwareProduct, Log::EXCEPTION => $e]);
                     }
                 }
             }

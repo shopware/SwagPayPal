@@ -25,8 +25,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 
 /**
  * @internal
@@ -102,13 +102,13 @@ class OrderResourceTest extends TestCase
         $response = $resource->create($order, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         $this->assertPayPalLogged(LogCode::CHECKOUT_ORDER_CREATED, Level::Info, [
-            LogKey::PAYPAL_ORDER_ID => $response->getId(),
-            LogKey::SALES_CHANNEL_ID => TestDefaults::SALES_CHANNEL,
-            LogKey::PARTNER_ATTRIBUTION_ID => PartnerAttributionId::PAYPAL_CLASSIC,
+            Log::PAYPAL_ORDER_ID => $response->getId(),
+            Log::SALES_CHANNEL_ID => TestDefaults::SALES_CHANNEL,
+            Log::PARTNER_ATTRIBUTION_ID => PartnerAttributionId::PAYPAL_CLASSIC,
             // taken from the sent order, not the response
-            LogKey::AMOUNT => '10.00',
-            LogKey::CURRENCY => 'EUR',
-            LogKey::INVOICE_ID => 'INV-1',
+            Log::AMOUNT => '10.00',
+            Log::CURRENCY => 'EUR',
+            Log::INVOICE_ID => 'INV-1',
         ], 'Created PayPal order {paypalOrderId}');
     }
 

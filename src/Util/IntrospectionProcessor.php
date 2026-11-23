@@ -12,12 +12,21 @@ use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Psr\Log\LogLevel;
+use Shopware\Core\Framework\Api\Context\AdminApiSource;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\PlatformRequest;
 use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
+use Swag\PayPal\Util\Log\Log;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
+ * Adds where a log line comes from: the request's sales channel, Admin user, method, host and route, but not its URL,
+ * as paths and queries carry tokens. From the given level up, as the backtrace is expensive, also the calling file, line,
+ * class and function and the PayPal client, gateway, resource and controller.
+ *
  * @phpstan-type Trace array{file?: string, line?: int, function?: string, class?: string, type?: string, args?: array<mixed>, object?: object}
  */
 #[Package('checkout')]
@@ -35,8 +44,10 @@ class IntrospectionProcessor implements ProcessorInterface
      *
      * @phpstan-param value-of<Level::VALUES>|value-of<Level::NAMES>|Level|LogLevel::* $level
      */
-    public function __construct(int|string|Level $level = Level::Error)
-    {
+    public function __construct(
+        int|string|Level $level = Level::Error,
+        private readonly ?RequestStack $requestStack = null,
+    ) {
         $this->level = Logger::toMonologLevel($level);
     }
 
@@ -45,6 +56,8 @@ class IntrospectionProcessor implements ProcessorInterface
      */
     public function __invoke(LogRecord $record): LogRecord
     {
+        $record = $this->addRequest($record);
+
         // return if the level is not high enough
         if ($record->level->isLowerThan($this->level)) {
             return $record;
@@ -130,6 +143,30 @@ class IntrospectionProcessor implements ProcessorInterface
         \array_splice($traces, 0, 3);
 
         return $traces;
+    }
+
+    private function addRequest(LogRecord $record): LogRecord
+    {
+        $request = $this->requestStack?->getMainRequest();
+        if ($request === null) {
+            return $record;
+        }
+
+        $requestContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
+        $source = $requestContext instanceof Context ? $requestContext->getSource() : null;
+        $isString = static fn (mixed $value): bool => \is_string($value);
+
+        return $record->with(
+            context: $record->context + \array_filter([
+                Log::SALES_CHANNEL_ID => $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID),
+                Log::USER_ID => $source instanceof AdminApiSource ? $source->getUserId() : null,
+            ], $isString),
+            extra: [...$record->extra, ...\array_filter([
+                'http_method' => $request->server->get('REQUEST_METHOD'),
+                'server' => $request->server->get('SERVER_NAME'),
+                Log::ROUTE => $request->attributes->get('_route'),
+            ], $isString)],
+        );
     }
 
     /**

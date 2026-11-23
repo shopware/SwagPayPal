@@ -40,8 +40,8 @@ use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -134,7 +134,7 @@ class HoneyWebhookServiceTest extends TestCase
         static::assertTrue($result->success);
         static::assertSame('Merchant onboarded successfully', $result->message);
 
-        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_SENT, Level::Info, [LogKey::ENDPOINT => 'install']);
+        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_SENT, Level::Info, [Log::ENDPOINT => 'install']);
     }
 
     public function testDeregisterWebhook(): void
@@ -185,7 +185,7 @@ class HoneyWebhookServiceTest extends TestCase
         static::assertTrue($result->success);
         static::assertSame('Merchant onboarded successfully', $result->message);
 
-        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_SENT, Level::Info, [LogKey::ENDPOINT => 'uninstall']);
+        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_SENT, Level::Info, [Log::ENDPOINT => 'uninstall']);
     }
 
     public function testReRegister(): void
@@ -257,7 +257,7 @@ class HoneyWebhookServiceTest extends TestCase
         static::assertSame('Merchant onboarded successfully', $result->message);
         static::assertSame(
             ['uninstall', 'install'],
-            \array_column($this->getPayPalLogContexts(LogCode::AGENTIC_WEBHOOK_SENT), LogKey::ENDPOINT),
+            \array_column($this->getPayPalLogContexts(LogCode::AGENTIC_WEBHOOK_SENT), Log::ENDPOINT),
         );
     }
 
@@ -321,8 +321,8 @@ class HoneyWebhookServiceTest extends TestCase
             static::assertSame('JWT signature verification failed', $e->getMessage());
         }
 
-        $this->assertPayPalLogged(LogCode::AGENTIC_OLD_REGISTRATION_NOT_REMOVED, Level::Warning, [LogKey::ERROR_CODE => 'INVALID_JWT']);
-        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_FAILED, Level::Error, [LogKey::ENDPOINT => 'install']);
+        $this->assertPayPalLogged(LogCode::AGENTIC_OLD_REGISTRATION_NOT_REMOVED, Level::Warning, [Log::ERROR_CODE => 'INVALID_JWT']);
+        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_FAILED, Level::Error, [Log::ENDPOINT => 'install']);
     }
 
     public function testDeregisterNotRegistered(): void
@@ -494,11 +494,11 @@ class HoneyWebhookServiceTest extends TestCase
         }
 
         $record = $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_FAILED, Level::Error, [
-            LogKey::ENDPOINT => 'install',
-            LogKey::ERROR_CODE => 'INVALID_JWT',
-            LogKey::RESULT_MESSAGE => 'JWT signature verification failed',
+            Log::ENDPOINT => 'install',
+            Log::ERROR_CODE => 'INVALID_JWT',
+            Log::RESULT_MESSAGE => 'JWT signature verification failed',
         ]);
-        static::assertSame(ClientException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(ClientException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testInvalidDeregisterRequest(): void
@@ -546,11 +546,11 @@ class HoneyWebhookServiceTest extends TestCase
         }
 
         $record = $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_FAILED, Level::Error, [
-            LogKey::ENDPOINT => 'uninstall',
-            LogKey::ERROR_CODE => 'INVALID_JWT',
-            LogKey::RESULT_MESSAGE => 'JWT signature verification failed',
+            Log::ENDPOINT => 'uninstall',
+            Log::ERROR_CODE => 'INVALID_JWT',
+            Log::RESULT_MESSAGE => 'JWT signature verification failed',
         ]);
-        static::assertSame(ClientException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(ClientException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testInvalidRequestNoResponse(): void

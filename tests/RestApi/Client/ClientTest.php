@@ -81,22 +81,21 @@ class ClientTest extends TestCase
             'httpStatus' => 200,
             'paypalDebugId' => 'some-debug-id',
             'paypalRequestId' => '1234567',
-            'request' => $jsonBody,
-            'response' => $jsonBody,
+            'request' => $body,
+            'response' => $body,
         ], $logs[0]->context);
     }
 
-    public function testSendRequestPassesRawBodies(): void
+    public function testSendRequestRedactsBodies(): void
     {
         $jsonBody = \json_encode(['payer' => ['email_address' => 'buyer@example.com', 'payer_id' => 'ABC']], \JSON_THROW_ON_ERROR);
         $this->guzzleClient->append(new Response(200, [], $jsonBody));
 
         $this->client->sendRequest(new Request('POST', 'http://example.com/v2/checkout/orders', [], $jsonBody));
 
-        // the redaction is done by the `PayPalLogProcessor`
         $context = $this->logger->getRecords()[0]->context;
-        static::assertSame($jsonBody, $context['request']);
-        static::assertSame($jsonBody, $context['response']);
+        static::assertSame(['payer' => ['email_address' => '<redacted>', 'payer_id' => 'ABC']], $context['request']);
+        static::assertSame(['payer' => ['email_address' => '<redacted>', 'payer_id' => 'ABC']], $context['response']);
     }
 
     public function testSendRequestNeverLogsTokenBodies(): void
@@ -110,14 +109,14 @@ class ClientTest extends TestCase
         static::assertSame('<redacted>', $context['response']);
     }
 
-    public function testSendRequestPassesFormBodiesRaw(): void
+    public function testSendRequestRedactsFormBodies(): void
     {
         $this->guzzleClient->append(new Response(200, [], 'ok'));
 
         $this->client->sendRequest(new Request('POST', 'http://example.com/some/endpoint', [], 'client_secret=abc&grant_type=x'));
 
         $context = $this->logger->getRecords()[0]->context;
-        static::assertSame('client_secret=abc&grant_type=x', $context['request']);
+        static::assertSame('<redacted>', $context['request']);
         static::assertSame('ok', $context['response']);
     }
 
@@ -156,10 +155,8 @@ class ClientTest extends TestCase
             'httpMethod' => 'POST',
             'httpPath' => '/some/endpoint',
             'httpStatus' => 400,
-            'paypalDebugId' => null,
             'paypalRequestId' => '1234567',
             'paypalError' => 'UNKNOWN',
-            'paypalIssues' => null,
         ], $logs[0]->context);
         static::assertSame(Level::Debug, $logs[1]->level);
     }
@@ -179,15 +176,15 @@ class ClientTest extends TestCase
         static::assertSame(['PAYEE_ACCOUNT_RESTRICTED'], $logs[0]->context['paypalIssues']);
     }
 
-    public function testSendRequestPassesTheRawPath(): void
+    public function testSendRequestRedactsTokenPaths(): void
     {
         $this->guzzleClient->append(new Response(404));
 
         $this->client->sendRequest(new Request('DELETE', 'http://example.com/v3/vault/payment-tokens/8kk8451t?x=1'));
 
         $logs = $this->logger->getRecords();
-        static::assertSame('/v3/vault/payment-tokens/8kk8451t', $logs[0]->context['httpPath']);
-        static::assertSame('/v3/vault/payment-tokens/8kk8451t', $logs[1]->context['httpPath']);
+        static::assertSame('/v3/vault/payment-tokens/<redacted>', $logs[0]->context['httpPath']);
+        static::assertSame('/v3/vault/payment-tokens/<redacted>', $logs[1]->context['httpPath']);
     }
 
     public function testSendRequest400WithIssue(): void
@@ -202,7 +199,7 @@ class ClientTest extends TestCase
         static::assertSame(['FIRST', 'INSTRUMENT_DECLINED'], $context['paypalIssues']);
         static::assertSame('dbg', $context['paypalDebugId']);
         static::assertSame('/v2/checkout/orders', $context['httpPath']);
-        static::assertNull($context['paypalRequestId']);
+        static::assertArrayNotHasKey('paypalRequestId', $context);
     }
 
     public function testSendRequest400WithNameAndOAuthError(): void
@@ -215,7 +212,7 @@ class ClientTest extends TestCase
 
         $logs = $this->logger->getRecords();
         static::assertSame('RESOURCE_NOT_FOUND', $logs[0]->context['paypalError']);
-        static::assertNull($logs[0]->context['paypalIssues']);
+        static::assertArrayNotHasKey('paypalIssues', $logs[0]->context);
         static::assertSame('invalid_client', $logs[2]->context['paypalError']);
     }
 
@@ -227,6 +224,6 @@ class ClientTest extends TestCase
 
         $context = $this->logger->getRecords()[0]->context;
         static::assertSame('SERVICE_UNAVAILABLE', $context['paypalError']);
-        static::assertNull($context['paypalIssues']);
+        static::assertArrayNotHasKey('paypalIssues', $context);
     }
 }

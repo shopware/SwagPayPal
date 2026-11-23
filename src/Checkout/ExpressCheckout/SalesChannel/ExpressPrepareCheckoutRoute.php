@@ -22,8 +22,8 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -110,9 +110,9 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             $paypalOrderId = \is_string($paypalOrderId) ? $paypalOrderId : null;
 
             if (FailureClassifier::isCausedByBuyer($e)) {
-                $this->logger->notice('Could not continue the Express Checkout of PayPal order {paypalOrderId}: {errorCode}', [LogKey::CODE => LogCode::EXPRESS_PREPARATION_DECLINED, LogKey::PAYPAL_ORDER_ID => $paypalOrderId, LogKey::EXCEPTION => $e]);
+                $this->logger->notice('Could not continue the Express Checkout: {errorCode}', Log::context(code: LogCode::EXPRESS_PREPARATION_DECLINED, paypalOrderId: $paypalOrderId, exception: $e));
             } else {
-                $this->logger->error('Could not continue the Express Checkout of PayPal order {paypalOrderId}: {errorCode}, the buyer sees an error', [LogKey::CODE => LogCode::EXPRESS_PREPARATION_FAILED, LogKey::PAYPAL_ORDER_ID => $paypalOrderId, LogKey::EXCEPTION => $e]);
+                $this->logger->error('Could not continue the Express Checkout: {errorCode}, the buyer sees an error', Log::context(code: LogCode::EXPRESS_PREPARATION_FAILED, paypalOrderId: $paypalOrderId, exception: $e));
             }
 
             throw $e;

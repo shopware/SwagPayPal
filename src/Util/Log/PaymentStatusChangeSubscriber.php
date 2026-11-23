@@ -18,7 +18,8 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Whatever changed the status (checkout, webhook, status sync, Admin) logs the cause itself, `extra.uid` groups both lines.
+ * The checkout, webhooks and the plugin's Administration actions log the cause of a change, `extra.uid` groups both lines.
+ * Without a cause line, the status sync or someone outside the plugin changed it, e.g. manually in the Administration.
  *
  * @internal
  */
@@ -51,18 +52,33 @@ final class PaymentStatusChangeSubscriber implements EventSubscriberInterface
         $criteria = new Criteria([$event->getEntityId()]);
         $criteria->addAssociation('order');
         $criteria->addAssociation('paymentMethod');
-        $transaction = $this->orderTransactionRepository->search($criteria, $event->getContext())->getEntities()->first();
+        $logContext = [
+            Log::ORDER_TRANSACTION_ID => $event->getEntityId(),
+            Log::FROM_STATE => $event->getFromPlace()->getTechnicalName(),
+            Log::TO_STATE => $event->getToPlace()->getTechnicalName(),
+        ];
+
+        // the status has changed already, logging must not fail the transition of whoever triggered it
+        try {
+            $transaction = $this->orderTransactionRepository->search($criteria, $event->getContext())->getEntities()->first();
+        } catch (\Throwable $e) {
+            $this->logger->warning(
+                'Could not check if the changed payment status of order transaction {orderTransactionId} belongs to PayPal',
+                Log::context(...$logContext, code: LogCode::PAYMENT_STATUS_LOOKUP_FAILED, exception: $e),
+            );
+
+            return;
+        }
+
         $paymentMethod = $transaction?->getPaymentMethod();
 
         if ($transaction === null || $paymentMethod === null || !$this->paymentMethodDataRegistry->isPayPalPaymentMethod($paymentMethod)) {
             return;
         }
 
-        $this->logger->info('Changed the payment status of order {orderNumber} from {fromState} to {toState}', [
-            LogKey::ORDER_TRANSACTION => $transaction,
-            LogKey::CODE => LogCode::PAYMENT_STATUS_CHANGED,
-            LogKey::FROM_STATE => $event->getFromPlace()->getTechnicalName(),
-            LogKey::TO_STATE => $event->getToPlace()->getTechnicalName(),
-        ]);
+        $this->logger->info(
+            'Changed the payment status of order {orderNumber} from {fromState} to {toState}',
+            Log::context(...$logContext, code: LogCode::PAYMENT_STATUS_CHANGED, orderTransaction: $transaction),
+        );
     }
 }

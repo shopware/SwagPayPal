@@ -27,8 +27,8 @@ use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\RestApi\V2\Resource\RefundResource;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -294,21 +294,21 @@ class PayPalOrdersController extends AbstractController
         );
 
         $logContext = [
-            LogKey::SALES_CHANNEL_ID => $salesChannelId,
-            LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
-            LogKey::PAYPAL_ORDER_ID => $paypalOrderId,
-            LogKey::CAPTURE_ID => $captureId,
-            LogKey::PAYMENT => $refundResponse,
+            Log::PAYMENT => $refundResponse,
+            Log::SALES_CHANNEL_ID => $salesChannelId,
+            Log::ORDER_TRANSACTION_ID => $orderTransactionId,
+            Log::PAYPAL_ORDER_ID => $paypalOrderId,
+            Log::CAPTURE_ID => $captureId,
         ];
 
         if ($refundResponse->getStatus() === ConstantsV2::ORDER_REFUND_COMPLETED) {
             // before the status update, so a failing update can't hide a refund PayPal completed
-            $this->logger->info('Refunded {amount} {currency} of capture {captureId} in the Administration', [...$logContext, LogKey::CODE => LogCode::ADMIN_REFUND_CREATED]);
+            $this->logger->info('Refunded {amount} {currency} of capture {captureId} in the Administration', Log::context(...$logContext, code: LogCode::ADMIN_REFUND_CREATED));
 
             $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
             $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refundResponse, $order, $context);
         } else {
-            $this->logger->notice('PayPal answered the refund of capture {captureId} with status {refundStatus}', [...$logContext, LogKey::CODE => LogCode::ADMIN_REFUND_NOT_COMPLETED]);
+            $this->logger->notice('PayPal answered the refund of capture {captureId} with status {refundStatus}', Log::context(...$logContext, code: LogCode::ADMIN_REFUND_NOT_COMPLETED));
         }
 
         return new JsonResponse($refundResponse);
@@ -370,18 +370,18 @@ class PayPalOrdersController extends AbstractController
         );
 
         $logContext = [
-            LogKey::SALES_CHANNEL_ID => $salesChannelId,
-            LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
-            LogKey::AUTHORIZATION_ID => $authorizationId,
-            LogKey::PAYMENT => $captureResponse,
+            Log::PAYMENT => $captureResponse,
+            Log::SALES_CHANNEL_ID => $salesChannelId,
+            Log::ORDER_TRANSACTION_ID => $orderTransactionId,
+            Log::AUTHORIZATION_ID => $authorizationId,
         ];
 
         if ($captureResponse->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
-            $this->logger->info('Captured {amount} {currency} of authorization {authorizationId} in the Administration', [...$logContext, LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_CAPTURED]);
+            $this->logger->info('Captured {amount} {currency} of authorization {authorizationId} in the Administration', Log::context(...$logContext, code: LogCode::ADMIN_AUTHORIZATION_CAPTURED));
 
             $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
         } else {
-            $this->logger->notice('PayPal answered the capture of authorization {authorizationId} with status {captureStatus}', [...$logContext, LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_CAPTURE_NOT_COMPLETED]);
+            $this->logger->notice('PayPal answered the capture of authorization {authorizationId} with status {captureStatus}', Log::context(...$logContext, code: LogCode::ADMIN_AUTHORIZATION_CAPTURE_NOT_COMPLETED));
         }
 
         return new JsonResponse($captureResponse);
@@ -429,12 +429,12 @@ class PayPalOrdersController extends AbstractController
 
         $this->authorizationResource->void($authorizationId, $salesChannelId, $this->getPartnerAttributionId($request));
 
-        $this->logger->info('Voided authorization {authorizationId} in the Administration', [
-            LogKey::CODE => LogCode::ADMIN_AUTHORIZATION_VOIDED,
-            LogKey::SALES_CHANNEL_ID => $salesChannelId,
-            LogKey::ORDER_TRANSACTION_ID => $orderTransactionId,
-            LogKey::AUTHORIZATION_ID => $authorizationId,
-        ]);
+        $this->logger->info('Voided authorization {authorizationId} in the Administration', Log::context(
+            code: LogCode::ADMIN_AUTHORIZATION_VOIDED,
+            salesChannelId: $salesChannelId,
+            orderTransactionId: $orderTransactionId,
+            authorizationId: $authorizationId,
+        ));
 
         $this->paymentStatusUtil->applyVoidState($orderTransactionId, $context);
 

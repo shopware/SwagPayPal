@@ -22,8 +22,8 @@ use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\WebhookController;
@@ -113,7 +113,7 @@ class WebhookControllerTest extends TestCase
             Level::Info,
             message: 'Processed PayPal webhook event {webhookEventType}',
         );
-        static::assertArrayNotHasKey(LogKey::PAYLOAD, $record->context);
+        static::assertArrayNotHasKey(Log::PAYLOAD, $record->context);
         static::assertArrayNotHasKey('webhook', $record->context);
     }
 
@@ -129,7 +129,7 @@ class WebhookControllerTest extends TestCase
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
         $record = $this->assertPayPalLogged(LogCode::WEBHOOK_EVENT_FAILED, Level::Error);
-        static::assertSame(PayPalApiException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(PayPalApiException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testExecuteWebhookThrowsWebhookException(): void
@@ -144,7 +144,7 @@ class WebhookControllerTest extends TestCase
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
         $record = $this->assertPayPalLogged(LogCode::WEBHOOK_EVENT_INVALID, Level::Error);
-        static::assertSame(WebhookException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(WebhookException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testExecuteWebhookThrowsGeneralException(): void
@@ -159,7 +159,7 @@ class WebhookControllerTest extends TestCase
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
         $record = $this->assertPayPalLogged(LogCode::WEBHOOK_EVENT_FAILED, Level::Error);
-        static::assertSame(\RuntimeException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(\RuntimeException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testExecuteWebhookEmptyToken(): void
@@ -172,7 +172,7 @@ class WebhookControllerTest extends TestCase
 
         static::assertSame('Shopware token is invalid', $response->getContent());
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Warning, [LogKey::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
+        $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Warning, [Log::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
     }
 
     public function testExecuteWebhookEmptyTokenSent(): void
@@ -211,7 +211,7 @@ class WebhookControllerTest extends TestCase
 
         static::assertSame('Shopware token is invalid', $response->getContent());
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $record = $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Warning, [LogKey::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
+        $record = $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Warning, [Log::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
         static::assertStringNotContainsString('invalid-token', \json_encode($record->context, \JSON_THROW_ON_ERROR));
     }
 
@@ -255,7 +255,7 @@ class WebhookControllerTest extends TestCase
 
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $record = $this->assertPayPalLogged(LogCode::WEBHOOK_TRANSACTION_UNKNOWN, Level::Warning);
-        static::assertSame(WebhookOrderTransactionNotFoundException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(WebhookOrderTransactionNotFoundException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testExecuteWebhookLogsTheRawPayload(): void
@@ -270,8 +270,8 @@ class WebhookControllerTest extends TestCase
         ));
         static::assertCount(1, $records);
         static::assertSame(Level::Debug, $records[0]->level);
-        static::assertSame(WebhookDataFixture::get(), $records[0]->context[LogKey::PAYLOAD]);
-        static::assertArrayNotHasKey(LogKey::CODE, $records[0]->context);
+        static::assertSame(WebhookDataFixture::get(), $records[0]->context[Log::PAYLOAD]);
+        static::assertArrayNotHasKey(Log::CODE, $records[0]->context);
     }
 
     private function createRequestWithWebhookData(): Request

@@ -29,7 +29,10 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 #[Package('checkout')]
 final class FailureClassifier
 {
+    // cart exceptions with other codes are system failures, e.g. a cart that couldn't be loaded
     private const BUYER_ERROR_CODES = [
+        CartException::CUSTOMER_NOT_LOGGED_IN_CODE,
+        CartException::CART_EMPTY,
         CardValidationFailedException::PAYMENT_CARD_VALIDATION_FAILED,
         EmptyCartException::ERROR_CODE,
         PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL,
@@ -43,7 +46,7 @@ final class FailureClassifier
 
     public static function isCausedByBuyer(\Throwable $e): bool
     {
-        if ($e instanceof PayerActionRequiredException || $e instanceof CartException) {
+        if ($e instanceof PayerActionRequiredException) {
             return true;
         }
 

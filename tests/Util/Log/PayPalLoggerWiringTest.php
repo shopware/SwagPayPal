@@ -14,14 +14,13 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\PlatformRequest;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
-use Swag\PayPal\Util\Log\LogKey;
-use Swag\PayPal\Util\Log\PayPalLogProcessor;
-use Symfony\Bridge\Monolog\Processor\WebProcessor;
+use Swag\PayPal\Util\IntrospectionProcessor;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * @internal
@@ -33,51 +32,40 @@ class PayPalLoggerWiringTest extends TestCase
     use KernelTestBehaviour;
     use PayPalLogTrait;
 
-    public function testPayPalLoggerHasTheLogProcessor(): void
-    {
-        // it redacts request data, so it must never be unwired silently
-        $logger = $this->getContainer()->get('monolog.logger.paypal');
-
-        static::assertInstanceOf(Logger::class, $logger);
-        static::assertGreaterThan(0, \count(\array_filter(
-            $logger->getProcessors(),
-            static fn (callable $processor) => $processor instanceof PayPalLogProcessor,
-        )));
-    }
-
-    public function testRequestUrlIsNotLogged(): void
+    public function testPayPalLoggerHasTheProcessorWithTheRequestStack(): void
     {
         $logger = $this->getContainer()->get('monolog.logger.paypal');
         static::assertInstanceOf(Logger::class, $logger);
-        $webProcessors = \array_values(\array_filter(
+        $processors = \array_values(\array_filter(
             $logger->getProcessors(),
-            static fn (callable $processor) => $processor instanceof WebProcessor,
+            static fn (callable $processor) => $processor instanceof IntrospectionProcessor,
         ));
-        static::assertCount(1, $webProcessors);
+        static::assertCount(1, $processors);
 
-        // a copy, so the request data doesn't stay in the shared service
-        $processor = clone $webProcessors[0];
-        $request = Request::create('https://shop.example/paypal/restore-context/restore-token?sw-token=webhook-token');
-        $processor->onKernelRequest(new RequestEvent($this->createMock(HttpKernelInterface::class), $request, HttpKernelInterface::MAIN_REQUEST));
+        $request = new Request(attributes: [PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID => 'sales-channel-id']);
+        $this->getContainer()->get('request_stack')->push($request);
+        try {
+            $record = $processors[0](new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Info, 'message'));
+        } finally {
+            $this->getContainer()->get('request_stack')->pop();
+        }
 
-        $record = $processor(new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Info, 'message'));
-
-        static::assertSame(['http_method' => 'GET', 'server' => 'shop.example'], $record->extra);
+        static::assertSame('sales-channel-id', $record->context[Log::SALES_CHANNEL_ID] ?? null);
     }
 
     public function testErrorLinesGetTheDetailsOfTheException(): void
     {
         $this->recordPayPalLogs(static::getContainer());
 
-        static::getContainer()->get('monolog.logger.paypal')->error('Could not do it: {errorCode}', [
-            LogKey::CODE => 'CODE',
-            LogKey::EXCEPTION => new PayPalApiException('UNPROCESSABLE_ENTITY', 'The instrument was declined.', 422, 'INSTRUMENT_DECLINED'),
-        ]);
+        static::getContainer()->get('monolog.logger.paypal')->error('Could not do it: {errorCode}', Log::context(
+            code: LogCode::API_REQUEST_FAILED,
+            exception: new PayPalApiException('UNPROCESSABLE_ENTITY', 'The instrument was declined.', 422, 'INSTRUMENT_DECLINED'),
+        ));
 
-        $record = $this->assertPayPalLogged('CODE', Level::Error, [
-            LogKey::ERROR_CODE => 'SWAG_PAYPAL__API_INSTRUMENT_DECLINED',
-            LogKey::PAYPAL_ISSUES => ['INSTRUMENT_DECLINED'],
+        $record = $this->assertPayPalLogged(LogCode::API_REQUEST_FAILED, Level::Error, [
+            Log::ERROR_CODE => 'SWAG_PAYPAL__API_INSTRUMENT_DECLINED',
+            Log::PAYPAL_ISSUES => ['INSTRUMENT_DECLINED'],
         ]);
-        static::assertSame(PayPalApiException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(PayPalApiException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 }

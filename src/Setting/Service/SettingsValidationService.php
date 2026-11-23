@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class SettingsValidationService implements SettingsValidationServiceInterface
@@ -47,11 +47,11 @@ class SettingsValidationService implements SettingsValidationServiceInterface
 
         $exception = new PayPalSettingsInvalidException($missingSetting);
 
-        $this->logger->debug('PayPal settings are incomplete: {missingSetting} is missing', [
-            LogKey::MISSING_SETTING => $missingSetting,
-            LogKey::SALES_CHANNEL_ID => $salesChannelId,
-            LogKey::EXCEPTION => $exception,
-        ]);
+        $this->logger->debug('PayPal settings are incomplete: {missingSetting} is missing', Log::context(
+            missingSetting: $missingSetting,
+            salesChannelId: $salesChannelId,
+            exception: $exception,
+        ));
 
         throw $exception;
     }

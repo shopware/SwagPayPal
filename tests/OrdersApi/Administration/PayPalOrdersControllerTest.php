@@ -40,8 +40,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -178,15 +178,15 @@ class PayPalOrdersControllerTest extends TestCase
             LogCode::ADMIN_REFUND_CREATED,
             Level::Info,
             [
-                LogKey::ORDER_TRANSACTION_ID => 'orderTransactionId',
-                LogKey::PAYPAL_ORDER_ID => GetOrderCapture::ID,
-                LogKey::CAPTURE_ID => 'captureId',
+                Log::ORDER_TRANSACTION_ID => 'orderTransactionId',
+                Log::PAYPAL_ORDER_ID => GetOrderCapture::ID,
+                Log::CAPTURE_ID => 'captureId',
             ],
             'Refunded {amount} {currency} of capture {captureId} in the Administration',
         );
-        static::assertArrayHasKey(LogKey::REFUND_ID, $record->context);
-        static::assertArrayHasKey(LogKey::AMOUNT, $record->context);
-        static::assertArrayHasKey(LogKey::CURRENCY, $record->context);
+        static::assertArrayHasKey(Log::REFUND_ID, $record->context);
+        static::assertArrayHasKey(Log::AMOUNT, $record->context);
+        static::assertArrayHasKey(Log::CURRENCY, $record->context);
     }
 
     public function testRefundCaptureWithNoAmount(): void
@@ -261,8 +261,8 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
         static::assertFalse($captureDetailArray['final_capture']);
 
         $this->assertPayPalLogged(LogCode::ADMIN_AUTHORIZATION_CAPTURED, Level::Info, [
-            LogKey::AUTHORIZATION_ID => 'authorizationId',
-            LogKey::CAPTURE_ID => CaptureAuthorization::ID,
+            Log::AUTHORIZATION_ID => 'authorizationId',
+            Log::CAPTURE_ID => CaptureAuthorization::ID,
         ]);
     }
 
@@ -289,7 +289,7 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
         $this->assertPayPalLogged(
             $isApplied ? LogCode::ADMIN_AUTHORIZATION_CAPTURED : LogCode::ADMIN_AUTHORIZATION_CAPTURE_NOT_COMPLETED,
             $isApplied ? Level::Info : Level::Notice,
-            [LogKey::CAPTURE_STATUS => $status],
+            [Log::CAPTURE_STATUS => $status],
         );
         $this->assertPayPalNotLogged($isApplied ? LogCode::ADMIN_AUTHORIZATION_CAPTURE_NOT_COMPLETED : LogCode::ADMIN_AUTHORIZATION_CAPTURED);
     }
@@ -332,7 +332,7 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
         $this->assertPayPalLogged(
             $isApplied ? LogCode::ADMIN_REFUND_CREATED : LogCode::ADMIN_REFUND_NOT_COMPLETED,
             $isApplied ? Level::Info : Level::Notice,
-            [LogKey::REFUND_STATUS => $status],
+            [Log::REFUND_STATUS => $status],
         );
         $this->assertPayPalNotLogged($isApplied ? LogCode::ADMIN_REFUND_NOT_COMPLETED : LogCode::ADMIN_REFUND_CREATED);
     }
@@ -359,7 +359,7 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
 
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
 
-        $this->assertPayPalLogged(LogCode::ADMIN_AUTHORIZATION_VOIDED, Level::Info, [LogKey::AUTHORIZATION_ID => 'authorizationId']);
+        $this->assertPayPalLogged(LogCode::ADMIN_AUTHORIZATION_VOIDED, Level::Info, [Log::AUTHORIZATION_ID => 'authorizationId']);
     }
 
     public function testRefundCaptureLogsRefundEvenIfThePaymentStatusUpdateFails(): void

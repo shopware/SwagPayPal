@@ -22,8 +22,8 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -156,11 +156,11 @@ class ExpressShippingCallbackRouteTest extends TestCase
             $record = $this->assertPayPalLogged(
                 LogCode::EXPRESS_CALLBACK_FAILED,
                 Level::Error,
-                [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id'],
+                [Log::PAYPAL_ORDER_ID => 'paypal-order-id'],
                 'Could not answer the shipping callback for PayPal order {paypalOrderId}, PayPal shows the buyer an error',
             );
-            static::assertSame($expection::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
-            static::assertSame($expection->getMessage(), $record->context[LogKey::EXCEPTION]['message'] ?? null);
+            static::assertSame($expection::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+            static::assertSame($expection->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
         }
     }
 
@@ -194,7 +194,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $this->assertPayPalLogged(
             LogCode::EXPRESS_CALLBACK_SHIPPING_UNAVAILABLE,
             Level::Notice,
-            [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id', LogKey::COUNTRY_CODE => 'DE'],
+            [Log::PAYPAL_ORDER_ID => 'paypal-order-id', Log::COUNTRY_CODE => 'DE'],
             'Could not offer shipping for PayPal order {paypalOrderId}: {errorCode}',
         );
     }

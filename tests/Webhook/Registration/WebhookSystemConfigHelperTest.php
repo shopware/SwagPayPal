@@ -18,8 +18,8 @@ use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Webhook\Exception\WebhookValidationError;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
@@ -156,7 +156,7 @@ class WebhookSystemConfigHelperTest extends TestCase
         static::assertStringNotContainsString('0123456789abcdef', \json_encode($record->toArray(), \JSON_THROW_ON_ERROR));
         static::assertSame(
             'https://shop.example/api/_action/paypal/webhook/execute',
-            $record->context[LogKey::EXCEPTION]['parameters']['webhookUrl'] ?? null,
+            $record->context[Log::EXCEPTION]['parameters']['webhookUrl'] ?? null,
         );
     }
 

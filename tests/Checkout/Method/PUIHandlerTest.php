@@ -45,8 +45,8 @@ use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -135,10 +135,10 @@ class PUIHandlerTest extends TestCase
         $record = $this->assertPayPalLogged(
             LogCode::CHECKOUT_PAYMENT_FAILED,
             Level::Error,
-            [LogKey::ORDER_TRANSACTION_ID => $order->getTransactions()?->first()?->getId()],
+            [Log::ORDER_TRANSACTION_ID => $order->getTransactions()?->first()?->getId()],
             'Could not complete the payment of order transaction {orderTransactionId}: {errorCode}, the payment status of the order is now Failed',
         );
-        static::assertSame(PaymentException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        static::assertSame(PaymentException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testPayWithInvalidSettingsException(): void

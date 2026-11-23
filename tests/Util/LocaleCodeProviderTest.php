@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 /**
  * @internal
@@ -57,7 +57,7 @@ class LocaleCodeProviderTest extends TestCase
         $this->assertPayPalLogged(
             null,
             Level::Debug,
-            [LogKey::LOCALE_CODE => 'cch-ZZ', LogKey::FALLBACK_LOCALE_CODE => 'en_GB'],
+            [Log::LOCALE_CODE => 'cch-ZZ', Log::FALLBACK_LOCALE_CODE => 'en_GB'],
             'PayPal doesn\'t support locale {localeCode}, used {fallbackLocaleCode} instead',
         );
     }
@@ -70,7 +70,7 @@ class LocaleCodeProviderTest extends TestCase
         $this->assertPayPalLogged(
             null,
             Level::Debug,
-            [LogKey::LOCALE_CODE => 'en_ZA', LogKey::FALLBACK_LOCALE_CODE => 'en_US'],
+            [Log::LOCALE_CODE => 'en_ZA', Log::FALLBACK_LOCALE_CODE => 'en_US'],
             'PayPal doesn\'t support locale {localeCode}, used {fallbackLocaleCode} instead',
         );
     }

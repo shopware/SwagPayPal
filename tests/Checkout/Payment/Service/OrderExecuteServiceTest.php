@@ -34,8 +34,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -105,7 +105,7 @@ class OrderExecuteServiceTest extends TestCase
         $finalized = $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
 
         static::assertTrue($finalized);
-        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_PENDING, Level::Info, [LogKey::CAPTURE_STATUS => ConstantsV2::ORDER_CAPTURE_PENDING]);
+        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_PENDING, Level::Info, [Log::CAPTURE_STATUS => ConstantsV2::ORDER_CAPTURE_PENDING]);
         $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED);
     }
 
@@ -305,7 +305,7 @@ class OrderExecuteServiceTest extends TestCase
         $this->transactionStateHandler->expects($this->never())->method('authorize');
 
         static::assertFalse($this->orderExecuteService->isCancellationAllowed('paypal-order-id', 'sales-channel-id'));
-        $this->assertPayPalLogged(LogCode::CHECKOUT_CANCELLATION_UNVERIFIED, Level::Warning, [LogKey::PAYPAL_ORDER_ID => 'paypal-order-id']);
+        $this->assertPayPalLogged(LogCode::CHECKOUT_CANCELLATION_UNVERIFIED, Level::Warning, [Log::PAYPAL_ORDER_ID => 'paypal-order-id']);
     }
 
     public static function orderLookupFailureProvider(): \Generator

@@ -27,8 +27,8 @@ use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Handler\CaptureCompleted;
@@ -106,11 +106,11 @@ class WebhookControllerPaymentStatusTest extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, $context);
 
         $record = $this->assertPayPalLogged(LogCode::PAYMENT_STATUS_CHANGED, Level::Info, [
-            LogKey::ORDER_TRANSACTION_ID => $transactionId,
-            LogKey::FROM_STATE => OrderTransactionStates::STATE_OPEN,
-            LogKey::TO_STATE => OrderTransactionStates::STATE_PAID,
+            Log::ORDER_TRANSACTION_ID => $transactionId,
+            Log::FROM_STATE => OrderTransactionStates::STATE_OPEN,
+            Log::TO_STATE => OrderTransactionStates::STATE_PAID,
         ]);
-        static::assertArrayHasKey(LogKey::ORDER_NUMBER, $record->context);
+        static::assertArrayHasKey(Log::ORDER_NUMBER, $record->context);
         static::assertCount(1, $this->getPayPalLogRecords(LogCode::WEBHOOK_EVENT_PROCESSED));
     }
 

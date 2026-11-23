@@ -38,8 +38,8 @@ use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Reporting\ScheduledTask\TurnoverReportingTaskHandler;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 
 /**
  * @internal
@@ -143,8 +143,8 @@ class TurnoverReportingTaskHandlerTest extends TestCase
         static::assertEquals([$rejectedTransactionReport['orderTransactionId']], $leftoverReportIds);
 
         static::assertCount(1, $this->getPayPalLogRecords());
-        $record = $this->assertPayPalLogged(LogCode::REPORTING_TURNOVER_FAILED, Level::Warning, [LogKey::CURRENCY => 'EUR'], 'Could not report the PayPal turnover in {currency}');
-        static::assertSame(ClientException::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
+        $record = $this->assertPayPalLogged(LogCode::REPORTING_TURNOVER_FAILED, Level::Warning, [Log::CURRENCY => 'EUR'], 'Could not report the PayPal turnover in {currency}');
+        static::assertSame(ClientException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testRunWithTransactionsNotInPaidStateWillBeIgnoredButDeleted(): void

@@ -29,8 +29,8 @@ use Swag\PayPal\AgenticCommerce\Util\FaviconLoader;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -57,26 +57,26 @@ class HoneyWebhookService
     {
         $previous = $this->uninstall($salesChannelId);
         if ($previous && !$previous->success) {
-            $this->logger->warning('Could not remove the previous registration of the sales channel at PayPal\'s agentic commerce service, registering it again anyway', [
-                LogKey::CODE => LogCode::AGENTIC_OLD_REGISTRATION_NOT_REMOVED,
-                LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                LogKey::ERROR_CODE => $previous->error,
-                LogKey::RESULT_MESSAGE => $previous->message,
-                LogKey::EXCEPTION => $previous->exception,
-            ]);
+            $this->logger->warning('Could not remove the previous registration of the sales channel at PayPal\'s agentic commerce service, registering it again anyway', Log::context(
+                code: LogCode::AGENTIC_OLD_REGISTRATION_NOT_REMOVED,
+                salesChannelId: $salesChannelId,
+                errorCode: $previous->error,
+                resultMessage: $previous->message,
+                exception: $previous->exception,
+            ));
         }
 
         $token = $this->createToken($salesChannelId, $context);
         $result = $this->webhookCall($token, 'install');
         if (!$result->success) {
             $this->systemConfigService->delete(Settings::AGENTIC_COMMERCE_ONBOARDED, $salesChannelId);
-            $this->logger->error('Could not notify PayPal\'s agentic commerce service: {endpoint}, so PayPal doesn\'t know the current registration state of the sales channel', [
-                LogKey::CODE => LogCode::AGENTIC_WEBHOOK_FAILED,
-                LogKey::ENDPOINT => 'install',
-                LogKey::ERROR_CODE => $result->error,
-                LogKey::RESULT_MESSAGE => $result->message,
-                LogKey::EXCEPTION => $result->exception,
-            ]);
+            $this->logger->error('Could not notify PayPal\'s agentic commerce service: {endpoint}, so PayPal doesn\'t know the current registration state of the sales channel', Log::context(
+                code: LogCode::AGENTIC_WEBHOOK_FAILED,
+                endpoint: 'install',
+                errorCode: $result->error,
+                resultMessage: $result->message,
+                exception: $result->exception,
+            ));
 
             throw HoneyWebhookException::invalidRequest($result);
         }
@@ -90,21 +90,21 @@ class HoneyWebhookService
     {
         $result = $this->uninstall($salesChannelId);
         if ($result === null) {
-            $this->logger->debug('Did not deregister the sales channel at PayPal\'s agentic commerce service, because it is not registered', [
-                LogKey::SALES_CHANNEL_ID => $salesChannelId,
-            ]);
+            $this->logger->debug('Did not deregister the sales channel at PayPal\'s agentic commerce service, because it is not registered', Log::context(
+                salesChannelId: $salesChannelId,
+            ));
 
             throw HoneyWebhookException::salesChannelNotRegistered();
         }
 
         if (!$result->success) {
-            $this->logger->error('Could not notify PayPal\'s agentic commerce service: {endpoint}, so PayPal doesn\'t know the current registration state of the sales channel', [
-                LogKey::CODE => LogCode::AGENTIC_WEBHOOK_FAILED,
-                LogKey::ENDPOINT => 'uninstall',
-                LogKey::ERROR_CODE => $result->error,
-                LogKey::RESULT_MESSAGE => $result->message,
-                LogKey::EXCEPTION => $result->exception,
-            ]);
+            $this->logger->error('Could not notify PayPal\'s agentic commerce service: {endpoint}, so PayPal doesn\'t know the current registration state of the sales channel', Log::context(
+                code: LogCode::AGENTIC_WEBHOOK_FAILED,
+                endpoint: 'uninstall',
+                errorCode: $result->error,
+                resultMessage: $result->message,
+                exception: $result->exception,
+            ));
 
             throw HoneyWebhookException::invalidRequest($result);
         }
@@ -113,7 +113,7 @@ class HoneyWebhookService
     }
 
     /**
-     * Best effort before registering again, the callers log failures.
+     * Null if the sales channel isn't registered, the callers log failures.
      */
     private function uninstall(string $salesChannelId): ?HoneyWebhookResult
     {
@@ -167,11 +167,11 @@ class HoneyWebhookService
                 ->getToken(new Sha256(), InMemory::plainText(random_bytes(32)))
                 ->toString();
         } catch (HoneyWebhookException $e) {
-            $this->logger->error('Could not create the token for PayPal\'s agentic commerce service: {errorCode}', [
-                LogKey::CODE => LogCode::AGENTIC_TOKEN_FAILED,
-                LogKey::SALES_CHANNEL_ID => $salesChannelId,
-                LogKey::EXCEPTION => $e,
-            ]);
+            $this->logger->error('Could not create the token for PayPal\'s agentic commerce service: {errorCode}', Log::context(
+                code: LogCode::AGENTIC_TOKEN_FAILED,
+                salesChannelId: $salesChannelId,
+                exception: $e,
+            ));
 
             throw $e;
         }
@@ -205,10 +205,10 @@ class HoneyWebhookService
         $result = new HoneyWebhookResult($content['success'] ?? !isset($content['error']), $content['message'], $content['error'] ?? null, $e ?? null);
 
         if ($result->success) {
-            $this->logger->info('Notified PayPal\'s agentic commerce service: {endpoint}', [
-                LogKey::CODE => LogCode::AGENTIC_WEBHOOK_SENT,
-                LogKey::ENDPOINT => $endpoint,
-            ]);
+            $this->logger->info('Notified PayPal\'s agentic commerce service: {endpoint}', Log::context(
+                code: LogCode::AGENTIC_WEBHOOK_SENT,
+                endpoint: $endpoint,
+            ));
         }
 
         return $result;

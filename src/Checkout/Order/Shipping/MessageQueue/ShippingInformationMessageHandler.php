@@ -21,8 +21,8 @@ use Shopware\PayPalSDK\Struct\V2\Order\Tracker;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -62,11 +62,11 @@ class ShippingInformationMessageHandler
         }
 
         $logContext = [
-            LogKey::SALES_CHANNEL_ID => $salesChannelId,
-            LogKey::ORDER_DELIVERY_ID => $orderDelivery->getId(),
-            LogKey::ORDER_ID => $orderDelivery->getOrder()?->getId(),
-            LogKey::ORDER_NUMBER => $orderDelivery->getOrder()?->getOrderNumber(),
-            LogKey::PAYPAL_ORDER_ID => $orderId,
+            Log::SALES_CHANNEL_ID => $salesChannelId,
+            Log::ORDER_DELIVERY_ID => $orderDelivery->getId(),
+            Log::ORDER_ID => $orderDelivery->getOrder()?->getId(),
+            Log::ORDER_NUMBER => $orderDelivery->getOrder()?->getOrderNumber(),
+            Log::PAYPAL_ORDER_ID => $orderId,
         ];
 
         try {
@@ -75,7 +75,7 @@ class ShippingInformationMessageHandler
             if ($e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
                 $this->logger->warning(
                     'Could not send the tracking codes of order {orderNumber}: PayPal couldn\'t find PayPal order {paypalOrderId}',
-                    [...$logContext, LogKey::CODE => LogCode::TRACKING_PAYPAL_ORDER_NOT_FOUND, LogKey::EXCEPTION => $e],
+                    Log::context(...$logContext, code: LogCode::TRACKING_PAYPAL_ORDER_NOT_FOUND, exception: $e),
                 );
 
                 return;
@@ -103,7 +103,15 @@ class ShippingInformationMessageHandler
             try {
                 $this->orderResource->addTracker($tracker, $orderId, $salesChannelId, $partnerAttributionId);
             } catch (PayPalApiException $e) {
-                $this->handleInvalidCarrierException($e, $tracker, $shippingMethodName, $logContext);
+                $this->handleInvalidCarrierException($e, $tracker);
+
+                $this->logger->warning('PayPal doesn\'t support carrier {carrier} of shipping method {shippingMethodName}, sent the tracking codes with carrier OTHER instead', Log::context(
+                    ...$logContext,
+                    code: LogCode::TRACKING_CARRIER_UNSUPPORTED,
+                    carrier: $carrier,
+                    shippingMethodName: $shippingMethodName,
+                    exception: $e,
+                ));
 
                 $carrierOtherName = $carrier;
                 $carrier = Tracker::CARRIER_OTHER;
@@ -113,12 +121,12 @@ class ShippingInformationMessageHandler
         }
 
         if (\count($addedTrackingCodes) > 0) {
-            $this->logger->info('Sent tracking codes {trackingCodes} of order {orderNumber} to PayPal', [
+            $this->logger->info('Sent tracking codes {trackingCodes} of order {orderNumber} to PayPal', Log::context(
                 ...$logContext,
-                LogKey::CODE => LogCode::TRACKING_CODES_ADDED,
-                LogKey::TRACKING_CODES => \implode(', ', $addedTrackingCodes),
-                LogKey::CARRIER => $carrier,
-            ]);
+                code: LogCode::TRACKING_CODES_ADDED,
+                trackingCodes: \implode(', ', $addedTrackingCodes),
+                carrier: $carrier,
+            ));
         }
 
         foreach ($removedTrackingCodes as $trackingCode) {
@@ -128,32 +136,18 @@ class ShippingInformationMessageHandler
         }
 
         if (\count($removedTrackingCodes) > 0) {
-            $this->logger->info('Removed tracking codes {trackingCodes} of order {orderNumber} at PayPal', [
+            $this->logger->info('Removed tracking codes {trackingCodes} of order {orderNumber} at PayPal', Log::context(
                 ...$logContext,
-                LogKey::CODE => LogCode::TRACKING_CODES_REMOVED,
-                LogKey::TRACKING_CODES => \implode(', ', $removedTrackingCodes),
-                LogKey::CARRIER => $carrier,
-            ]);
+                code: LogCode::TRACKING_CODES_REMOVED,
+                trackingCodes: \implode(', ', $removedTrackingCodes),
+                carrier: $carrier,
+            ));
         }
     }
 
-    /**
-     * @param array<string, mixed> $logContext
-     */
-    private function handleInvalidCarrierException(PayPalApiException $e, Tracker &$tracker, string $shippingMethodName, array $logContext): void
+    private function handleInvalidCarrierException(PayPalApiException $e, Tracker &$tracker): void
     {
         if ($e->is(PayPalApiException::ISSUE_INVALID_PARAMETER_VALUE) && \str_contains($e->getMessage(), '(/carrier)')) {
-            $this->logger->warning(
-                'PayPal doesn\'t support carrier {carrier} of shipping method {shippingMethodName}, sent the tracking codes with carrier OTHER instead',
-                [
-                    ...$logContext,
-                    LogKey::CODE => LogCode::TRACKING_CARRIER_UNSUPPORTED,
-                    LogKey::CARRIER => $tracker->getCarrier(),
-                    LogKey::SHIPPING_METHOD_NAME => $shippingMethodName,
-                    LogKey::EXCEPTION => $e,
-                ],
-            );
-
             $tracker->setCarrierNameOther($tracker->getCarrier());
             $tracker->setCarrier(Tracker::CARRIER_OTHER);
         } else {

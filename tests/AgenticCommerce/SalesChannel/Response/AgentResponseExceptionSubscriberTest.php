@@ -27,8 +27,8 @@ use Swag\PayPal\AgenticCommerce\Routing\AgentSource;
 use Swag\PayPal\AgenticCommerce\SalesChannel\Response\AgentResponseExceptionSubscriber;
 use Swag\PayPal\Checkout\CheckoutException;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
-use Swag\PayPal\Util\Log\LogKey;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -177,7 +177,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $this->assertPayPalLogged(
             LogCode::AGENTIC_REQUEST_REJECTED,
             Level::Notice,
-            [LogKey::HTTP_STATUS => 400],
+            [Log::HTTP_STATUS => 400],
             'Rejected a request of an AI agent: {errorCode}',
         );
         static::assertSame('PayPal Order ID does not exist in the request. The payment method Shopware\Core\Test\Integration\PaymentHandler\TestPaymentHandler requires a prepared PayPal order.', $error->getMessage());
@@ -211,11 +211,11 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $record = $this->assertPayPalLogged(
             LogCode::AGENTIC_REQUEST_FAILED,
             Level::Error,
-            [LogKey::HTTP_STATUS => 500],
+            [Log::HTTP_STATUS => 500],
             'Could not answer a request of an AI agent: {errorCode}',
         );
-        static::assertSame(\Exception::class, $record->context[LogKey::EXCEPTION]['class'] ?? null);
-        static::assertSame('Generic error', $record->context[LogKey::EXCEPTION]['message'] ?? null);
+        static::assertSame(\Exception::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        static::assertSame('Generic error', $record->context[Log::EXCEPTION]['message'] ?? null);
         static::assertSame(500, $error->getCode());
         static::assertSame('debug-id', $error->getDebugId());
     }

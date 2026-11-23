@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Util\Log;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Util\Log\LogKey;
 use Swag\PayPal\Util\Log\LogRedactor;
 
 /**
@@ -118,6 +117,78 @@ class LogRedactorTest extends TestCase
         ], LogRedactor::redactBody($data));
     }
 
+    public function testMatchesSnakeCaseAndCamelCaseKeysAlike(): void
+    {
+        $data = [
+            'phoneNumber' => '+49 123',
+            'additionalAddressLine1' => 'c/o Doe',
+            'zip_code' => '48624',
+            'city' => 'Schöppingen',
+            'birthday' => '1990-01-01',
+            'returnUrl' => 'https://shop.example/paypal/restore/token',
+            'orderNumber' => '10023',
+        ];
+
+        static::assertSame([
+            'phoneNumber' => '<redacted>',
+            'additionalAddressLine1' => '<redacted>',
+            'zip_code' => '<redacted>',
+            'city' => '<redacted>',
+            'birthday' => '<redacted>',
+            'returnUrl' => 'https://shop.example/<redacted>',
+            'orderNumber' => '10023',
+        ], LogRedactor::redactBody($data));
+    }
+
+    public function testRedactsVenmoUserNameMerchantEmailAndAgentAddress(): void
+    {
+        static::assertSame([
+            'payment_source' => ['venmo' => ['user_name' => '<redacted>']],
+            'primary_email' => '<redacted>',
+            'context' => ['provided_address' => '<redacted>'],
+        ], LogRedactor::redactBody([
+            'payment_source' => ['venmo' => ['user_name' => '@jane-doe']],
+            'primary_email' => 'merchant@example.com',
+            'context' => ['provided_address' => ['address_line_1' => 'Street 1']],
+        ]));
+    }
+
+    public function testRedactsTheTokenOfVaultEventsAndLinksToIt(): void
+    {
+        $event = [
+            'id' => 'WH-1',
+            'event_type' => 'VAULT.PAYMENT-TOKEN.CREATED',
+            'resource' => [
+                'id' => '8kk8451t',
+                'customer' => ['id' => 'customer-id'],
+                'links' => [['href' => 'https://api-m.paypal.com/v3/vault/payment-tokens/8kk8451t', 'rel' => 'self']],
+            ],
+        ];
+
+        static::assertSame([
+            'id' => 'WH-1',
+            'event_type' => 'VAULT.PAYMENT-TOKEN.CREATED',
+            'resource' => [
+                'id' => '<redacted>',
+                'customer' => ['id' => 'customer-id'],
+                'links' => [['href' => 'https://api-m.paypal.com/v3/vault/payment-tokens/<redacted>', 'rel' => 'self']],
+            ],
+        ], LogRedactor::redactBody($event));
+    }
+
+    public function testKeepsTheResourceIdOfOtherEvents(): void
+    {
+        $event = [
+            'event_type' => 'PAYMENT.CAPTURE.COMPLETED',
+            'resource' => [
+                'id' => 'CAP-1',
+                'links' => [['href' => 'https://api-m.paypal.com/v2/payments/captures/CAP-1', 'rel' => 'self']],
+            ],
+        ];
+
+        static::assertSame($event, LogRedactor::redactBody($event));
+    }
+
     public function testRedactPath(): void
     {
         static::assertSame('/v3/vault/payment-tokens/<redacted>', self::redactPath('/v3/vault/payment-tokens/abc123'));
@@ -185,37 +256,8 @@ class LogRedactorTest extends TestCase
         static::assertSame('', LogRedactor::redactBody(''));
     }
 
-    public function testRedactContextRedactsBodiesAndPath(): void
-    {
-        $context = LogRedactor::redactContext([
-            LogKey::CODE => 'CODE',
-            LogKey::HTTP_PATH => '/v3/vault/payment-tokens/abc',
-            LogKey::REQUEST => '{"email":"a@b.c"}',
-            LogKey::RESPONSE => ['payer' => ['email' => 'a@b.c']],
-            LogKey::PAYLOAD => ['firstName' => 'A'],
-        ]);
-
-        static::assertSame([
-            LogKey::CODE => 'CODE',
-            LogKey::HTTP_PATH => '/v3/vault/payment-tokens/<redacted>',
-            LogKey::REQUEST => ['email' => '<redacted>'],
-            LogKey::RESPONSE => ['payer' => ['email' => '<redacted>']],
-            LogKey::PAYLOAD => ['firstName' => '<redacted>'],
-        ], $context);
-    }
-
-    public function testRedactContextLeavesContextsWithoutRedactedKeysUntouched(): void
-    {
-        $context = [LogKey::CODE => 'CODE', LogKey::PAYPAL_ORDER_ID => '5O1'];
-
-        static::assertSame($context, LogRedactor::redactContext($context));
-    }
-
     private static function redactPath(string $path): string
     {
-        $context = LogRedactor::redactContext([LogKey::HTTP_PATH => $path]);
-        static::assertIsString($context[LogKey::HTTP_PATH]);
-
-        return $context[LogKey::HTTP_PATH];
+        return LogRedactor::redactPath($path);
     }
 }

@@ -22,7 +22,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGrouping;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
-use Swag\PayPal\Util\Log\LogKey;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class ProductConverter
@@ -55,7 +55,7 @@ class ProductConverter
                 $grouping->setProduct($product);
             } catch (PosConversionException $e) {
                 $groupingCollection->remove($grouping->getIdentifyingId());
-                $this->logger->warning('Could not convert the product for PayPal POS, it\'s skipped', [LogKey::EXCEPTION => $e, 'product' => $grouping->getIdentifyingEntity()]);
+                $this->logger->warning('Could not convert the product for PayPal POS, it\'s skipped', [Log::EXCEPTION => $e, 'product' => $grouping->getIdentifyingEntity()]);
             }
         }
 

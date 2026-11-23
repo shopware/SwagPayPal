@@ -62,7 +62,9 @@ class FailureClassifierTest extends TestCase
         yield 'browser user cancelled code' => [self::httpException('SWAG_PAYPAL__USER_CANCELLED'), false];
         yield 'card validation' => [self::httpException('SWAG_PAYPAL__CARD_VALIDATION_FAILED'), true];
         yield 'customer cancelled' => [PaymentException::customerCanceled('order', 'message'), true];
-        yield 'cart exception' => [CartException::deserializeFailed(), true];
+        yield 'customer not logged in' => [CartException::customerNotLoggedIn(), true];
+        yield 'empty Shopware cart' => [CartException::cartEmpty(), true];
+        yield 'cart that could not be loaded' => [CartException::deserializeFailed(), false];
         yield 'other http exception' => [self::httpException('SOMETHING_ELSE'), false];
         yield 'runtime exception' => [new \RuntimeException('message'), false];
     }
