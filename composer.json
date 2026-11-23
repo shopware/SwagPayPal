@@ -77,6 +77,7 @@
             "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js ./src/scss"
         ],
         "phpunit": "../../../vendor/bin/phpunit",
+        "phpunit:devops": "../../../vendor/bin/phpunit --testsuite devops --bootstrap ../../../vendor/autoload.php --fail-on-empty-test-suite",
         "phpstan": [
             "php bin/phpstan-config-generator.php",
             "php ../../../vendor/bin/phpstan analyze -vv"
