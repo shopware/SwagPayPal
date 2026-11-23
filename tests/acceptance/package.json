@@ -16,10 +16,10 @@
     "@types/node": "^26.6.6",
     "@types/uuid": "^11.0.0",
     "dotenv": "^18.0.9",
-    "eslint": "^10.13.0",
+    "eslint": "^10.15.0",
     "eslint-plugin-playwright": "^2.12.1",
     "jiti": "^2.6.1",
-    "typescript-eslint": "^8.72.1"
+    "typescript-eslint": "^8.73.0"
   },
   "dependencies": {
     "@currents/playwright": "^2.6.0",
