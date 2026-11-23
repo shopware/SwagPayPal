@@ -65,6 +65,8 @@ class PayPalControllerTest extends TestCase
 
     private ReturnTokenService&MockObject $returnTokenService;
 
+    private AbstractClearVaultRoute&MockObject $clearVaultRoute;
+
     private PayPalController&MockObject $controller;
 
     private SystemConfigServiceMock $systemConfigService;
@@ -74,6 +76,7 @@ class PayPalControllerTest extends TestCase
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
         $this->expressCreateOrderRoute = $this->createMock(AbstractExpressCreateOrderRoute::class);
         $this->returnTokenService = $this->createMock(ReturnTokenService::class);
+        $this->clearVaultRoute = $this->createMock(AbstractClearVaultRoute::class);
         $this->returnTokenService
             ->method('generate')
             ->willReturn('return-token');
@@ -100,7 +103,7 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractCartDeleteRoute::class),
                 $this->createMock(CartService::class),
                 new CartPriceService(new PriceFormatter()),
-                $this->createMock(AbstractClearVaultRoute::class),
+                $this->clearVaultRoute,
                 $this->createMock(AbstractClientTokenRoute::class),
                 $this->createPayPalLogger(),
                 $this->returnTokenService,
@@ -385,6 +388,35 @@ class PayPalControllerTest extends TestCase
         yield 'non-fatal script error' => [false, AbstractScriptData::PAGE_TYPE_CHECKOUT, false];
         yield 'fatal script error on non-checkout page' => [true, AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS, false];
         yield 'non-fatal script error on non-checkout page' => [false, AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS, false];
+    }
+
+    /**
+     * @param array<string, string> $headers
+     */
+    #[DataProvider('dataProviderClearVaultRequests')]
+    public function testClearVaultOnlyClearsGetRequestsFromTheShop(string $method, array $headers, bool $expectCleared): void
+    {
+        $request = Request::create('https://example.test/paypal/vault/clear', $method);
+        $request->headers->add($headers);
+
+        $this->clearVaultRoute
+            ->expects($expectCleared ? $this->once() : $this->never())
+            ->method('clearVault');
+
+        $this->controller->clearVault($request, $this->generateSalesChannelContext());
+    }
+
+    public static function dataProviderClearVaultRequests(): \Generator
+    {
+        yield 'POST' => [Request::METHOD_POST, [], true];
+        yield 'GET from the shop' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'same-origin'], true];
+        yield 'GET from another website' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'cross-site', 'Referer' => 'https://example.test/'], false];
+        yield 'GET from another subdomain' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'same-site'], false];
+        yield 'GET from the address bar' => [Request::METHOD_GET, ['Sec-Fetch-Site' => 'none'], false];
+        yield 'HEAD from another website' => [Request::METHOD_HEAD, ['Sec-Fetch-Site' => 'cross-site'], false];
+        yield 'GET without fetch metadata from the shop' => [Request::METHOD_GET, ['Referer' => 'https://example.test/checkout/confirm'], true];
+        yield 'GET without fetch metadata from another website' => [Request::METHOD_GET, ['Referer' => 'https://example.test.attacker.test/'], false];
+        yield 'GET without fetch metadata and referer' => [Request::METHOD_GET, [], false];
     }
 
     private function generateSalesChannelContext(): SalesChannelContext
