@@ -69,6 +69,12 @@ final class PayPalLogProcessor implements ProcessorInterface
                 }
             }
 
+            // not normalized, as that may be what failed; a formatter would add the previous exceptions, the SDK's too
+            $exception = $context[LogKey::EXCEPTION] ?? null;
+            if ($exception instanceof \Throwable) {
+                $context[LogKey::EXCEPTION] = ['class' => $exception::class, 'message' => $exception->getMessage()];
+            }
+
             return $record->with(context: $context);
         }
     }

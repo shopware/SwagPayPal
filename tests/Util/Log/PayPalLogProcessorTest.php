@@ -362,6 +362,20 @@ class PayPalLogProcessorTest extends TestCase
         static::assertSame([LogKey::PAYPAL_ORDER_ID => '5O1'], $record->context);
     }
 
+    public function testExceptionIsReducedToClassAndMessageIfTheProcessorFails(): void
+    {
+        $stack = $this->createMock(RequestStack::class);
+        $stack->method('getMainRequest')->willThrowException(new \RuntimeException());
+
+        $record = $this->createProcessor($stack)($this->createRecord([
+            LogKey::EXCEPTION => new \RuntimeException('Could not capture the payment', 0, new \LogicException('a@b.c')),
+        ]));
+
+        static::assertSame([
+            LogKey::EXCEPTION => ['class' => \RuntimeException::class, 'message' => 'Could not capture the payment'],
+        ], $record->context);
+    }
+
     private function createStack(Request $request): RequestStack
     {
         $stack = new RequestStack();
