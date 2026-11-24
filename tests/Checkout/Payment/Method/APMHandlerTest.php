@@ -84,6 +84,7 @@ class APMHandlerTest extends TestCase
             $this->orderResource,
             static::createStub(VaultTokenService::class),
             new StaticEntityRepository([new OrderTransactionCollection([$orderTransaction])]),
+            new NullLogger(),
             static::createStub(AbstractOrderBuilder::class),
         );
     }

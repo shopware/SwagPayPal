@@ -42,7 +42,7 @@ class PayLaterHandlerTest extends AbstractTestSyncAPMHandler
     public function testPayWithPayerActionRequiredConfirmsPaymentSourceAndRedirects(): void
     {
         $systemConfig = $this->createDefaultSystemConfig([Settings::SPB_APP_SWITCH_ENABLED => true]);
-        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger());
         $handler = new PayLaterHandler(
             new SettingsValidationService($systemConfig, new NullLogger()),
             $this->stateMachineRegistry,
@@ -61,6 +61,7 @@ class PayLaterHandlerTest extends AbstractTestSyncAPMHandler
             $orderResource,
             static::createStub(VaultTokenService::class),
             $this->orderTransactionRepo,
+            new NullLogger(),
             $this->createOrderBuilder($systemConfig),
         );
         $context = Context::createDefaultContext();

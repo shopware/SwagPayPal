@@ -12,6 +12,7 @@
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 - Fixes an issue, where the transaction status synchronisation could change a transaction based on an outdated payment attempt (shopware/SwagPayPal#842)
 - Fixes an issue, where renewals of subscriptions paid with a saved PayPal account or card failed after the customer removed it, or used one added later instead
+- Reworked the plugin's log messages: clearer wording, stable log codes, consistent context and levels, and names, addresses, email addresses and tokens redacted from logged API requests, responses and webhook events. Monitoring based on the old message texts needs to be adjusted
 
 # 10.9.0
 - Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)

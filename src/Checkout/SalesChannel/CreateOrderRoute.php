@@ -35,6 +35,9 @@ use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -115,7 +118,6 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             $requestDataBag = $this->createRequestDataBag($request);
             $request->request->replace($requestDataBag->all());
 
-            $this->logger->debug('Started', ['request' => $requestDataBag->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
                 throw CartException::customerNotLoggedIn();
@@ -141,7 +143,11 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
             return new TokenResponse($response->getId());
         } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            if (FailureClassifier::isCausedByBuyer($e)) {
+                $this->logger->notice('Could not create the PayPal order: {errorCode}', Log::context(code: LogCode::CHECKOUT_ORDER_CREATION_DECLINED, exception: $e));
+            } else {
+                $this->logger->error('Could not create the PayPal order: {errorCode}, the buyer sees an error in the checkout', Log::context(code: LogCode::CHECKOUT_ORDER_CREATION_FAILED, exception: $e));
+            }
 
             throw $e;
         }

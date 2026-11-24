@@ -141,7 +141,7 @@ class APMHandlerTest extends TestCase
     private function getPaymentHandler(AbstractAPMOrderBuilder $orderBuilder, array $settings): APMHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger());
         $logger = new NullLogger();
 
         return new APMHandler(
@@ -153,6 +153,7 @@ class APMHandlerTest extends TestCase
             $orderResource,
             $this->getContainer()->get(VaultTokenService::class),
             $this->getContainer()->get('order_transaction.repository'),
+            $logger,
             $orderBuilder,
         );
     }

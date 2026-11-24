@@ -35,7 +35,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->abstract()
         ->args([
             service('scheduled_task.repository'),
-            service('logger'),
+            service('monolog.logger.paypal'),
             service('sales_channel.repository'),
         ]);
 

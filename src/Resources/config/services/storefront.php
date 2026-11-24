@@ -109,9 +109,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ]);
 
     $services->set(RequestSubscriber::class)
-        ->args([
-            service('monolog.logger.paypal'),
-        ])
         ->tag('kernel.event_subscriber');
 
     $services->set(FundingSubscriber::class)
@@ -192,7 +189,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
     $services->set(CheckoutDataSubscriber::class)
         ->args([
-            service('logger'),
             service(SettingsValidationService::class),
             service('request_stack'),
             service('event_dispatcher'),

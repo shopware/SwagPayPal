@@ -14,6 +14,7 @@ use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class NewUpdater
@@ -49,9 +50,9 @@ class NewUpdater
                 } catch (PosApiException $e) {
                     if ($e->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
                         $productContext->changeProduct($shopwareProduct);
-                        $this->logger->notice('The product was not marked as synced, but was found at Zettle. Overwriting.', ['product' => $shopwareProduct]);
+                        $this->logger->notice('The product wasn\'t marked as synced but exists at PayPal POS, overwriting it', ['product' => $shopwareProduct]);
                     } else {
-                        $this->logger->error('Product creation error: ' . $e->getMessage(), ['product' => $shopwareProduct, 'error' => $e]);
+                        $this->logger->error('Could not create the product at PayPal POS', ['product' => $shopwareProduct, Log::EXCEPTION => $e]);
                     }
                 }
             }

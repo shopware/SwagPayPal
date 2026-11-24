@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Webhook;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Util\Random;
@@ -15,6 +16,8 @@ use Shopware\PayPalSDK\Struct\V1\Webhook;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -52,6 +55,7 @@ class WebhookService implements WebhookServiceInterface
         WebhookRegistry $webhookRegistry,
         SystemConfigService $systemConfigService,
         RouterInterface $router,
+        private readonly LoggerInterface $logger,
     ) {
         $this->webhookResource = $webhookResource;
         $this->webhookRegistry = $webhookRegistry;
@@ -118,6 +122,12 @@ class WebhookService implements WebhookServiceInterface
         try {
             $this->webhookResource->updateWebhook($webhookUrl, $webhookId, $salesChannelId);
 
+            $this->logger->info('Updated the URL of PayPal webhook {webhookId}', Log::context(
+                code: LogCode::WEBHOOK_UPDATED,
+                salesChannelId: $salesChannelId,
+                webhookId: $webhookId,
+            ));
+
             return self::WEBHOOK_UPDATED;
         } catch (WebhookIdInvalidException) {
             return $this->createWebhook($salesChannelId, $webhookUrl, $webhookExecuteToken);
@@ -146,6 +156,12 @@ class WebhookService implements WebhookServiceInterface
         try {
             $this->webhookResource->deleteWebhook($webhookId, $salesChannelId);
             $deleted = true;
+
+            $this->logger->info('Removed PayPal webhook {webhookId}', Log::context(
+                code: LogCode::WEBHOOK_DEREGISTERED,
+                salesChannelId: $salesChannelId,
+                webhookId: $webhookId,
+            ));
         } catch (WebhookIdInvalidException) {
             $deleted = false;
         }
@@ -178,6 +194,12 @@ class WebhookService implements WebhookServiceInterface
 
             $this->systemConfigService->set(Settings::WEBHOOK_EXECUTE_TOKEN, $webhookExecuteToken, $salesChannelId);
             $this->systemConfigService->set(Settings::WEBHOOK_ID, $webhookId, $salesChannelId);
+
+            $this->logger->info('Registered PayPal webhook {webhookId}', Log::context(
+                code: LogCode::WEBHOOK_REGISTERED,
+                salesChannelId: $salesChannelId,
+                webhookId: $webhookId,
+            ));
 
             return self::WEBHOOK_CREATED;
         } catch (WebhookAlreadyExistsException) {

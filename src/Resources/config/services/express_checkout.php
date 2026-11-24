@@ -112,7 +112,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(PaymentMethodUtil::class),
             service(ExcludedProductValidator::class),
             service('customer.repository'),
-            service('monolog.logger.paypal'),
         ])
         ->tag('kernel.event_subscriber');
 

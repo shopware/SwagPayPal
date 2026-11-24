@@ -17,6 +17,7 @@ use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
+use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
@@ -78,6 +79,10 @@ class WebhookServiceMock implements WebhookServiceInterface
 
         if ($context->hasExtension(WebhookControllerTest::THROW_NOT_FOUND_EXCEPTION)) {
             throw new WebhookHandlerNotFoundException(DummyWebhook::EVENT_TYPE);
+        }
+
+        if ($context->hasExtension(WebhookControllerTest::THROW_TRANSACTION_UNKNOWN_EXCEPTION)) {
+            throw new WebhookOrderTransactionNotFoundException('with test reason', DummyWebhook::EVENT_TYPE);
         }
 
         if ($context->hasExtension(WebhookControllerTest::THROW_GENERAL_EXCEPTION)) {

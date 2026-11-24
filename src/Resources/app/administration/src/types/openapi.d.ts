@@ -1684,10 +1684,15 @@ export interface components {
             customer_service_instructions: string[];
             order_update_callback_config: components["schemas"]["paypal_v2_order_payment_source_common_attributes_order_update_callback_config"];
             app_switch_context: components["schemas"]["paypal_v2_order_payment_source_common_app_switch_context"] | (never | null);
+            /** @description Only: PayPal Wallet */
+            preferred_payment_source: components["schemas"]["paypal_v2_order_payment_source_common_preferred_payment_source"] | (never | null);
         };
         paypal_v2_order_payment_source_common_phone: {
             phone_type: string;
             phone_number: components["schemas"]["paypal_v2_common_phone_number"];
+        };
+        paypal_v2_order_payment_source_common_preferred_payment_source: {
+            vault_id: string;
         };
         paypal_v2_order_payment_source_eps: {
             name: string;

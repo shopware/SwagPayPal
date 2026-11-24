@@ -35,6 +35,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->args([
             service(OrderGateway::class),
             service(ApiContextFactoryInterface::class),
+            service('monolog.logger.paypal'),
         ]);
 
     $services->set(RefundResource::class)

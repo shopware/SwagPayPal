@@ -7,10 +7,13 @@
 
 namespace Swag\PayPal\Setting\Service;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\Struct\SettingsInformationStruct;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 
 #[Package('checkout')]
@@ -24,6 +27,7 @@ class SettingsSaver implements SettingsSaverInterface
         private readonly ApiCredentialService $apiCredentialService,
         private readonly WebhookSystemConfigHelper $webhookSystemConfigHelper,
         private readonly SdkV6EligibilityServiceInterface $sdkV6EligibilityService,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -59,9 +63,20 @@ class SettingsSaver implements SettingsSaverInterface
             $webhookErrors = $this->webhookSystemConfigHelper->checkWebhookBefore([($salesChannelId ?? '') => $settings]);
         }
 
+        $changedKeys = $this->getChangedKeys($settings, $salesChannelId);
+
         $this->systemConfigService->setMultiple($settings, $salesChannelId);
 
         $this->guardSdkV6Setting($salesChannelId);
+
+        if ($changedKeys !== []) {
+            $this->logger->info('Saved the PayPal settings, changed: {changedKeys}', Log::context(
+                code: LogCode::SETTINGS_SAVED,
+                salesChannelId: $salesChannelId,
+                changedKeys: \str_replace(Settings::SYSTEM_CONFIG_DOMAIN, '', \implode(', ', $changedKeys)),
+                sandbox: $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId),
+            ));
+        }
 
         if ($information->getLiveCredentialsValid() || $information->getSandboxCredentialsValid()) {
             $webhookErrors = \array_merge(
@@ -73,6 +88,22 @@ class SettingsSaver implements SettingsSaverInterface
         $information->setWebhookErrors(\array_map(static fn (\Throwable $e) => $e->getMessage(), $webhookErrors ?? []));
 
         return $information;
+    }
+
+    /**
+     * The Administration sends null for inherited values: that's only a change if the sales channel had its own value.
+     *
+     * @param array<string, mixed> $settings
+     *
+     * @return list<string>
+     */
+    private function getChangedKeys(array $settings, ?string $salesChannelId): array
+    {
+        return \array_keys(\array_filter(
+            $settings,
+            fn (mixed $value, string $key) => $this->systemConfigService->get($key, $salesChannelId) !== ($value ?? ($salesChannelId === null ? null : $this->systemConfigService->get($key))),
+            \ARRAY_FILTER_USE_BOTH,
+        ));
     }
 
     private function guardSdkV6Setting(?string $salesChannelId): void
@@ -112,6 +143,7 @@ class SettingsSaver implements SettingsSaverInterface
             $credentials[Settings::CLIENT_SECRET] ?? '',
             $credentials[Settings::MERCHANT_PAYER_ID] ?? '',
             false,
+            $salesChannelId,
         );
     }
 
@@ -134,14 +166,22 @@ class SettingsSaver implements SettingsSaverInterface
             $credentials[Settings::CLIENT_SECRET_SANDBOX] ?? '',
             $credentials[Settings::MERCHANT_PAYER_ID_SANDBOX] ?? '',
             true,
+            $salesChannelId,
         );
     }
 
-    private function testCredentials(string $clientId, string $clientSecret, string $merchantId, bool $sandbox): bool
+    private function testCredentials(string $clientId, string $clientSecret, string $merchantId, bool $sandbox, ?string $salesChannelId): bool
     {
         try {
             return $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandbox, $merchantId);
         } catch (\Exception $e) {
+            $this->logger->warning('Could not verify the PayPal credentials, the Administration shows them as invalid', Log::context(
+                code: LogCode::SETTINGS_CREDENTIALS_UNVERIFIED,
+                salesChannelId: $salesChannelId,
+                sandbox: $sandbox,
+                exception: $e,
+            ));
+
             return false;
         }
     }
