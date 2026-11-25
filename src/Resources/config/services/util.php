@@ -6,6 +6,7 @@
  */
 
 use Doctrine\DBAL\Connection;
+use Monolog\Processor\UidProcessor;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
@@ -39,11 +40,11 @@ use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Bridge\Monolog\Processor\WebProcessor;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -84,17 +85,20 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->tag('kernel.reset', ['method' => 'reset']);
 
     $services->set('monolog.processor.paypal.introspection', IntrospectionProcessor::class)
+        ->arg('$requestStack', service('request_stack'))
         ->tag('monolog.processor', ['channel' => 'paypal']);
 
-    $services->set('monolog.processor.paypal.web', WebProcessor::class)
+    $services->set('monolog.processor.paypal.uid', UidProcessor::class)
+        ->tag('monolog.processor', ['channel' => 'paypal'])
+        ->tag('kernel.reset', ['method' => 'reset']);
+
+    $services->set(PaymentStatusChangeSubscriber::class)
         ->args([
-            [
-                'url' => 'REQUEST_URI',
-                'http_method' => 'REQUEST_METHOD',
-                'server' => 'SERVER_NAME',
-            ],
+            service('monolog.logger.paypal'),
+            service('order_transaction.repository'),
+            service(PaymentMethodDataRegistry::class),
         ])
-        ->tag('monolog.processor', ['channel' => 'paypal']);
+        ->tag('kernel.event_subscriber');
 
     $services->set(ActivateDeactivate::class)
         ->args([

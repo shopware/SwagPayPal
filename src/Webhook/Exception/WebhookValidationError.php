@@ -26,7 +26,8 @@ class WebhookValidationError extends ShopwareHttpException
 
         parent::__construct(
             $message,
-            ['webhookUrl' => $webhookUrl]
+            // the query has the webhook's `sw-token`
+            ['webhookUrl' => \explode('?', $webhookUrl, 2)[0]]
         );
     }
 

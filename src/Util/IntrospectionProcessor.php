@@ -12,17 +12,21 @@ use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Psr\Log\LogLevel;
-use Shopware\Core\Framework\HttpException;
+use Shopware\Core\Framework\Api\Context\AdminApiSource;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\ShopwareHttpException;
-use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
+use Shopware\Core\PlatformRequest;
 use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
-use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
-use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
+use Swag\PayPal\Util\Log\Log;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
+ * Adds where a log line comes from: the request's sales channel, Admin user, method, host and route, but not its URL,
+ * as paths and queries carry tokens. From the given level up, as the backtrace is expensive, also the calling file, line,
+ * class and function and the PayPal client, gateway, resource and controller.
+ *
  * @phpstan-type Trace array{file?: string, line?: int, function?: string, class?: string, type?: string, args?: array<mixed>, object?: object}
  */
 #[Package('checkout')]
@@ -40,8 +44,10 @@ class IntrospectionProcessor implements ProcessorInterface
      *
      * @phpstan-param value-of<Level::VALUES>|value-of<Level::NAMES>|Level|LogLevel::* $level
      */
-    public function __construct(int|string|Level $level = Level::Error)
-    {
+    public function __construct(
+        int|string|Level $level = Level::Error,
+        private readonly ?RequestStack $requestStack = null,
+    ) {
         $this->level = Logger::toMonologLevel($level);
     }
 
@@ -50,6 +56,8 @@ class IntrospectionProcessor implements ProcessorInterface
      */
     public function __invoke(LogRecord $record): LogRecord
     {
+        $record = $this->addRequest($record);
+
         // return if the level is not high enough
         if ($record->level->isLowerThan($this->level)) {
             return $record;
@@ -112,16 +120,7 @@ class IntrospectionProcessor implements ProcessorInterface
             }
         }
 
-        $context = [];
-
-        foreach (['exception', 'error'] as $prop) {
-            if (isset($record->context[$prop]) && $record->context[$prop] instanceof \Throwable) {
-                $context[$prop] = $this->exceptionToContext($record->context[$prop]);
-            }
-        }
-
         return $record->with(...[
-            'context' => [...$record->context, ...$context],
             'extra' => [
                 ...$record->extra,
                 ...$extra,
@@ -146,41 +145,28 @@ class IntrospectionProcessor implements ProcessorInterface
         return $traces;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function exceptionToContext(\Throwable $exception): array
+    private function addRequest(LogRecord $record): LogRecord
     {
-        $context = ['message' => $exception->getMessage()];
-
-        if ($exception instanceof AgentHttpException) {
-            $context['details'] = $exception->getDetails()->jsonSerialize();
+        $request = $this->requestStack?->getMainRequest();
+        if ($request === null) {
+            return $record;
         }
 
-        if ($exception instanceof ShopwareHttpException) {
-            $context['parameters'] = $exception->getParameters();
-        }
+        $requestContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
+        $source = $requestContext instanceof Context ? $requestContext->getSource() : null;
+        $isString = static fn (mixed $value): bool => \is_string($value);
 
-        if ($exception instanceof ConstraintViolationException) {
-            foreach ($exception->getViolations() as $violation) {
-                $context['parameters']['violations'][] = (string) $violation;
-            }
-        }
-
-        if ($exception instanceof HttpException || $exception instanceof PosException) {
-            $context['errorCode'] = $exception->getErrorCode();
-        }
-
-        // Order class, file and line at the end to make the exception & the most important information more readable in logs
-        $context['class'] = $this->traceToClassString($exception->getTrace()[0]);
-        $context['file'] = $exception->getFile();
-        $context['line'] = $exception->getLine();
-
-        if ($exception->getPrevious()) {
-            $context['previous'] = $this->exceptionToContext($exception->getPrevious());
-        }
-
-        return $context;
+        return $record->with(
+            context: $record->context + \array_filter([
+                Log::SALES_CHANNEL_ID => $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID),
+                Log::USER_ID => $source instanceof AdminApiSource ? $source->getUserId() : null,
+            ], $isString),
+            extra: [...$record->extra, ...\array_filter([
+                'http_method' => $request->server->get('REQUEST_METHOD'),
+                'server' => $request->server->get('SERVER_NAME'),
+                Log::ROUTE => $request->attributes->get('_route'),
+            ], $isString)],
+        );
     }
 
     /**

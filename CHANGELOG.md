@@ -1,5 +1,8 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where the PayPal Express Checkout window stayed blank on product detail, listing and search pages, if "Open offcanvas cart after adding a product" was disabled (shopware/SwagPayPal#858)
+- Fixes an issue, where completed payments with alternative payment methods like eps were not marked as paid right away
+- Fixes an issue, where a link on another website could remove the saved PayPal account or card of a logged-in customer. Template customisations of saved PayPal accounts and cards in the checkout should be adapted before version 11 (shopware/SwagPayPal#847)
+- Changed the label "Remove account" or "Remove card" of saved PayPal accounts and cards to "Don't use for future purchases", as subscriptions keep using them for their renewals (shopware/SwagPayPal#847)
 - Fixes an issue, where the Pay Later button showed an error instead of opening PayPal, if the PayPal JS SDK v6 was enabled (shopware/shopware#23097)
 - Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
@@ -10,6 +13,7 @@
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 - Fixes an issue, where the transaction status synchronisation could change a transaction based on an outdated payment attempt (shopware/SwagPayPal#842)
 - Fixes an issue, where renewals of subscriptions paid with a saved PayPal account or card failed after the customer removed it, or used one added later instead
+- Reworked the plugin's log messages: clearer wording, stable log codes, consistent context and levels, and names, addresses, email addresses and tokens redacted from logged API requests, responses and webhook events. Monitoring based on the old message texts needs to be adjusted
 
 # 10.9.0
 - Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)

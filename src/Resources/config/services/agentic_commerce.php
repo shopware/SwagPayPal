@@ -204,7 +204,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(CredentialsUtil::class),
             service('router'),
             service(SystemConfigService::class),
-            service('logger'),
+            service('monolog.logger.paypal'),
             service(FaviconLoader::class),
         ]);
 

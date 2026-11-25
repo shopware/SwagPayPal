@@ -6339,7 +6339,8 @@
                     "payment_method_preference",
                     "customer_service_instructions",
                     "order_update_callback_config",
-                    "app_switch_context"
+                    "app_switch_context",
+                    "preferred_payment_source"
                 ],
                 "properties": {
                     "locale": {
@@ -6414,6 +6415,21 @@
                                 ]
                             }
                         ]
+                    },
+                    "preferred_payment_source": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_preferred_payment_source"
+                            },
+                            {
+                                "type": "object",
+                                "nullable": true,
+                                "enum": [
+                                    null
+                                ]
+                            }
+                        ],
+                        "description": "Only: PayPal Wallet"
                     }
                 },
                 "type": "object"
@@ -6429,6 +6445,17 @@
                     },
                     "phone_number": {
                         "$ref": "#/components/schemas/paypal_v2_common_phone_number"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_common_preferred_payment_source": {
+                "required": [
+                    "vault_id"
+                ],
+                "properties": {
+                    "vault_id": {
+                        "type": "string"
                     }
                 },
                 "type": "object"

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
@@ -40,10 +41,11 @@ class GooglePayHandler extends AbstractPaymentMethodHandler
         OrderResource $orderResource,
         VaultTokenService $vaultTokenService,
         EntityRepository $orderTransactionRepository,
+        LoggerInterface $logger,
         AbstractOrderBuilder $orderBuilder,
         private readonly CardValidatorInterface $googlePayValidator,
     ) {
-        parent::__construct($settingsValidationService, $stateMachineRegistry, $orderExecuteService, $orderPatchService, $transactionDataService, $orderResource, $vaultTokenService, $orderTransactionRepository, $orderBuilder);
+        parent::__construct($settingsValidationService, $stateMachineRegistry, $orderExecuteService, $orderPatchService, $transactionDataService, $orderResource, $vaultTokenService, $orderTransactionRepository, $logger, $orderBuilder);
     }
 
     protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order

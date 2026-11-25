@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Webhook;
 
+use Monolog\Level;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -17,9 +18,12 @@ use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Shopware\PayPalSDK\Struct\V1\Webhook\WebhookCollection;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookRegistry;
@@ -32,6 +36,8 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class WebhookServiceTest extends TestCase
 {
+    use PayPalLogTrait;
+
     public const THROW_WEBHOOK_ID_INVALID = 'webhookIdInvalid';
 
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
@@ -67,6 +73,7 @@ class WebhookServiceTest extends TestCase
             new WebhookRegistry([new DummyWebhook($this->orderTransactionRepo)]),
             $this->systemConfig,
             $this->router,
+            $this->createPayPalLogger(),
         );
     }
 
@@ -216,6 +223,7 @@ class WebhookServiceTest extends TestCase
         $result = $this->webhookService->registerWebhook(null);
 
         static::assertSame(WebhookService::WEBHOOK_UPDATED, $result);
+        $this->assertSingleLog('Updated the URL of PayPal webhook {webhookId}', LogCode::WEBHOOK_UPDATED, self::THROW_WEBHOOK_ID_INVALID);
     }
 
     public function testRegisterWebhookWithoutTokenAndId(): void
@@ -231,6 +239,7 @@ class WebhookServiceTest extends TestCase
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
         static::assertSame(self::WEBHOOK_ID, $this->systemConfig->getString(Settings::WEBHOOK_ID));
         static::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($this->systemConfig->getString(Settings::WEBHOOK_EXECUTE_TOKEN)));
+        $this->assertSingleLog('Registered PayPal webhook {webhookId}', LogCode::WEBHOOK_REGISTERED, self::WEBHOOK_ID);
     }
 
     public function testDeregisterWebhookWithExistingInheritedId(): void
@@ -263,6 +272,7 @@ class WebhookServiceTest extends TestCase
         static::assertSame(WebhookService::WEBHOOK_DELETED, $result);
         static::assertNull($this->systemConfig->get(Settings::WEBHOOK_ID));
         static::assertNull($this->systemConfig->get(Settings::WEBHOOK_EXECUTE_TOKEN));
+        $this->assertSingleLog('Removed PayPal webhook {webhookId}', LogCode::WEBHOOK_DEREGISTERED, self::ALREADY_EXISTING_WEBHOOK_ID);
     }
 
     public function testDeregisterWebhookWithoutExistingId(): void
@@ -320,5 +330,15 @@ class WebhookServiceTest extends TestCase
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
         static::assertNull($this->systemConfig->get(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
         static::assertNull($this->systemConfig->get(Settings::WEBHOOK_EXECUTE_TOKEN, TestDefaults::SALES_CHANNEL));
+    }
+
+    private function assertSingleLog(string $message, string $code, string $webhookId): void
+    {
+        static::assertCount(1, $this->getPayPalLogRecords());
+        $record = $this->assertPayPalLogged($code, Level::Info, [Log::WEBHOOK_ID => $webhookId], $message);
+
+        $encoded = \json_encode($record->context, \JSON_THROW_ON_ERROR);
+        static::assertStringNotContainsString(self::WEBHOOK_URL, $encoded);
+        static::assertStringNotContainsString(WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME, $encoded);
     }
 }

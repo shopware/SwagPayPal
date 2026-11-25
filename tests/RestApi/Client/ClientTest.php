@@ -13,11 +13,13 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
+use Monolog\Level;
 use Monolog\Logger;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\Client;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -71,28 +73,51 @@ class ClientTest extends TestCase
 
         $logs = $this->logger->getRecords();
         static::assertCount(1, $logs);
-        static::assertSame('Requesting PayPal: [{debugId}] {method} {target} {code}', $logs[0]->message);
+        static::assertSame('Requested the PayPal API: {httpMethod} {httpPath} returned {httpStatus}', $logs[0]->message);
+        static::assertSame(Level::Debug, $logs[0]->level);
         static::assertEquals([
-            'method' => 'POST',
-            'target' => 'http://example.com/some/endpoint',
-            'code' => 200,
-            'debugId' => 'some-debug-id',
-            'requestId' => '1234567',
+            'httpMethod' => 'POST',
+            'httpPath' => '/some/endpoint',
+            'httpStatus' => 200,
+            'paypalDebugId' => 'some-debug-id',
+            'paypalRequestId' => '1234567',
             'request' => $body,
-            'requestHeaders' => [
-                'paypal-request-id' => '1234567',
-                'content-type' => 'application/json',
-                'date' => '2000-01-01',
-                'authorization' => 'Basic <redacted>',
-            ],
             'response' => $body,
-            'responseHeaders' => [
-                'paypal-request-id' => '1234567',
-                'content-type' => 'application/json',
-                'date' => '2000-01-01',
-                'authorization' => 'Basic <redacted>',
-            ],
         ], $logs[0]->context);
+    }
+
+    public function testSendRequestRedactsBodies(): void
+    {
+        $jsonBody = \json_encode(['payer' => ['email_address' => 'buyer@example.com', 'payer_id' => 'ABC']], \JSON_THROW_ON_ERROR);
+        $this->guzzleClient->append(new Response(200, [], $jsonBody));
+
+        $this->client->sendRequest(new Request('POST', 'http://example.com/v2/checkout/orders', [], $jsonBody));
+
+        $context = $this->logger->getRecords()[0]->context;
+        static::assertSame(['payer' => ['email_address' => '<redacted>', 'payer_id' => 'ABC']], $context['request']);
+        static::assertSame(['payer' => ['email_address' => '<redacted>', 'payer_id' => 'ABC']], $context['response']);
+    }
+
+    public function testSendRequestNeverLogsTokenBodies(): void
+    {
+        $this->guzzleClient->append(new Response(200, [], '{"access_token":"secret-token"}'));
+
+        $this->client->sendRequest(new Request('POST', 'http://example.com/v1/oauth2/token', [], 'grant_type=client_credentials'));
+
+        $context = $this->logger->getRecords()[0]->context;
+        static::assertSame('<redacted>', $context['request']);
+        static::assertSame('<redacted>', $context['response']);
+    }
+
+    public function testSendRequestRedactsFormBodies(): void
+    {
+        $this->guzzleClient->append(new Response(200, [], 'ok'));
+
+        $this->client->sendRequest(new Request('POST', 'http://example.com/some/endpoint', [], 'client_secret=abc&grant_type=x'));
+
+        $context = $this->logger->getRecords()[0]->context;
+        static::assertSame('<redacted>', $context['request']);
+        static::assertSame('ok', $context['response']);
     }
 
     public function testSendRequest400(): void
@@ -123,13 +148,82 @@ class ClientTest extends TestCase
 
         $logs = $this->logger->getRecords();
         static::assertCount(2, $logs);
-        static::assertSame('Requesting PayPal: [{debugId}] {method} {target} {code}', $logs[0]->message);
+        static::assertSame('Requested the PayPal API: {httpMethod} {httpPath} returned {httpStatus}', $logs[0]->message);
+        static::assertSame(Level::Info, $logs[0]->level);
         static::assertEquals([
-            'method' => 'POST',
-            'target' => 'http://example.com/some/endpoint',
-            'code' => 400,
-            'debugId' => '',
-            'requestId' => '1234567',
+            'code' => LogCode::API_REQUEST_FAILED,
+            'httpMethod' => 'POST',
+            'httpPath' => '/some/endpoint',
+            'httpStatus' => 400,
+            'paypalRequestId' => '1234567',
+            'paypalError' => 'UNKNOWN',
         ], $logs[0]->context);
+        static::assertSame(Level::Debug, $logs[1]->level);
+    }
+
+    public function testSendRequestRejectedBecauseOfTheMerchantAccountIsCritical(): void
+    {
+        $body = ['name' => 'UNPROCESSABLE_ENTITY', 'message' => 'The requested action could not be performed.', 'details' => [['issue' => 'PAYEE_ACCOUNT_RESTRICTED']]];
+        $this->guzzleClient->append(new Response(422, [], \json_encode($body, \JSON_THROW_ON_ERROR)));
+
+        $this->client->sendRequest(new Request('POST', 'http://example.com/v2/checkout/orders'));
+
+        $logs = $this->logger->getRecords();
+        static::assertCount(2, $logs);
+        static::assertSame('Requested the PayPal API: {httpMethod} {httpPath} returned {httpStatus}', $logs[0]->message);
+        static::assertSame(Level::Critical, $logs[0]->level);
+        static::assertSame(LogCode::API_MERCHANT_ACCOUNT_REJECTED, $logs[0]->context['code']);
+        static::assertSame(['PAYEE_ACCOUNT_RESTRICTED'], $logs[0]->context['paypalIssues']);
+    }
+
+    public function testSendRequestRedactsTokenPaths(): void
+    {
+        $this->guzzleClient->append(new Response(404));
+
+        $this->client->sendRequest(new Request('DELETE', 'http://example.com/v3/vault/payment-tokens/8kk8451t?x=1'));
+
+        $logs = $this->logger->getRecords();
+        static::assertSame('/v3/vault/payment-tokens/<redacted>', $logs[0]->context['httpPath']);
+        static::assertSame('/v3/vault/payment-tokens/<redacted>', $logs[1]->context['httpPath']);
+    }
+
+    public function testSendRequest400WithIssue(): void
+    {
+        $body = ['name' => 'UNPROCESSABLE_ENTITY', 'message' => 'The requested action could not be performed.', 'details' => [['issue' => 'FIRST'], ['issue' => 'INSTRUMENT_DECLINED']]];
+        $this->guzzleClient->append(new Response(422, ['paypal-debug-id' => 'dbg'], \json_encode($body, \JSON_THROW_ON_ERROR)));
+
+        $this->client->sendRequest(new Request('POST', 'http://example.com/v2/checkout/orders?x=1'));
+
+        $context = $this->logger->getRecords()[0]->context;
+        static::assertSame('UNPROCESSABLE_ENTITY', $context['paypalError']);
+        static::assertSame(['FIRST', 'INSTRUMENT_DECLINED'], $context['paypalIssues']);
+        static::assertSame('dbg', $context['paypalDebugId']);
+        static::assertSame('/v2/checkout/orders', $context['httpPath']);
+        static::assertArrayNotHasKey('paypalRequestId', $context);
+    }
+
+    public function testSendRequest400WithNameAndOAuthError(): void
+    {
+        $this->guzzleClient->append(new Response(404, [], '{"name":"RESOURCE_NOT_FOUND","message":"The specified resource does not exist."}'));
+        $this->guzzleClient->append(new Response(401, [], '{"error":"invalid_client"}'));
+
+        $this->client->sendRequest(new Request('GET', 'http://example.com/a'));
+        $this->client->sendRequest(new Request('POST', 'http://example.com/v1/oauth2/token'));
+
+        $logs = $this->logger->getRecords();
+        static::assertSame('RESOURCE_NOT_FOUND', $logs[0]->context['paypalError']);
+        static::assertArrayNotHasKey('paypalIssues', $logs[0]->context);
+        static::assertSame('invalid_client', $logs[2]->context['paypalError']);
+    }
+
+    public function testSendRequestWithoutPayPalErrorBodyUsesTheErrorOfTheSdk(): void
+    {
+        $this->guzzleClient->append(new Response(503, [], '<html>Service Unavailable</html>'));
+
+        $this->client->sendRequest(new Request('GET', 'http://example.com/v2/checkout/orders/5O1'));
+
+        $context = $this->logger->getRecords()[0]->context;
+        static::assertSame('SERVICE_UNAVAILABLE', $context['paypalError']);
+        static::assertArrayNotHasKey('paypalIssues', $context);
     }
 }

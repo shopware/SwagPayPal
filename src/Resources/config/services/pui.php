@@ -79,7 +79,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(SettingsValidationService::class),
             service(PUIFraudNetDataService::class),
             service(PUIPaymentInstructionDataService::class),
-            service('monolog.logger.paypal'),
         ])
         ->tag('kernel.event_subscriber');
 
@@ -89,7 +88,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set(PUIInstructionsFetchTaskHandler::class)
         ->args([
             service('scheduled_task.repository'),
-            service('logger'),
+            service('monolog.logger.paypal'),
             service('order_transaction.repository'),
             service(PaymentMethodDataRegistry::class),
             service('messenger.default_bus'),

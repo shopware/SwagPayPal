@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -38,11 +39,14 @@ use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\FullCheckoutTrait;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -57,6 +61,7 @@ class PUIHandlerTest extends TestCase
     use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
+    use PayPalLogTrait;
     use ServicesTrait;
     use StateMachineStateTrait;
 
@@ -112,17 +117,28 @@ class PUIHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The synchronous payment process was interrupted due to the following error:' . \PHP_EOL . 'Missing Fraudnet session id', '/') . '\z/');
-        $this->processPayment(
-            $order,
-            [
-                PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
-                PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-            ],
-            $context,
-            $this->getDefaultConfigData()
+        try {
+            $this->processPayment(
+                $order,
+                [
+                    PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
+                    PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
+                ],
+                $context,
+                $this->getDefaultConfigData()
+            );
+            static::fail('Expected a PaymentException');
+        } catch (PaymentException $e) {
+            static::assertMatchesRegularExpression('/\A' . \preg_quote('The synchronous payment process was interrupted due to the following error:' . \PHP_EOL . 'Missing Fraudnet session id', '/') . '\z/', $e->getMessage());
+        }
+
+        $record = $this->assertPayPalLogged(
+            LogCode::CHECKOUT_PAYMENT_FAILED,
+            Level::Error,
+            [Log::ORDER_TRANSACTION_ID => $order->getTransactions()?->first()?->getId()],
+            'Could not complete the payment of order transaction {orderTransactionId}: {errorCode}, the payment status of the order is now Failed',
         );
+        static::assertSame(PaymentException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testPayWithInvalidSettingsException(): void
@@ -190,7 +206,7 @@ class PUIHandlerTest extends TestCase
     private function processPayment(OrderEntity $order, array $requestData, SalesChannelContext $context, array $settings): void
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger());
 
         $criteria = new Criteria([$order->getId()]);
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
@@ -214,6 +230,7 @@ class PUIHandlerTest extends TestCase
             $orderResource,
             $this->getContainer()->get(VaultTokenService::class),
             $this->getContainer()->get('order_transaction.repository'),
+            $this->createPayPalLogger(),
             $this->getContainer()->get(PUIOrderBuilder::class),
             $this->getContainer()->get(PUICustomerDataService::class),
         );

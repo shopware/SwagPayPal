@@ -18,6 +18,8 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentError;
 use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
 use Swag\PayPal\AgenticCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgenticCommerce\Routing\AgentSource;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,10 +57,20 @@ class AgentResponseExceptionSubscriber implements EventSubscriberInterface
 
         $exception = $event->getThrowable();
 
-        $this->logger->error($exception->getMessage(), ['exception' => $exception]);
-
         $source = self::extractSource($event);
-        $response = new JsonResponse(self::getResponseFromException($exception, $source));
+        $error = self::getResponseFromException($exception, $source);
+
+        $logContext = [
+            Log::HTTP_STATUS => $error->getCode(),
+            Log::EXCEPTION => $exception,
+        ];
+        if ($error->getCode() >= Response::HTTP_BAD_REQUEST && $error->getCode() < Response::HTTP_INTERNAL_SERVER_ERROR) {
+            $this->logger->notice('Rejected a request of an AI agent: {errorCode}', Log::context(...$logContext, code: LogCode::AGENTIC_REQUEST_REJECTED));
+        } else {
+            $this->logger->error('Could not answer a request of an AI agent: {errorCode}', Log::context(...$logContext, code: LogCode::AGENTIC_REQUEST_FAILED));
+        }
+
+        $response = new JsonResponse($error);
 
         $event->setResponse($response);
         $event->stopPropagation();

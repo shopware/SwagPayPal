@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -57,6 +58,7 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
@@ -72,6 +74,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\PayPalSDK\MockRequestHandler;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -87,6 +91,7 @@ class PayPalPaymentHandlerTest extends TestCase
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use PaymentTransactionTrait;
+    use PayPalLogTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
 
@@ -235,6 +240,13 @@ class PayPalPaymentHandlerTest extends TestCase
         );
 
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, Context::createDefaultContext());
+
+        $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYER_ACTION_REDIRECT, Level::Info, [
+            Log::ORDER_TRANSACTION_ID => $transactionId,
+            Log::PAYPAL_ORDER_ID => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+        ]);
+        static::assertArrayHasKey(Log::ORDER_NUMBER, $record->context);
+        $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
     }
 
     /**
@@ -347,7 +359,7 @@ class PayPalPaymentHandlerTest extends TestCase
             $payerRequest,
             MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
             new PaymentTransactionStruct('orderTransactionId', self::RETURN_URL),
-            new OrderTransactionEntity(),
+            (new OrderTransactionEntity())->assign(['id' => 'orderTransactionId']),
             $this->createOrderWithSalesChannel(),
             Context::createDefaultContext(),
         );
@@ -417,7 +429,7 @@ class PayPalPaymentHandlerTest extends TestCase
             new Request([], ['product' => 'spb']),
             MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
             new PaymentTransactionStruct('orderTransactionId', self::RETURN_URL),
-            new OrderTransactionEntity(),
+            (new OrderTransactionEntity())->assign(['id' => 'orderTransactionId']),
             $this->createOrderWithSalesChannel(),
             Context::createDefaultContext(),
         );
@@ -593,6 +605,33 @@ class PayPalPaymentHandlerTest extends TestCase
         );
     }
 
+    public function testFinalizeWithCancelLogsTheCancellation(): void
+    {
+        $orderResource = $this->createMock(OrderResource::class);
+        $orderResource->method('get')->willReturn((new Order())->assign([
+            'id' => GetCapturedOrderCapture::ID,
+            'status' => 'CREATED',
+            'purchase_units' => [['reference_id' => 'default']],
+        ]));
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+
+        try {
+            $this->createPayPalPaymentHandler(orderResource: $orderResource)->finalize(
+                new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
+                new PaymentTransactionStruct($transactionId),
+                Context::createDefaultContext(),
+            );
+            static::fail('Expected the cancellation to be rethrown');
+        } catch (PaymentException $e) {
+            $record = $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_CANCELLED, Level::Notice, [Log::ORDER_TRANSACTION_ID => $transactionId]);
+            static::assertSame($e::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+            static::assertSame($e->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
+            $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_FAILED);
+            $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_DECLINED);
+        }
+    }
+
     #[DataProvider('pendingTransactionStateProvider')]
     public function testFinalizeWithCancelPreservesTransactionAwaitingPaymentReconciliation(string $state): void
     {
@@ -726,6 +765,7 @@ class PayPalPaymentHandlerTest extends TestCase
             $orderResource ?? $this->createMock(OrderResource::class),
             $this->createMock(VaultTokenService::class),
             $this->createMock(EntityRepository::class),
+            new NullLogger(),
             $orderBuilder ?? $this->createMock(AbstractOrderBuilder::class),
         ];
     }
@@ -744,11 +784,11 @@ class PayPalPaymentHandlerTest extends TestCase
     private function createPayPalPaymentHandler(array $settings = [], ?VaultTokenService $vaultTokenService = null, ?OrderResource $orderResource = null): PayPalPaymentHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $orderResource ??= new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
+        $logger = $this->createPayPalLogger();
+        $orderResource ??= new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger());
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
-        $logger = new NullLogger();
 
-        return new PayPalPaymentHandler(
+        $handler = new PayPalPaymentHandler(
             new SettingsValidationService($systemConfig, new NullLogger()),
             $this->stateMachineRegistry,
             new OrderExecuteService(
@@ -782,8 +822,11 @@ class PayPalPaymentHandlerTest extends TestCase
             $orderResource,
             $vaultTokenService ?? $this->createMock(VaultTokenService::class),
             $this->orderTransactionRepo,
+            $logger,
             $this->createOrderBuilder($systemConfig),
         );
+
+        return $handler;
     }
 
     private function assertFinalizeRequest(
