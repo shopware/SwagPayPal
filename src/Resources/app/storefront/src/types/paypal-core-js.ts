@@ -30,6 +30,7 @@ declare global {
             | T extends 'googlepay' ? SDK.GooglePayOneTimePaymentSession : never
             | T extends 'applepay' ? SDK.ApplePayOneTimePaymentSession : never
             | T extends 'advanced_cards' ? SDK.CardFieldsOneTimePaymentSession : never
+            | T extends 'sepa' ? SDK.LPMOneTimePaymentSession : never
         ;
 
         export type PageTypes = SDK.PageTypes;

@@ -134,7 +134,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service('router'),
             service('request_stack'),
             service(MethodEligibilityStateService::class),
-            service(PaymentMethodUtil::class),
         ]);
 
     $services->set(VaultDataService::class)
