@@ -220,9 +220,9 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/handle-error', name: 'frontend.paypal.handle-error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function onHandleError(Request $request, SalesChannelContext $context): Response
     {
-        $step = \mb_trim($request->request->getString('step')) ?: null;
-        $code = \mb_trim($request->request->getString('code')) ?: null;
-        $pageType = \mb_trim($request->request->getString('pageType')) ?: null;
+        $step = \trim($request->request->getString('step')) ?: null;
+        $code = \trim($request->request->getString('code')) ?: null;
+        $pageType = \trim($request->request->getString('pageType')) ?: null;
         $fatal = $request->request->getBoolean('fatal');
         $error = $request->request->getString('error') ?: null;
         $isCheckout = $request->request->getBoolean('isCheckout');

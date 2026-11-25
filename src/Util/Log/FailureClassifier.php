@@ -28,7 +28,8 @@ final class FailureClassifier
     // cart exceptions with other codes are system failures, e.g. a cart that couldn't be loaded
     private const BUYER_ERROR_CODES = [
         CartException::CUSTOMER_NOT_LOGGED_IN_CODE,
-        CartException::CART_EMPTY,
+        // `CartException::CART_EMPTY` exists from Shopware 6.6.8.0
+        'CHECKOUT__CART_EMPTY',
         CardValidationFailedException::PAYMENT_CARD_VALIDATION_FAILED,
         EmptyCartException::ERROR_CODE,
         PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL,
