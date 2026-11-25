@@ -13,22 +13,22 @@ use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Api\Context\AdminApiSource;
+use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
+use Shopware\Core\Framework\Api\Context\SystemSource;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Kernel;
-use Swag\PayPal\AgenticCommerce\Exception\AgentException;
-use Swag\PayPal\AgenticCommerce\Struct\V1\AgentErrorDetail;
-use Swag\PayPal\AgenticCommerce\Struct\V1\AgentErrorDetailCollection;
+use Shopware\Core\PlatformRequest;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
-use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\RestApi\Client\AbstractClient;
 use Swag\PayPal\RestApi\Client\PayPalClient;
-use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Util\IntrospectionProcessor;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
+use Swag\PayPal\Util\Log\Log;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @internal
@@ -85,6 +85,8 @@ class IntrospectionProcessorTest extends TestCase
         'class' => Kernel::class,
         'type' => '->',
     ];
+
+    private RequestStack $requestStack;
 
     #[DataProvider('invokeDataProvider')]
     public function testInvoke(array $backtrace, array $expected): void
@@ -214,127 +216,71 @@ class IntrospectionProcessorTest extends TestCase
         ]];
     }
 
-    #[DataProvider('invokeWithExceptionDataProvider')]
-    public function testInvokeWithException(array $context, array $expected): void
+    public function testSalesChannelFromRequestUnlessTheCallSitePassedOne(): void
     {
-        $logRecord = new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Error, 'test', $context);
+        $processor = $this->createProcessor(new Request(attributes: [PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID => 'sales-channel-id']));
 
-        $staticExcepted = [];
+        static::assertSame('sales-channel-id', $processor($this->createRecord())->context[Log::SALES_CHANNEL_ID]);
+        static::assertSame('from-context', $processor($this->createRecord([Log::SALES_CHANNEL_ID => 'from-context']))->context[Log::SALES_CHANNEL_ID]);
+    }
 
-        foreach (['exception', 'error'] as $prop) {
-            if (!$logRecord->context[$prop] instanceof \Throwable) {
-                continue;
-            }
+    public function testUserFromAdminApiRequest(): void
+    {
+        $processor = $this->createProcessor(new Request(attributes: [
+            PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT => new Context(new AdminApiSource('user-id')),
+        ]));
 
-            $staticExcepted[$prop] = [
-                'file' => __FILE__,
-                'class' => self::class . '::invokeWithExceptionDataProvider',
-                'line' => $logRecord->context[$prop]->getLine(),
-            ];
+        static::assertSame('user-id', $processor($this->createRecord())->context[Log::USER_ID]);
+        static::assertSame('from-context', $processor($this->createRecord([Log::USER_ID => 'from-context']))->context[Log::USER_ID]);
+    }
+
+    public function testNoUserWithoutAdminApiUser(): void
+    {
+        foreach ([new AdminApiSource(null), new SystemSource(), new SalesChannelApiSource('sales-channel-id')] as $source) {
+            $processor = $this->createProcessor(new Request(attributes: [PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT => new Context($source)]));
+
+            static::assertArrayNotHasKey(Log::USER_ID, $processor($this->createRecord())->context);
         }
+    }
 
-        $processor = $this->getMockBuilder(IntrospectionProcessor::class)
-            ->setConstructorArgs([Level::Error])
-            ->onlyMethods(['getBacktrace'])
-            ->getMock();
+    public function testMethodHostAndRouteOfTheMainRequestButNotItsUrl(): void
+    {
+        // paths and queries carry tokens, e.g. the restore token or the webhook's `sw-token`
+        $request = Request::create('https://shop.example/paypal/restore-context/restore-token?sw-token=webhook-token');
+        $request->attributes->set('_route', 'frontend.paypal.restore_context');
+        $processor = $this->createProcessor($request);
+        $this->requestStack->push(new Request(attributes: ['_route' => 'sub.request']));
 
-        $processor
-            ->expects(static::once())
-            ->method('getBacktrace')
-            ->willReturn(\array_merge([self::TRACE_MONOLOG], []));
-
-        $logRecord = $processor->__invoke($logRecord);
-
-        static::assertEquals(
-            \array_merge_recursive($expected, $staticExcepted),
-            $logRecord->context,
+        static::assertSame(
+            ['uid' => 'abc', 'http_method' => 'GET', 'server' => 'shop.example', Log::ROUTE => 'frontend.paypal.restore_context'],
+            $processor($this->createRecord(extra: ['uid' => 'abc']))->extra,
         );
     }
 
-    public static function invokeWithExceptionDataProvider(): \Generator
+    public function testWithoutRequestTheRecordStaysAsItIs(): void
     {
-        yield 'not a throwable' => [
-            ['error' => ['some-key' => 'some-value']],
-            ['error' => ['some-key' => 'some-value']],
-        ];
+        $record = $this->createRecord([Log::CODE => 'CODE']);
 
-        yield 'throwable' => [
-            ['exception' => new \Exception('test-message'), 'error' => new \Exception('test-message')],
-            ['exception' => ['message' => 'test-message'], 'error' => ['message' => 'test-message']],
-        ];
+        static::assertSame($record, (new IntrospectionProcessor(Level::Error, new RequestStack()))($record));
+        static::assertSame($record, (new IntrospectionProcessor())($record));
+    }
 
-        yield 'PayPalApiException' => [
-            ['exception' => new PayPalApiException('test-name', 'test-message', issue: 'test-issue')],
-            ['exception' => [
-                'message' => 'The error "test-name" occurred with the following message: test-message',
-                'parameters' => ['name' => 'test-name', 'message' => 'test-message', 'issue' => 'test-issue'],
-                'errorCode' => 'SWAG_PAYPAL__API_test-issue',
-            ]],
-        ];
+    private function createProcessor(Request $mainRequest): IntrospectionProcessor
+    {
+        $this->requestStack = new RequestStack();
+        $this->requestStack->push($mainRequest);
 
-        yield 'PosException' => [
-            ['exception' => new PosException('test-name', 'test-message')],
-            ['exception' => [
-                'message' => 'The error "test-name" occurred with the following message: test-message',
-                'parameters' => ['name' => 'test-name', 'message' => 'test-message'],
-                'errorCode' => 'SWAG_PAYPAL__POS_EXCEPTION',
-            ]],
-        ];
+        return new IntrospectionProcessor(Level::Error, $this->requestStack);
+    }
 
-        yield 'AgentException' => [
-            ['exception' => new AgentException(
-                500,
-                'TEST_ERROR',
-                'Test error message',
-                [],
-                new AgentErrorDetailCollection([
-                    (new AgentErrorDetail())->assign([
-                        'field' => 'field1',
-                        'issue' => 'issue1',
-                        'description' => 'description1',
-                    ]),
-                    (new AgentErrorDetail())->assign([
-                        'field' => 'field2',
-                        'issue' => 'issue2',
-                        'description' => 'description2',
-                    ]),
-                ])
-            )],
-            ['exception' => [
-                'message' => 'Test error message',
-                'parameters' => [],
-                'errorCode' => 'TEST_ERROR',
-                'details' => [
-                    [
-                        'field' => 'field1',
-                        'issue' => 'issue1',
-                        'description' => 'description1',
-                    ],
-                    [
-                        'field' => 'field2',
-                        'issue' => 'issue2',
-                        'description' => 'description2',
-                    ],
-                ],
-            ]],
-        ];
-
-        yield 'ConstraintViolationException' => [
-            ['exception' => new ConstraintViolationException(new ConstraintViolationList([new ConstraintViolation(
-                'test message',
-                'test message template with {{ type }}',
-                ['{{ type }}' => 'testParameter'],
-                '/root',
-                'testProperty',
-                'VIOLATION_TESTPROPERTY_INVALID'
-            )]), [])],
-            ['exception' => [
-                'message' => 'Caught 1 violation errors.',
-                'parameters' => [
-                    'count' => 1,
-                    'violations' => ["/root.testProperty:\n    test message"],
-                ],
-            ]],
-        ];
+    /**
+     * Below the level of the backtrace, so only the request is added.
+     *
+     * @param array<string, mixed> $context
+     * @param array<string, mixed> $extra
+     */
+    private function createRecord(array $context = [], array $extra = []): LogRecord
+    {
+        return new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Info, 'message', $context, $extra);
     }
 }

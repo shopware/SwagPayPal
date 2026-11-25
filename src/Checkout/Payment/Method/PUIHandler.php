@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
+use Swag\PayPal\Checkout\Payment\PaymentFailureLogger;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
 use Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder;
@@ -91,12 +92,18 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
         $fraudnetSessionId = $dataBag->get(self::PUI_FRAUD_NET_SESSION_ID);
 
         if (!$fraudnetSessionId) {
-            throw PaymentException::syncProcessInterrupted($transactionId, 'Missing Fraudnet session id');
+            $exception = PaymentException::syncProcessInterrupted($transactionId, 'Missing Fraudnet session id');
+            $this->logPaymentFailure($exception, $transaction, beforePayPal: true);
+
+            throw $exception;
         }
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
-            throw CartException::customerNotLoggedIn();
+            $exception = CartException::customerNotLoggedIn();
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         try {
@@ -131,9 +138,11 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
             if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
                 $e->setOrderTransactionId($transactionId);
             }
+            $this->logPaymentFailure($e, $transaction);
+
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::syncProcessInterrupted($transactionId, $e->getMessage());
         }
@@ -169,5 +178,10 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
             );
         } catch (SessionNotFoundException $e) {
         }
+    }
+
+    private function logPaymentFailure(\Throwable $e, SyncPaymentTransactionStruct $transaction, bool $beforePayPal = false): void
+    {
+        PaymentFailureLogger::log($this->logger, $e, $transaction->getOrderTransaction(), $transaction->getOrder(), beforePayPal: $beforePayPal);
     }
 }

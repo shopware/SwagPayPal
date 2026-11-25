@@ -14,10 +14,11 @@ use GuzzleHttp\Psr7\Response;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\UnencryptedToken;
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Shopware\Core\Content\ProductExport\ProductExportCollection;
 use Shopware\Core\Content\ProductExport\ProductExportEntity;
 use Shopware\Core\Framework\Context;
@@ -41,6 +42,9 @@ use Swag\PayPal\AgenticCommerce\Util\FaviconLoader;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -52,6 +56,8 @@ use Symfony\Component\Routing\RouterInterface;
 #[CoversClass(HoneyWebhookService::class)]
 class HoneyWebhookServiceTest extends TestCase
 {
+    use PayPalLogTrait;
+
     public function testRegisterWebhook(): void
     {
         $context = Context::createDefaultContext();
@@ -110,16 +116,6 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('set')
             ->with(Settings::AGENTIC_COMMERCE_ONBOARDED, true);
 
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $loggerMock
-            ->expects(static::once())
-            ->method('log')
-            ->with('info', 'PayPal agentic commerce webhook install', [
-                'success' => true,
-                'message' => 'Merchant onboarded successfully',
-                'error' => null,
-            ]);
-
         $faviconMock = $this->createMock(FaviconLoader::class);
         $faviconMock
             ->expects(static::once())
@@ -132,7 +128,7 @@ class HoneyWebhookServiceTest extends TestCase
             $credentialsUtil,
             $routeMock,
             $configServiceMock,
-            $loggerMock,
+            $this->createPayPalLogger(),
             $faviconMock
         );
 
@@ -140,6 +136,8 @@ class HoneyWebhookServiceTest extends TestCase
 
         static::assertTrue($result->success);
         static::assertSame('Merchant onboarded successfully', $result->message);
+
+        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_SENT, Level::Info, [Log::ENDPOINT => 'install']);
     }
 
     public function testDeregisterWebhook(): void
@@ -175,23 +173,13 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('delete')
             ->with(Settings::AGENTIC_COMMERCE_ONBOARDED);
 
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $loggerMock
-            ->expects(static::once())
-            ->method('log')
-            ->with('info', 'PayPal agentic commerce webhook uninstall', [
-                'success' => true,
-                'message' => 'Merchant onboarded successfully',
-                'error' => null,
-            ]);
-
         $service = new HoneyWebhookService(
             $client,
             $this->createMock(EntityRepository::class),
             $this->createMock(CredentialsUtil::class),
             $this->createMock(RouterInterface::class),
             $configServiceMock,
-            $loggerMock,
+            $this->createPayPalLogger(),
             $this->createMock(FaviconLoader::class)
         );
 
@@ -199,6 +187,8 @@ class HoneyWebhookServiceTest extends TestCase
 
         static::assertTrue($result->success);
         static::assertSame('Merchant onboarded successfully', $result->message);
+
+        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_SENT, Level::Info, [Log::ENDPOINT => 'uninstall']);
     }
 
     public function testReRegister(): void
@@ -254,18 +244,13 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('set')
             ->with(Settings::AGENTIC_COMMERCE_ONBOARDED);
 
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $loggerMock
-            ->expects(static::exactly(2))
-            ->method('log');
-
         $service = new HoneyWebhookService(
             $client,
             $salesChannelRepository,
             $credentialsUtil,
             $routeMock,
             $configServiceMock,
-            $loggerMock,
+            $this->createPayPalLogger(),
             $this->createMock(FaviconLoader::class)
         );
 
@@ -273,13 +258,14 @@ class HoneyWebhookServiceTest extends TestCase
 
         static::assertTrue($result->success);
         static::assertSame('Merchant onboarded successfully', $result->message);
+        static::assertSame(
+            ['uninstall', 'install'],
+            \array_column($this->getPayPalLogContexts(LogCode::AGENTIC_WEBHOOK_SENT), Log::ENDPOINT),
+        );
     }
 
     public function testFailedReRegister(): void
     {
-        $this->expectException(HoneyWebhookException::class);
-        $this->expectExceptionMessage('JWT signature verification failed');
-
         $context = Context::createDefaultContext();
         $salesChannel = self::createSalesChannel();
         $salesChannelRepository = $this->createMock(EntityRepository::class);
@@ -321,22 +307,25 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('set')
             ->with(Settings::AGENTIC_COMMERCE_ONBOARDED, true);
 
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $loggerMock
-            ->expects(static::exactly(2))
-            ->method('log');
-
         $service = new HoneyWebhookService(
             $client,
             $salesChannelRepository,
             $this->createMock(CredentialsUtil::class),
             $routeMock,
             $configServiceMock,
-            $loggerMock,
+            $this->createPayPalLogger(),
             $this->createMock(FaviconLoader::class)
         );
 
-        $service->register($salesChannel->getId(), $context);
+        try {
+            $service->register($salesChannel->getId(), $context);
+            static::fail('Expected a HoneyWebhookException');
+        } catch (HoneyWebhookException $e) {
+            static::assertSame('JWT signature verification failed', $e->getMessage());
+        }
+
+        $this->assertPayPalLogged(LogCode::AGENTIC_OLD_REGISTRATION_NOT_REMOVED, Level::Warning, [Log::ERROR_CODE => 'INVALID_JWT']);
+        $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_FAILED, Level::Error, [Log::ENDPOINT => 'install']);
     }
 
     public function testDeregisterNotRegistered(): void
@@ -366,7 +355,7 @@ class HoneyWebhookServiceTest extends TestCase
             $this->createMock(CredentialsUtil::class),
             $this->createMock(RouterInterface::class),
             $configServiceMock,
-            $this->createMock(LoggerInterface::class),
+            new NullLogger(),
             $this->createMock(FaviconLoader::class)
         );
 
@@ -414,7 +403,7 @@ class HoneyWebhookServiceTest extends TestCase
             $this->createMock(CredentialsUtil::class),
             $routeMock,
             $configServiceMock,
-            $this->createMock(LoggerInterface::class),
+            new NullLogger(),
             $this->createMock(FaviconLoader::class)
         );
 
@@ -446,9 +435,6 @@ class HoneyWebhookServiceTest extends TestCase
 
     public function testInvalidRegisterRequest(): void
     {
-        $this->expectException(HoneyWebhookException::class);
-        $this->expectExceptionMessage('JWT signature verification failed');
-
         $context = Context::createDefaultContext();
         $salesChannel = self::createSalesChannel();
         $salesChannelRepository = $this->createMock(EntityRepository::class);
@@ -493,34 +479,33 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('delete')
             ->with(Settings::AGENTIC_COMMERCE_ONBOARDED);
 
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $loggerMock
-            ->expects(static::once())
-            ->method('log')
-            ->with('error', 'PayPal agentic commerce webhook install', [
-                'success' => false,
-                'message' => 'JWT signature verification failed',
-                'error' => 'INVALID_JWT',
-            ]);
-
         $service = new HoneyWebhookService(
             $client,
             $salesChannelRepository,
             $this->createMock(CredentialsUtil::class),
             $routeMock,
             $configServiceMock,
-            $loggerMock,
+            $this->createPayPalLogger(),
             $this->createMock(FaviconLoader::class)
         );
 
-        $service->register($salesChannel->getId(), $context);
+        try {
+            $service->register($salesChannel->getId(), $context);
+            static::fail('Expected a HoneyWebhookException');
+        } catch (HoneyWebhookException $e) {
+            static::assertSame('JWT signature verification failed', $e->getMessage());
+        }
+
+        $record = $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_FAILED, Level::Error, [
+            Log::ENDPOINT => 'install',
+            Log::ERROR_CODE => 'INVALID_JWT',
+            Log::RESULT_MESSAGE => 'JWT signature verification failed',
+        ]);
+        static::assertSame(ClientException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testInvalidDeregisterRequest(): void
     {
-        $this->expectException(HoneyWebhookException::class);
-        $this->expectExceptionMessage('JWT signature verification failed');
-
         $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects(static::once())
@@ -546,27 +531,29 @@ class HoneyWebhookServiceTest extends TestCase
             ->expects(static::never())
             ->method('set');
 
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $loggerMock
-            ->expects(static::once())
-            ->method('log')
-            ->with('error', 'PayPal agentic commerce webhook uninstall', [
-                'success' => false,
-                'message' => 'JWT signature verification failed',
-                'error' => 'INVALID_JWT',
-            ]);
-
         $service = new HoneyWebhookService(
             $client,
             $this->createMock(EntityRepository::class),
             $this->createMock(CredentialsUtil::class),
             $this->createMock(RouterInterface::class),
             $configServiceMock,
-            $loggerMock,
+            $this->createPayPalLogger(),
             $this->createMock(FaviconLoader::class)
         );
 
-        $service->deregister(Uuid::randomHex());
+        try {
+            $service->deregister(Uuid::randomHex());
+            static::fail('Expected a HoneyWebhookException');
+        } catch (HoneyWebhookException $e) {
+            static::assertSame('JWT signature verification failed', $e->getMessage());
+        }
+
+        $record = $this->assertPayPalLogged(LogCode::AGENTIC_WEBHOOK_FAILED, Level::Error, [
+            Log::ENDPOINT => 'uninstall',
+            Log::ERROR_CODE => 'INVALID_JWT',
+            Log::RESULT_MESSAGE => 'JWT signature verification failed',
+        ]);
+        static::assertSame(ClientException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testInvalidRequestNoResponse(): void
@@ -618,7 +605,7 @@ class HoneyWebhookServiceTest extends TestCase
             $this->createMock(CredentialsUtil::class),
             $routeMock,
             $configServiceMock,
-            $this->createMock(LoggerInterface::class),
+            new NullLogger(),
             $this->createMock(FaviconLoader::class)
         );
 

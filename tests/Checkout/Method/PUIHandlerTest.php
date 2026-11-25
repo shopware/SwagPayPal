@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -34,10 +35,13 @@ use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\FullCheckoutTrait;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -53,6 +57,7 @@ class PUIHandlerTest extends TestCase
     use FullCheckoutTrait;
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
+    use PayPalLogTrait;
     use ServicesTrait;
     use StateMachineStateTrait;
 
@@ -112,15 +117,26 @@ Birthday is required for PUI for customer/');
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 Missing Fraudnet session id');
-        $this->processPayment(
-            $order,
-            new RequestDataBag([
-                PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
-                PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-            ]),
-            $context,
-            $this->getDefaultConfigData()
-        );
+
+        try {
+            $this->processPayment(
+                $order,
+                new RequestDataBag([
+                    PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
+                    PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
+                ]),
+                $context,
+                $this->getDefaultConfigData()
+            );
+        } finally {
+            $record = $this->assertPayPalLogged(
+                LogCode::CHECKOUT_PAYMENT_FAILED,
+                Level::Error,
+                [Log::ORDER_TRANSACTION_ID => $order->getTransactions()?->first()?->getId()],
+                'Could not complete the payment of order transaction {orderTransactionId}: {errorCode}, the payment status of the order is now Failed',
+            );
+            static::assertSame(PaymentException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        }
     }
 
     public function testPayWithInvalidSettingsException(): void
@@ -191,8 +207,8 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($clientFactory);
-        $logger = new NullLogger();
+        $orderResource = new OrderResource($clientFactory, new NullLogger());
+        $logger = $this->createPayPalLogger();
 
         $criteria = new Criteria([$order->getId()]);
         $criteria->addAssociation('transactions.stateMachineState');

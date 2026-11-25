@@ -7,8 +7,8 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\Service;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
@@ -29,7 +29,10 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -39,6 +42,7 @@ class ExpressCustomerServiceTest extends TestCase
 {
     use CheckoutRouteTrait;
     use IntegrationTestBehaviour;
+    use PayPalLogTrait;
 
     public const TEST_PAYMENT_ID_WITHOUT_STATE = 'testPaymentIdWithoutState';
     public const TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES = 'testPaymentIdWithCountryWithoutStates';
@@ -81,6 +85,14 @@ class ExpressCustomerServiceTest extends TestCase
         static::assertNotNull($countryState);
         static::assertSame('New York', $countryState->getName());
         static::assertSame(GetOrderCapture::PAYER_PHONE_NUMBER, $address->getPhoneNumber());
+
+        $this->assertPayPalLogged(LogCode::EXPRESS_CUSTOMER_CREATED, Level::Info, [
+            Log::CUSTOMER_ID => $customer->getId(),
+            Log::CUSTOMER_NUMBER => $customer->getCustomerNumber(),
+            Log::GUEST => true,
+            Log::PAYPAL_ORDER_ID => $order->getId(),
+        ]);
+        $this->assertPayPalNotLogged(LogCode::EXPRESS_CUSTOMER_LOGGED_IN);
     }
 
     public function testLoginSameAccount(): void
@@ -96,6 +108,13 @@ class ExpressCustomerServiceTest extends TestCase
         $addresses = $secondCustomer->getAddresses();
         static::assertNotNull($addresses);
         static::assertCount(1, $addresses);
+
+        $this->assertPayPalLogged(LogCode::EXPRESS_CUSTOMER_CREATED, Level::Info);
+        $this->assertPayPalLogged(LogCode::EXPRESS_CUSTOMER_LOGGED_IN, Level::Info, [
+            Log::CUSTOMER_ID => $secondCustomer->getId(),
+            Log::CUSTOMER_NUMBER => $secondCustomer->getCustomerNumber(),
+            Log::PAYPAL_ORDER_ID => $order->getId(),
+        ]);
     }
 
     public function testLoginSameAccountWithDifferentAddress(): void
@@ -210,7 +229,7 @@ class ExpressCustomerServiceTest extends TestCase
             $customerRepo,
             $this->getContainer()->get(AccountService::class),
             $settings,
-            new NullLogger()
+            $this->createPayPalLogger()
         );
     }
 }

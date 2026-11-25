@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Webhook\Registration;
 
+use Monolog\Level;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -24,13 +25,17 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
+use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
@@ -41,6 +46,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class WebhookSubscriberTest extends TestCase
 {
+    use PayPalLogTrait;
     use ServicesTrait;
 
     private const WEBHOOK_ID = 'someWebhookId';
@@ -80,6 +86,38 @@ class WebhookSubscriberTest extends TestCase
             ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
         static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
+    }
+
+    public function testRemoveWebhookLogsFailure(): void
+    {
+        $this->systemConfigService->set(Settings::WEBHOOK_ID, null);
+        $this->systemConfigService->set(Settings::WEBHOOK_ID, self::WEBHOOK_ID, TestDefaults::SALES_CHANNEL);
+
+        $exception = new \RuntimeException('PayPal is down');
+        $webhookService = $this->createMock(WebhookServiceInterface::class);
+        $webhookService->method('deregisterWebhook')->willThrowException($exception);
+
+        $subscriber = new WebhookSubscriber(
+            $this->createPayPalLogger(),
+            $this->systemConfigService,
+            $webhookService,
+            $this->webhookSystemConfigHelper,
+            $this->requestStack,
+        );
+
+        $subscriber->removeSalesChannelWebhookConfiguration($this->createEvent());
+
+        $record = $this->assertPayPalLogged(
+            LogCode::WEBHOOK_DEREGISTRATION_FAILED,
+            Level::Warning,
+            [
+                Log::WEBHOOK_ID => self::WEBHOOK_ID,
+                Log::SALES_CHANNEL_ID => TestDefaults::SALES_CHANNEL,
+            ],
+            'Could not remove the PayPal webhook, it stays registered at PayPal',
+        );
+        static::assertSame($exception::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        static::assertSame($exception->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
     }
 
     public function testCheckWebhookBefore(): void
@@ -267,6 +305,7 @@ class WebhookSubscriberTest extends TestCase
             new WebhookRegistry([]),
             $this->systemConfigService,
             $this->createMock(RouterInterface::class),
+            new NullLogger(),
         );
 
         foreach ($configuration as $salesChannelId => $webhookId) {

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -16,6 +17,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
@@ -23,6 +25,7 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
@@ -33,6 +36,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -42,6 +47,7 @@ class OrderResourceTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use PaymentTransactionTrait;
+    use PayPalLogTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
 
@@ -108,6 +114,25 @@ class OrderResourceTest extends TestCase
         static::assertStringContainsString('token=' . CreateOrderCapture::ID, $orderResponse->getLinks()->getAt(1)?->getHref() ?? '');
     }
 
+    public function testCreateLogsTheCreatedOrder(): void
+    {
+        $resource = new OrderResource(new PayPalClientFactoryMock(new NullLogger()), $this->createPayPalLogger());
+
+        $order = new Order();
+        $order->assign(['purchase_units' => [['amount' => ['value' => '10.00', 'currency_code' => 'EUR'], 'invoice_id' => 'INV-1']]]);
+        $response = $resource->create($order, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
+
+        $this->assertPayPalLogged(LogCode::CHECKOUT_ORDER_CREATED, Level::Info, [
+            Log::PAYPAL_ORDER_ID => $response->getId(),
+            Log::SALES_CHANNEL_ID => TestDefaults::SALES_CHANNEL,
+            Log::PARTNER_ATTRIBUTION_ID => PartnerAttributionId::PAYPAL_CLASSIC,
+            // taken from the sent order, not the response
+            Log::AMOUNT => '10.00',
+            Log::CURRENCY => 'EUR',
+            Log::INVOICE_ID => 'INV-1',
+        ], 'Created PayPal order {paypalOrderId}');
+    }
+
     public function testAuthorize(): void
     {
         $order = $this->createResource()->authorize('orderId', TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
@@ -130,7 +155,7 @@ class OrderResourceTest extends TestCase
         $paymentSource->setPaypal($paypal);
         $clientFactory = new PayPalClientFactoryMock(new NullLogger());
 
-        $order = (new OrderResource($clientFactory))->confirm('orderId', $paymentSource, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT);
+        $order = (new OrderResource($clientFactory, new NullLogger()))->confirm('orderId', $paymentSource, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT);
 
         static::assertSame(ConfirmOrderPayerAction::ID, $order->getId());
         static::assertSame(ConfirmOrderPayerAction::PAYER_ACTION_URL, $order->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref());
@@ -139,6 +164,6 @@ class OrderResourceTest extends TestCase
 
     private function createResource(): OrderResource
     {
-        return new OrderResource(new PayPalClientFactoryMock(new NullLogger()));
+        return new OrderResource(new PayPalClientFactoryMock(new NullLogger()), new NullLogger());
     }
 }

@@ -225,7 +225,7 @@ Missing PayPal order id');
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($this->clientFactory);
+        $orderResource = new OrderResource($this->clientFactory, new NullLogger());
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();
 

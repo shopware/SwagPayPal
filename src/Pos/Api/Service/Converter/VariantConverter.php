@@ -58,8 +58,8 @@ class VariantConverter
         if (\mb_strlen($variant->getDescription()) > 1024) {
             $variant->setDescription(\sprintf('%s...', \mb_substr($variant->getDescription(), 0, 1021)));
 
-            $this->logger->warning(
-                'The description of product "{productName}" is too long and will be cut off at 1024 characters.',
+            $this->logger->info(
+                'Shortened the description of product {productName} to the PayPal POS maximum of 1024 characters',
                 [
                     'productName' => $variant->getName(),
                     'product' => $shopwareVariant,

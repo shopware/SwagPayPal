@@ -143,7 +143,7 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
             <argument type="service" id="router" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\AgenticCommerce\Util\FaviconLoader"/>
         </service>
 

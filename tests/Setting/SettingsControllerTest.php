@@ -104,13 +104,15 @@ class SettingsControllerTest extends TestCase
                 new MerchantIntegrationsResource(new PayPalClientFactoryMock($logger)),
                 new CredentialsUtil($systemConfigService),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class),
-                new PayPalClientFactoryMock($logger)
+                new PayPalClientFactoryMock($logger),
+                $logger,
             ),
             $this->getContainer()->get(SystemConfigValidator::class),
             new SettingsSaver(
                 $systemConfigService,
                 $apiCredentialsService,
                 $this->createMock(WebhookSystemConfigHelper::class),
+                $logger,
             )
         );
     }

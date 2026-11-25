@@ -116,8 +116,12 @@ class WebhookControllerTest extends TestCase
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
 
         static::assertTrue(
-            $this->logger->hasRecordThatContains('No webhook handler found', Level::Info),
-            'Expected "No webhook handler found" log entry not found',
+            $this->logger->hasRecordThatContains('Ignored PayPal POS webhook event {webhookEventType}: the plugin doesn\'t handle this event type', Level::Debug),
+            'Expected "Ignored Zettle webhook event" log entry not found',
+        );
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('Received a PayPal POS webhook event', Level::Debug),
+            'Expected "Received a PayPal POS webhook event" log entry not found',
         );
     }
 

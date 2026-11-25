@@ -23,6 +23,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
 use Swag\PayPal\Checkout\Card\Exception\CardValidationFailedException;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
+use Swag\PayPal\Checkout\Payment\PaymentFailureLogger;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
@@ -65,7 +66,10 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         $existingVault = $this->vaultTokenService->getTokenForPayment($transaction, $salesChannelContext->getContext(), false);
 
         if (!$paypalOrderId && !$existingVault) {
-            throw PaymentException::asyncProcessInterrupted($transactionId, 'Missing PayPal order id');
+            $exception = PaymentException::asyncProcessInterrupted($transactionId, 'Missing PayPal order id');
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         try {
@@ -114,9 +118,11 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
             if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
                 $e->setOrderTransactionId($transactionId);
             }
+            $this->logPaymentFailure($e, $transaction, $paypalOrderId);
+
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction, $paypalOrderId);
 
             throw PaymentException::asyncProcessInterrupted($transactionId, $e->getMessage());
         }
@@ -127,7 +133,10 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         $transactionId = $transaction->getOrderTransaction()->getId();
         $paypalOrderId = $transaction->getOrderTransaction()->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
         if (!\is_string($paypalOrderId)) {
-            throw PaymentException::asyncProcessInterrupted($transactionId, 'Missing PayPal order id');
+            $exception = PaymentException::asyncProcessInterrupted($transactionId, 'Missing PayPal order id');
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         try {
@@ -139,7 +148,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
 
             $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction, $paypalOrderId);
 
             throw PaymentException::asyncProcessInterrupted($transactionId, $e->getMessage());
         }
@@ -165,7 +174,10 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         $transactionId = $transaction->getOrderTransaction()->getId();
         $subscription = $this->vaultTokenService->getSubscription($transaction);
         if (!$subscription) {
-            throw PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
+            $exception = PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         $salesChannelContext = $this->orderConverter->assembleSalesChannelContext($transaction->getOrder(), $context);
@@ -197,7 +209,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
                 PartnerAttributionId::PAYPAL_PPCP
             );
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::recurringInterrupted($transactionId, $e->getMessage());
         }
@@ -231,6 +243,17 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
             $salesChannelContext->getSalesChannelId(),
             $salesChannelContext->getContext(),
             PartnerAttributionId::PAYPAL_PPCP,
+        );
+    }
+
+    private function logPaymentFailure(\Throwable $e, SyncPaymentTransactionStruct $transaction, mixed $paypalOrderId = null): void
+    {
+        PaymentFailureLogger::log(
+            $this->logger,
+            $e,
+            $transaction->getOrderTransaction(),
+            $transaction->getOrder(),
+            \is_string($paypalOrderId) ? $paypalOrderId : null,
         );
     }
 }

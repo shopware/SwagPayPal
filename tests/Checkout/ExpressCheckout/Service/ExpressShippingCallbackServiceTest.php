@@ -49,6 +49,8 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOption;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\Api\OrderShippingCallback;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 
 /**
  * @internal
@@ -57,6 +59,7 @@ use Swag\PayPal\RestApi\V2\Api\OrderShippingCallback;
 class ExpressShippingCallbackServiceTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use PayPalLogTrait;
 
     private const BLOCK_AVAILABLITITY_RULE = [
         'name' => 'Block',
@@ -163,6 +166,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
     public function testCalculationWithoutChanges(): void
     {
+        $this->recordPayPalLogs($this->getContainer());
+
         $cart = $this->getCart();
         $country = $this->getCountry('DE');
         $order = $this->service->recalculateCart($this->createCallback($country), $this->salesChannelContext);
@@ -170,6 +175,12 @@ class ExpressShippingCallbackServiceTest extends TestCase
         $this->assertMinimalOrderPayload($order);
         static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertSame($cart, $this->getCart());
+
+        $records = $this->getPayPalLogRecords();
+        static::assertCount(1, $records);
+        static::assertSame('Answered the shipping callback with {shippingOptionCount} shipping options', $records[0]->message);
+        static::assertSame(2, $records[0]->context[Log::SHIPPING_OPTION_COUNT] ?? null);
+        static::assertFalse($records[0]->context[Log::CONTEXT_SWITCHED] ?? null);
 
         $this->assertContextParameters([
             SalesChannelContextService::COUNTRY_ID => $country->getId(),

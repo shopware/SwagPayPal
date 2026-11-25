@@ -22,6 +22,8 @@ use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Api\Shipping\TrackerCollection;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @deprecated tag:v10.0.0 - Will be removed without replacement. {@see ShippingInformationMessageHandler}
@@ -103,14 +105,17 @@ class ShippingService
             $trackers->add($this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_SHIPPED));
         }
 
-        $this->logger->info('Adding tracking codes for order delivery "{orderDeliveryId}"', [
-            'orderDeliveryId' => $orderDeliveryId,
-            'trackers' => \array_values($addedTrackingCodes),
-        ]);
-
         $shipping = new Shipping();
         $shipping->setTrackers($trackers);
         $this->shippingResource->batch($shipping, $salesChannelId);
+
+        $this->logger->info('Sent tracking codes {trackingCodes} of order delivery {orderDeliveryId} to PayPal', Log::context(
+            code: LogCode::TRACKING_CODES_ADDED,
+            salesChannelId: $salesChannelId,
+            orderDeliveryId: $orderDeliveryId,
+            trackingCodes: \implode(', ', $addedTrackingCodes),
+            carrier: $carrier,
+        ));
     }
 
     /**
@@ -133,10 +138,13 @@ class ShippingService
             $this->shippingResource->update($tracker, $salesChannelId);
         }
 
-        $this->logger->info('Removed tracking codes for order delivery "{orderDeliveryId}"', [
-            'orderDeliveryId' => $orderDeliveryId,
-            'trackers' => \array_values($removedTrackingCodes),
-        ]);
+        $this->logger->info('Removed tracking codes {trackingCodes} of order delivery {orderDeliveryId} at PayPal', Log::context(
+            code: LogCode::TRACKING_CODES_REMOVED,
+            salesChannelId: $salesChannelId,
+            orderDeliveryId: $orderDeliveryId,
+            trackingCodes: \implode(', ', $removedTrackingCodes),
+            carrier: $carrier,
+        ));
     }
 
     private function getPayPalTransactionId(string $orderDeliveryId, Context $context): ?string

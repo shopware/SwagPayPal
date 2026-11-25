@@ -7,10 +7,10 @@
 
 namespace Swag\PayPal\Test\Checkout\Order\Shipping\Service;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -30,6 +30,9 @@ use Swag\PayPal\RestApi\V1\Api\Shipping;
 use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -39,6 +42,8 @@ use Swag\PayPal\SwagPayPal;
 #[Package('checkout')]
 class ShippingServiceTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private const TEST_CODE_A = 'test_code_a';
     private const TEST_CODE_B = 'test_code_b';
     private const TEST_CODE_C = 'test_code_c';
@@ -201,7 +206,27 @@ class ShippingServiceTest extends TestCase
             }
         ), static::isType('string'));
 
-        $this->getService()->updateTrackingCodes(Uuid::randomHex(), $after, $before, Context::createDefaultContext());
+        $orderDeliveryId = Uuid::randomHex();
+        $this->getService()->updateTrackingCodes($orderDeliveryId, $after, $before, Context::createDefaultContext());
+
+        $expected = [
+            Log::ORDER_DELIVERY_ID => $orderDeliveryId,
+            Log::CARRIER => self::CARRIER_NAME,
+        ];
+        $added = \array_diff($after, $before);
+        $removed = \array_diff($before, $after);
+
+        if ($added !== []) {
+            $this->assertPayPalLogged(LogCode::TRACKING_CODES_ADDED, Level::Info, [...$expected, Log::TRACKING_CODES => \implode(', ', $added)], 'Sent tracking codes {trackingCodes} of order delivery {orderDeliveryId} to PayPal');
+        } else {
+            $this->assertPayPalNotLogged(LogCode::TRACKING_CODES_ADDED);
+        }
+
+        if ($removed !== []) {
+            $this->assertPayPalLogged(LogCode::TRACKING_CODES_REMOVED, Level::Info, [...$expected, Log::TRACKING_CODES => \implode(', ', $removed)], 'Removed tracking codes {trackingCodes} of order delivery {orderDeliveryId} at PayPal');
+        } else {
+            $this->assertPayPalNotLogged(LogCode::TRACKING_CODES_REMOVED);
+        }
     }
 
     private function getService(): ShippingService
@@ -211,7 +236,7 @@ class ShippingServiceTest extends TestCase
             $this->salesChannelRepository,
             $this->orderTransactionRepository,
             $this->shippingMethodRepository,
-            new NullLogger()
+            $this->createPayPalLogger(),
         );
     }
 

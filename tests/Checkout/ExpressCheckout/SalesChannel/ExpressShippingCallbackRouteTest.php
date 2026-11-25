@@ -7,8 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -22,6 +21,9 @@ use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\Api\OrderShippingCallback;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -31,19 +33,18 @@ use Symfony\Component\HttpFoundation\Request;
 #[CoversClass(ExpressShippingCallbackRoute::class)]
 class ExpressShippingCallbackRouteTest extends TestCase
 {
-    private MockObject&ExpressShippingCallbackService $service;
+    use PayPalLogTrait;
 
-    private TestHandler $logger;
+    private MockObject&ExpressShippingCallbackService $service;
 
     private ExpressShippingCallbackRoute $route;
 
     protected function setUp(): void
     {
         $this->service = $this->createMock(ExpressShippingCallbackService::class);
-        $this->logger = new TestHandler();
         $this->route = new ExpressShippingCallbackRoute(
             $this->service,
-            new Logger('test', [$this->logger]),
+            $this->createPayPalLogger(),
         );
     }
 
@@ -82,8 +83,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
         static::assertSame('paypal-order-id', $responsePayload['id']);
         static::assertSame('default', $responsePayload['purchase_units'][0]['reference_id']);
 
-        static::assertCount(1, $this->logger->getRecords());
-        static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
+        static::assertSame([], $this->getPayPalLogRecords());
     }
 
     /**
@@ -102,9 +102,8 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $response = $this->route->handleCallback($request, $salesChannelContext);
         static::assertEquals(\json_encode(['error' => 'Invalid payload']), $response->getContent());
 
-        static::assertCount(2, $this->logger->getRecords());
-        static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
-        static::assertTrue($this->logger->hasError(['message' => 'Shipping callback: Invalid payload']));
+        $record = $this->assertPayPalLogged(LogCode::EXPRESS_CALLBACK_INVALID, Level::Warning, message: 'Rejected a shipping callback with an invalid payload');
+        static::assertArrayNotHasKey('callback', $record->context);
     }
 
     public static function handleCallbackInvalidPayloadDataProvider(): \Generator
@@ -154,9 +153,14 @@ class ExpressShippingCallbackRouteTest extends TestCase
         try {
             $this->route->handleCallback($request, $salesChannelContext);
         } finally {
-            static::assertCount(2, $this->logger->getRecords());
-            static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
-            static::assertTrue($this->logger->hasError(['message' => 'Shipping callback failed']));
+            $record = $this->assertPayPalLogged(
+                LogCode::EXPRESS_CALLBACK_FAILED,
+                Level::Error,
+                [Log::PAYPAL_ORDER_ID => 'paypal-order-id'],
+                'Could not answer the shipping callback for PayPal order {paypalOrderId}, PayPal shows the buyer an error',
+            );
+            static::assertSame($expection::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+            static::assertSame($expection->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
         }
     }
 
@@ -187,8 +191,11 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $response = $this->route->handleCallback($request, $salesChannelContext);
         static::assertSame($expection->intoCallbackResponse()->getContent(), $response->getContent());
 
-        static::assertCount(2, $this->logger->getRecords());
-        static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
-        static::assertTrue($this->logger->hasError(['message' => 'Shipping callback failed']));
+        $this->assertPayPalLogged(
+            LogCode::EXPRESS_CALLBACK_SHIPPING_UNAVAILABLE,
+            Level::Notice,
+            [Log::PAYPAL_ORDER_ID => 'paypal-order-id', Log::COUNTRY_CODE => 'DE'],
+            'Could not offer shipping for PayPal order {paypalOrderId}: {errorCode}',
+        );
     }
 }

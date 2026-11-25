@@ -7,8 +7,8 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
@@ -21,10 +21,13 @@ use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -32,6 +35,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 #[Package('checkout')]
 class OrderExecuteServiceTest extends TestCase
 {
+    use PayPalLogTrait;
+
     public function testOrderGetOnMissingPayments(): void
     {
         $orderResource = $this->createMock(OrderResource::class);
@@ -39,7 +44,7 @@ class OrderExecuteServiceTest extends TestCase
             $orderResource,
             $this->createMock(OrderTransactionStateHandler::class),
             $this->createMock(OrderNumberPatchBuilder::class),
-            new NullLogger(),
+            $this->createPayPalLogger(),
         );
 
         $captureDataWithMissingPayment = CaptureOrderCapture::get();
@@ -87,6 +92,9 @@ class OrderExecuteServiceTest extends TestCase
             $context,
             Uuid::randomHex(),
         );
+
+        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_PENDING, Level::Info, [Log::ORDER_TRANSACTION_ID => $transactionId, Log::CAPTURE_STATUS => PaymentStatusV2::ORDER_CAPTURE_PENDING]);
+        $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED);
     }
 
     public function testPendingAuthorizationSetsInProgress(): void
@@ -196,7 +204,7 @@ class OrderExecuteServiceTest extends TestCase
             $orderResource,
             $transactionStateHandler,
             $this->createMock(OrderNumberPatchBuilder::class),
-            new NullLogger(),
+            $this->createPayPalLogger(),
         );
     }
 }

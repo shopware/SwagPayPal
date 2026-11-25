@@ -12,6 +12,7 @@
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer Karte im Abonnement-Checkout zu einer Fehlerseite führte und stattdessen andere Zahlungsdaten entfernen konnte. Headless-Storefronts können diese jetzt entfernen, auch bei Abonnements
 - Behebt ein Problem, bei dem Verlängerungen von Abonnements, die mit einem gespeicherten PayPal-Konto oder einer Karte bezahlt wurden, fehlschlugen, nachdem der Kunde diese entfernt hatte, oder stattdessen später hinzugefügte Zahlungsdaten verwendeten
 - Behebt ein Problem, bei dem die Administration den PayPal-Agentic-Commerce-Verkaufskanal auf Shopware-Versionen vor 6.6.9.0 anbot, auf denen er nicht funktionieren kann
+- Überarbeitet die Log-Meldungen des Plugins: verständlichere Texte, stabile Log-Codes, einheitlicher Kontext und Log-Level sowie unkenntlich gemachte Namen, Adressen, E-Mail-Adressen und Tokens in geloggten API-Anfragen, API-Antworten und Webhook-Ereignissen. Monitoring, das auf den alten Meldungstexten basiert, muss angepasst werden
 
 # 9.13.5
 - Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug

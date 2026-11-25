@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Payment\PaymentFailureLogger;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
@@ -51,7 +52,10 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
         $customerId = $salesChannelContext->getCustomerId();
 
         if (!$paypalOrderId || !$customerId) {
-            throw PaymentException::syncProcessInterrupted($transactionId, 'Missing PayPal order id');
+            $exception = PaymentException::syncProcessInterrupted($transactionId, 'Missing PayPal order id');
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         try {
@@ -91,12 +95,25 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
             if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
                 $e->setOrderTransactionId($transactionId);
             }
+            $this->logPaymentFailure($e, $transaction, $paypalOrderId);
+
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction, $paypalOrderId);
 
             throw PaymentException::syncProcessInterrupted($transactionId, $e->getMessage());
         }
+    }
+
+    protected function logPaymentFailure(\Throwable $e, SyncPaymentTransactionStruct $transaction, mixed $paypalOrderId = null): void
+    {
+        PaymentFailureLogger::log(
+            $this->logger,
+            $e,
+            $transaction->getOrderTransaction(),
+            $transaction->getOrder(),
+            \is_string($paypalOrderId) ? $paypalOrderId : null,
+        );
     }
 
     protected function executeOrder(SyncPaymentTransactionStruct $transaction, Order $paypalOrder, SalesChannelContext $salesChannelContext): Order

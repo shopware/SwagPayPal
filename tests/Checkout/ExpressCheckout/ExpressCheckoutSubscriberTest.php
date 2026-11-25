@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -568,7 +567,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         return new ExpressCheckoutSubscriber(
             new PayPalExpressCheckoutDataService(
                 $this->cartService,
-                new LocaleCodeProvider(new LanguageRepoMock(), $this->createMock(LoggerInterface::class)),
+                new LocaleCodeProvider(new LanguageRepoMock(), new NullLogger()),
                 $router,
                 $this->getContainer()->get(PaymentMethodUtil::class),
                 $settings,
@@ -584,7 +583,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
                 $this->createMock(SalesChannelRepository::class)
             ),
             $this->createMock(EntityRepository::class),
-            new NullLogger()
         );
     }
 

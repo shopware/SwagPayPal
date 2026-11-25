@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
+use Swag\PayPal\Checkout\Payment\PaymentFailureLogger;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
@@ -28,6 +29,7 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Log\Log;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -67,19 +69,18 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
 
     public function pay(AsyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): RedirectResponse
     {
-        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
 
         try {
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
         } catch (PayPalSettingsInvalidException $exception) {
+            $this->logPaymentFailure($exception, $transaction);
+
             throw PaymentException::asyncProcessInterrupted($transactionId, $exception->getMessage());
         }
 
         $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
-
-        $this->logger->debug('Building order');
 
         $paypalOrder = $this->orderBuilder->getOrder(
             $transaction,
@@ -97,15 +98,15 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
                 true,
                 $transactionId . ($updateTime ? $updateTime->getTimestamp() : ''),
             );
-
-            $this->logger->debug('Created order');
         } catch (PaymentException $e) {
             if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
                 $e->setOrderTransactionId($transactionId);
             }
+            $this->logPaymentFailure($e, $transaction);
+
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::asyncProcessInterrupted(
                 $transactionId,
@@ -133,16 +134,20 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         $transactionId = $transaction->getOrderTransaction()->getId();
         $paypalOrderId = $transaction->getOrderTransaction()->getCustomFields()[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID] ?? null;
         if (!$paypalOrderId) {
-            throw PaymentException::invalidTransaction($transactionId);
+            $exception = PaymentException::invalidTransaction($transactionId);
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         if ($request->query->getBoolean(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
-            $this->logger->debug('Customer canceled');
-
-            throw PaymentException::customerCanceled(
+            $exception = PaymentException::customerCanceled(
                 $transaction->getOrderTransaction()->getId(),
                 'Customer canceled the payment on the PayPal page'
             );
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         try {
@@ -152,9 +157,11 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
                 $e->setOrderTransactionId($transactionId);
             }
+            $this->logPaymentFailure($e, $transaction);
+
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::asyncProcessInterrupted($transactionId, $e->getMessage());
         }
@@ -162,8 +169,13 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         try {
             $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
         } catch (\Exception $e) {
-            $this->logger->warning('Could not set resource id: ' . $e->getMessage(), ['error' => $e]);
+            $this->logger->debug('Could not store the PayPal resource ID of order transaction {orderTransactionId}', Log::context(exception: $e, orderTransactionId: $transactionId));
         }
+    }
+
+    private function logPaymentFailure(\Throwable $e, AsyncPaymentTransactionStruct $transaction): void
+    {
+        PaymentFailureLogger::log($this->logger, $e, $transaction->getOrderTransaction(), $transaction->getOrder());
     }
 
     private function tryToSetTransactionState(Order $paypalOrder, string $transactionId, Context $context): void
@@ -188,7 +200,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_DECLINED
             || $capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_FAILED
         ) {
-            throw new OrderFailedException($paypalOrder->getId());
+            throw new OrderFailedException($paypalOrder->getId(), $capture->getStatus());
         }
     }
 }

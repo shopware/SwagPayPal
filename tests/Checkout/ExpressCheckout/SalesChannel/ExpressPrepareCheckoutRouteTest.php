@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
@@ -32,8 +33,11 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,6 +49,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 {
     use CheckoutRouteTrait;
     use IntegrationTestBehaviour;
+    use PayPalLogTrait;
 
     public const TEST_PAYMENT_ID_WITHOUT_STATE = 'testPaymentIdWithoutState';
     public const TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES = 'testPaymentIdWithCountryWithoutStates';
@@ -109,6 +114,31 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
         static::assertInstanceOf(ExpressCheckoutData::class, $ecsCartExtension);
         static::assertSame(GetOrderCapture::ID, $ecsCartExtension->getPaypalOrderId());
+
+        $this->assertPayPalLogged(
+            LogCode::EXPRESS_CUSTOMER_CREATED,
+            Level::Info,
+            [Log::PAYPAL_ORDER_ID => GetOrderCapture::ID, Log::CUSTOMER_ID => $customer->getId(), Log::GUEST => true],
+            'Created customer {customerNumber} after the Express Checkout approval',
+        );
+    }
+
+    public function testPrepareWithoutTokenLogsError(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContextWithCart();
+
+        try {
+            $this->createRoute()->prepareCheckout($salesChannelContext, new Request());
+            static::fail('Expected an exception');
+        } catch (\Throwable $e) {
+            $record = $this->assertPayPalLogged(
+                LogCode::EXPRESS_PREPARATION_FAILED,
+                Level::Error,
+                [],
+                'Could not continue the Express Checkout: {errorCode}, the buyer sees an error',
+            );
+            static::assertSame($e::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        }
     }
 
     public function testPrepareWithoutStateFromPayPal(): void
@@ -150,13 +180,13 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
                 $customerRepo,
                 $this->getContainer()->get(AccountService::class),
                 $settings,
-                new NullLogger()
+                $this->createPayPalLogger()
             ),
             $this->getContainer()->get(SalesChannelContextFactory::class),
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger()), $this->createPayPalLogger()),
             $cartService,
             $this->getContainer()->get(CartPriceService::class),
-            new NullLogger()
+            $this->createPayPalLogger()
         );
     }
 

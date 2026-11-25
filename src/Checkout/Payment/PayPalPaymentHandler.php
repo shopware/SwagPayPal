@@ -16,6 +16,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\RecurringPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -82,7 +83,6 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext,
     ): RedirectResponse {
-        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
 
         try {
@@ -107,9 +107,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
             if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
                 $e->setOrderTransactionId($transactionId);
             }
+            $this->logPaymentFailure($e, $transaction);
+
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::asyncProcessInterrupted($transactionId, $e->getMessage());
         }
@@ -123,21 +125,18 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
         Request $request,
         SalesChannelContext $salesChannelContext,
     ): void {
-        $this->logger->debug('Started');
-
         if ($this->transactionAlreadyFinalized($transaction, $salesChannelContext)) {
-            $this->logger->debug('Already finalized');
-
             return;
         }
 
         if ($request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
-            $this->logger->debug('Customer canceled');
-
-            throw PaymentException::customerCanceled(
+            $exception = PaymentException::customerCanceled(
                 $transaction->getOrderTransaction()->getId(),
                 'Customer canceled the payment on the PayPal page'
             );
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         try {
@@ -185,7 +184,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
                 $partnerAttributionId
             );
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::asyncFinalizeInterrupted($transaction->getOrderTransaction()->getId(), $e->getMessage());
         }
@@ -193,12 +192,14 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
 
     public function captureRecurring(RecurringPaymentTransactionStruct $transaction, Context $context): void
     {
-        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
 
         $subscription = $this->vaultTokenService->getSubscription($transaction);
         if (!$subscription) {
-            throw PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
+            $exception = PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         $salesChannelContext = $this->orderConverter->assembleSalesChannelContext($transaction->getOrder(), $context);
@@ -210,10 +211,15 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
             $redirect = $this->payPalHandler->handlePayPalOrder($transaction, new RequestDataBag(), $salesChannelContext);
             $this->payPalHandler->handleFinalizeOrder($transaction, $redirect->getTargetUrl(), $subscription->getSalesChannelId(), $salesChannelContext, PartnerAttributionId::PAYPAL_PPCP);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::recurringInterrupted($transactionId, $e->getMessage());
         }
+    }
+
+    private function logPaymentFailure(\Throwable $e, SyncPaymentTransactionStruct $transaction): void
+    {
+        PaymentFailureLogger::log($this->logger, $e, $transaction->getOrderTransaction(), $transaction->getOrder());
     }
 
     private function getPartnerAttributionId(bool $isECS, bool $isSPB, bool $isPlus): string

@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Storefront;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Event\RouteRequest\PaymentMethodRouteRequestEvent;
@@ -35,13 +34,6 @@ class RequestSubscriber implements EventSubscriberInterface
         PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
     ];
 
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
     public static function getSubscribedEvents(): array
     {
         return [
@@ -52,7 +44,6 @@ class RequestSubscriber implements EventSubscriberInterface
 
     public function addHandlePaymentParameters(HandlePaymentMethodRouteRequestEvent $event): void
     {
-        $this->logger->debug('Adding request parameter');
         $storefrontRequest = $event->getStorefrontRequest();
         $storeApiRequest = $event->getStoreApiRequest();
 
@@ -73,8 +64,6 @@ class RequestSubscriber implements EventSubscriberInterface
             $data[$paymentParameter] = $oldData[$paymentParameter];
         }
         $storeApiRequest->request = new InputBag(\array_merge($storeApiRequest->request->all(), $data));
-
-        $this->logger->debug('Added request parameter');
     }
 
     public function addAfterOrderId(PaymentMethodRouteRequestEvent $event): void

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\Payment\Handler;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
@@ -29,6 +30,9 @@ use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -57,8 +61,6 @@ class PayPalHandler
         RequestDataBag $requestDataBag,
         SalesChannelContext $salesChannelContext,
     ): RedirectResponse {
-        $this->logger->debug('Started');
-
         // only renewals are built from a recurring struct (see PayPalPaymentHandler::captureRecurring()), which keep the token of their subscription
         $isRenewal = $transaction instanceof RecurringPaymentTransactionStruct;
 
@@ -90,7 +92,12 @@ class PayPalHandler
                 throw $e;
             }
 
-            $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
+            $this->logger->warning('PayPal already has a payment with the same invoice ID, retried without it', Log::context(
+                code: LogCode::CHECKOUT_INVOICE_ID_DUPLICATE,
+                exception: $e,
+                salesChannelId: $salesChannelContext->getSalesChannelId(),
+                orderTransactionId: $transactionId,
+            ));
             $paypalOrder->getPurchaseUnits()->first()?->unset('invoiceId');
 
             $paypalOrderResponse = $this->orderResource->create(
@@ -144,7 +151,6 @@ class PayPalHandler
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext,
     ): RedirectResponse {
-        $this->logger->debug('Started');
         $paypalOrderId = $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
         $isECS = $dataBag->get(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID);
         $partnerAttributionId = $isECS ? PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT : PartnerAttributionId::SMART_PAYMENT_BUTTONS;
@@ -205,8 +211,6 @@ class PayPalHandler
         SalesChannelContext $context,
         string $partnerAttributionId,
     ): void {
-        $this->logger->debug('Started');
-
         $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
             $transaction->getOrderTransaction()->getId(),
             $this->orderResource->get($paypalOrderId, $salesChannelId),
@@ -255,10 +259,13 @@ class PayPalHandler
         string $partnerAttributionId,
         string $finalizeUrl,
     ): RedirectResponse {
-        $this->logger->warning('PayPal requires another payer action before the order can be captured.', [
-            'orderTransactionId' => $transaction->getOrderTransaction()->getId(),
-            'payPalOrderId' => $paypalOrderId,
-        ]);
+        $logContext = [
+            Log::ORDER_TRANSACTION => $transaction->getOrderTransaction(),
+            Log::ORDER_ID => $transaction->getOrder()->getId(),
+            Log::ORDER_NUMBER => $transaction->getOrder()->getOrderNumber(),
+            Log::SALES_CHANNEL_ID => $salesChannelContext->getSalesChannelId(),
+            Log::PAYPAL_ORDER_ID => $paypalOrderId,
+        ];
 
         // without a saved vault token
         $paymentSource = $this->orderBuilder
@@ -286,11 +293,12 @@ class PayPalHandler
                 $partnerAttributionId,
             );
         } catch (PayPalApiException $confirmationException) {
-            $this->logger->warning('Could not reopen the PayPal order for payer approval.', [
-                'orderTransactionId' => $transaction->getOrderTransaction()->getId(),
-                'payPalOrderId' => $paypalOrderId,
-                'exception' => $confirmationException,
-            ]);
+            // the caller only gets the payer action exception, so the cause is logged here
+            $this->logger->log(
+                FailureClassifier::isCausedByBuyer($confirmationException) ? LogLevel::NOTICE : LogLevel::ERROR,
+                'Could not send the buyer back to PayPal to approve the payment of order {orderNumber} again, the payment fails',
+                Log::context(...$logContext, code: LogCode::CHECKOUT_PAYER_ACTION_RECOVERY_FAILED, exception: $confirmationException),
+            );
 
             throw $exception;
         }
@@ -300,6 +308,11 @@ class PayPalHandler
         if ($link === null) {
             throw $exception;
         }
+
+        $this->logger->info(
+            'Redirected the buyer to PayPal to approve the payment of order {orderNumber} again',
+            Log::context(...$logContext, code: LogCode::CHECKOUT_PAYER_ACTION_REDIRECT),
+        );
 
         return new RedirectResponse($link->getHref());
     }

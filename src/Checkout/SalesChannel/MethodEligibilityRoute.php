@@ -20,6 +20,7 @@ use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
+use Swag\PayPal\Util\Log\Log;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -97,7 +98,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
             $salesChannelContext instanceof SalesChannelContext ? $salesChannelContext : null,
             $handlers,
         );
-        $this->logger->info('Removed ineligible PayPal payment methods from sales channel context', ['handlers' => $handlers]);
+        $this->logger->debug('Hid PayPal payment methods the browser reported as not eligible', Log::context(handlers: \array_map(static fn (string $handler) => \basename(\str_replace('\\', '/', $handler)), $handlers)));
 
         return new NoContentResponse();
     }

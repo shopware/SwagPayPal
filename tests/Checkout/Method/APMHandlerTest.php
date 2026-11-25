@@ -161,7 +161,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($clientFactory);
+        $orderResource = new OrderResource($clientFactory, new NullLogger());
         $logger = new NullLogger();
 
         return new APMHandler(

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Resource;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V2\Api\ConfirmOrder;
@@ -15,18 +16,23 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\Tracker;
 use Swag\PayPal\RestApi\V2\Api\Patch;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 #[Package('checkout')]
 class OrderResource
 {
     private PayPalClientFactoryInterface $payPalClientFactory;
 
+    private LoggerInterface $logger;
+
     /**
      * @internal
      */
-    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
+    public function __construct(PayPalClientFactoryInterface $payPalClientFactory, LoggerInterface $logger)
     {
         $this->payPalClientFactory = $payPalClientFactory;
+        $this->logger = $logger;
     }
 
     public function get(string $orderId, string $salesChannelId): Order
@@ -57,13 +63,22 @@ class OrderResource
             $headers['PayPal-Request-Id'] = $requestId;
         }
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
+        $response = $order->assign($this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
             RequestUriV2::ORDERS_RESOURCE,
             $order,
             $headers
-        );
+        ));
 
-        return $order->assign($response);
+        $this->logger->info('Created PayPal order {paypalOrderId}', Log::context(
+            code: LogCode::CHECKOUT_ORDER_CREATED,
+            // the request's order, a minimal response only has ID and status
+            paypalOrder: $order,
+            salesChannelId: $salesChannelId,
+            paypalOrderId: $response->getId(),
+            partnerAttributionId: $partnerAttributionId,
+        ));
+
+        return $response;
     }
 
     /**

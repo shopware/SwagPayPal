@@ -9,11 +9,12 @@ namespace Swag\PayPal\Test\Reporting\ScheduledTask;
 
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
-use Monolog\Handler\TestHandler;
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -36,6 +37,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Reporting\ScheduledTask\TurnoverReportingTaskHandler;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -45,6 +49,7 @@ class TurnoverReportingTaskHandlerTest extends TestCase
 {
     use BasicTestDataBehaviour;
     use KernelTestBehaviour;
+    use PayPalLogTrait;
 
     private EntityRepository $transactionReportRepository;
 
@@ -122,8 +127,7 @@ class TurnoverReportingTaskHandlerTest extends TestCase
 
         $this->replaceGuzzleClient($client);
 
-        $logHandler = new TestHandler();
-        $this->getContainer()->get('monolog.logger.paypal')->setHandlers([$logHandler]);
+        $this->recordPayPalLogs(static::getContainer());
 
         $this->handler->run();
 
@@ -138,11 +142,9 @@ class TurnoverReportingTaskHandlerTest extends TestCase
         $leftoverReportIds = $this->transactionReportRepository->searchIds(new Criteria(), Context::createDefaultContext())->getIds();
         static::assertEquals([$rejectedTransactionReport['orderTransactionId']], $leftoverReportIds);
 
-        static::assertCount(1, $logHandler->getRecords(), 'Missing log entry for failed turnover report "EUR"');
-        static::assertStringContainsString(
-            'Failed to report turnover for "EUR": Client error: `POST /shopwarepartners/reports/technology` resulted in a `400 Bad Request` response',
-            $logHandler->getRecords()[0]->message
-        );
+        static::assertCount(1, $this->getPayPalLogRecords());
+        $record = $this->assertPayPalLogged(LogCode::REPORTING_TURNOVER_FAILED, Level::Warning, [Log::CURRENCY => 'EUR'], 'Could not report the PayPal turnover in {currency}');
+        static::assertSame(ClientException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 
     public function testRunWithTransactionsNotInPaidStateWillBeIgnoredButDeleted(): void
