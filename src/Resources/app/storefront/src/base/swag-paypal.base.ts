@@ -15,6 +15,7 @@ export interface SwagPaypalBaseOptions {
     languageIso: string;
     currency: string;
     handleErrorUrl: string;
+    sdkInitTimeout: number;
 }
 
 type Credentials = { clientId: string; merchantId: string } | { clientToken: string };
@@ -78,6 +79,12 @@ export default abstract class SwagPaypalBase extends Plugin {
          * URL for adding flash error message
          */
         handleErrorUrl: '',
+
+        /**
+         * Time in milliseconds to wait for the PayPal SDK instance to be created.
+         * The SDK never settles if some of its requests are blocked, e.g. by a content blocker.
+         */
+        sdkInitTimeout: 15_000,
     };
 
     protected instance: PayPalCoreJS.SdkInstance<(typeof this.metadata)['components']> | null = null;
@@ -112,13 +119,17 @@ export default abstract class SwagPaypalBase extends Plugin {
             DependencyHelper.loadPayPalCore({ environment: this.options.environment }),
         ]);
 
-        this.instance ??= await paypal.createInstance({
-            ...credentials,
-            locale: this.options.languageIso.replace('_', '-'),
-            pageType: this.options.pageType,
-            partnerAttributionId: this.options.partnerAttributionId,
-            components: this.metadata.components,
-        });
+        this.instance ??= await this._withTimeout(
+            paypal.createInstance({
+                ...credentials,
+                locale: this.options.languageIso.replace('_', '-'),
+                pageType: this.options.pageType,
+                partnerAttributionId: this.options.partnerAttributionId,
+                components: this.metadata.components,
+            }),
+            this.options.sdkInitTimeout,
+            'PayPal SDK instance creation',
+        );
     }
 
     /**
@@ -201,6 +212,25 @@ export default abstract class SwagPaypalBase extends Plugin {
 
         const { token } = await response.json() as { token: string };
         return token;
+    }
+
+    /**
+     * Rejects, if {@link promise} does not settle within {@link timeout} milliseconds.
+     */
+    protected async _withTimeout<T>(promise: Promise<T>, timeout: number, name: string): Promise<T> {
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(() => {
+                reject(new Error(`${name} timed out after ${timeout}ms. Requests to PayPal may be blocked, e.g. by a content blocker.`));
+            }, timeout);
+        });
+
+        try {
+            return await Promise.race([promise, timeoutPromise]);
+        } finally {
+            clearTimeout(timeoutId);
+        }
     }
 
     protected async _fetchCredentials(): Promise<Credentials> {
