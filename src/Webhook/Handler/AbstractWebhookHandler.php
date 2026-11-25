@@ -10,7 +10,6 @@ namespace Swag\PayPal\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -21,6 +20,7 @@ use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\CancellationPolicy;
 use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionInvalidIdException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
@@ -126,14 +126,6 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
     protected function isCancellationAllowed(OrderTransactionEntity $orderTransaction): bool
     {
-        $state = $orderTransaction->getStateMachineState()?->getTechnicalName();
-
-        return $state === null || !\in_array($state, [
-            OrderTransactionStates::STATE_CANCELLED,
-            OrderTransactionStates::STATE_PAID,
-            OrderTransactionStates::STATE_PARTIALLY_PAID,
-            OrderTransactionStates::STATE_PARTIALLY_REFUNDED,
-            OrderTransactionStates::STATE_REFUNDED,
-        ], true);
+        return CancellationPolicy::isAllowed($orderTransaction);
     }
 }

@@ -121,15 +121,7 @@ class PaymentStatusUtilV2
     {
         $transaction = $this->getOrderTransaction($orderTransactionId, $context);
 
-        // Keep collected payments, as in AbstractWebhookHandler::isCancellationAllowed
-        $protectedStates = [
-            OrderTransactionStates::STATE_CANCELLED,
-            OrderTransactionStates::STATE_PAID,
-            OrderTransactionStates::STATE_PARTIALLY_PAID,
-            OrderTransactionStates::STATE_PARTIALLY_REFUNDED,
-            OrderTransactionStates::STATE_REFUNDED,
-        ];
-        if (\in_array($transaction->getStateMachineState()?->getTechnicalName(), $protectedStates, true)) {
+        if (!CancellationPolicy::isAllowed($transaction)) {
             return;
         }
 
