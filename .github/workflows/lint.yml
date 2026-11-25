@@ -67,6 +67,9 @@ jobs:
       - id: phpstan
         run: composer -d custom/plugins/SwagPayPal run phpstan
 
+      - name: Test PHPStan rules
+        run: composer -d custom/plugins/SwagPayPal run phpunit:devops
+
       # Baselines can only be generated with the matching Shopware version.
       # Regenerate the relevant one from scratch and print the diff, so it can be applied without a local setup.
       - name: Print baseline diff

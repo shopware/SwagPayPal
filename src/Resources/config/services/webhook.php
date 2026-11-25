@@ -56,6 +56,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(WebhookRegistry::class),
             service(SystemConfigService::class),
             service('router'),
+            service('monolog.logger.paypal'),
         ]);
 
     // handler registry

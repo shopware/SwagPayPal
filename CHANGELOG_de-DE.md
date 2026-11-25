@@ -14,6 +14,7 @@
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer Karte im Abonnement-Checkout zu einer Fehlerseite führte und stattdessen andere Zahlungsdaten entfernen konnte. Headless-Storefronts können diese jetzt entfernen, auch bei Abonnements
 - Behebt ein Problem, bei dem die Synchronisierung des Transaktionsstatus eine Transaktion anhand eines veralteten Zahlungsversuchs ändern konnte (shopware/SwagPayPal#842)
 - Behebt ein Problem, bei dem Verlängerungen von Abonnements, die mit einem gespeicherten PayPal-Konto oder einer Karte bezahlt wurden, fehlschlugen, nachdem der Kunde diese entfernt hatte, oder stattdessen später hinzugefügte Zahlungsdaten verwendeten
+- Überarbeitet die Log-Meldungen des Plugins: verständlichere Texte, stabile Log-Codes, einheitlicher Kontext und Log-Level sowie unkenntlich gemachte Namen, Adressen, E-Mail-Adressen und Tokens in geloggten API-Anfragen, API-Antworten und Webhook-Ereignissen. Monitoring, das auf den alten Meldungstexten basiert, muss angepasst werden
 
 # 10.9.0
 - Fügt Unterstützung für das PayPal JS SDK v6 hinzu, das in den Einstellungen unter "Storefront-Darstellung" aktiviert werden kann, sobald es für das PayPal-Händlerkonto freigeschaltet ist. Es ist performanter und zeigt Zahlungsbuttons und "Später bezahlen"-Banner schneller an. Template-Anpassungen müssen gegebenenfalls angepasst werden wenn aktiviert. SDK v6 wird ab Version 11 die Standardimplementierung (shopware/SwagPayPal#257)

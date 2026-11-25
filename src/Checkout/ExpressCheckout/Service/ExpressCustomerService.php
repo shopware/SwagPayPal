@@ -30,6 +30,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 #[Package('checkout')]
 class ExpressCustomerService
@@ -64,14 +66,11 @@ class ExpressCustomerService
 
     public function loginCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext, RequestDataBag $data): string
     {
-        $this->logger->debug('Searching for existing customer');
         $newContextToken = $this->findExistingCustomer($paypalOrder, $salesChannelContext);
 
         if ($newContextToken !== null) {
             return $newContextToken;
         }
-
-        $this->logger->debug('No existing customer found');
 
         return $this->registerNewCustomer($paypalOrder, $salesChannelContext, $data);
     }
@@ -100,13 +99,18 @@ class ExpressCustomerService
             return null;
         }
 
-        $this->logger->debug('Existing customer found, updating address data');
-
         $this->updateCustomer($customer, $paypalOrder, $salesChannelContext);
 
-        $this->logger->debug('Logging in existing customer');
+        $token = $this->accountService->loginById($customer->getId(), $salesChannelContext);
 
-        return $this->accountService->loginById($customer->getId(), $salesChannelContext);
+        $this->logger->info('Logged in existing customer {customerNumber} after the Express Checkout approval', Log::context(
+            code: LogCode::EXPRESS_CUSTOMER_LOGGED_IN,
+            customerId: $customer->getId(),
+            customerNumber: $customer->getCustomerNumber(),
+            paypalOrderId: $paypalOrder->getId(),
+        ));
+
+        return $token;
     }
 
     private function registerNewCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext, RequestDataBag $data): string
@@ -115,13 +119,21 @@ class ExpressCustomerService
         $customerDataBag = $this->getRegisterCustomerDataBag($paypalOrder, $salesChannelContext, $data);
         $response = $this->registerRoute->register($customerDataBag, $salesChannelContext, false);
         $salesChannelContext->getContext()->removeExtension(self::EXPRESS_CHECKOUT_ACTIVE);
-        $this->logger->debug('Customer created and logged in');
 
         $newToken = $response->headers->get(PlatformRequest::HEADER_CONTEXT_TOKEN);
 
         if ($newToken === null || $newToken === '') {
             throw RoutingException::missingRequestParameter(PlatformRequest::HEADER_CONTEXT_TOKEN);
         }
+
+        $customer = $response->getCustomer();
+        $this->logger->info('Created customer {customerNumber} after the Express Checkout approval', Log::context(
+            code: LogCode::EXPRESS_CUSTOMER_CREATED,
+            customerId: $customer->getId(),
+            customerNumber: $customer->getCustomerNumber(),
+            guest: $customer->getGuest(),
+            paypalOrderId: $paypalOrder->getId(),
+        ));
 
         return $newToken;
     }

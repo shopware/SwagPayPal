@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class WebhookOrderTransactionInvalidIdException extends WebhookException
 {
+    public const ERROR_CODE = 'SWAG_PAYPAL__WEBHOOK_ORDER_TRANSACTION_INVALID';
+
     public function __construct(
         string $reason,
         string $eventType,
@@ -34,6 +36,6 @@ class WebhookOrderTransactionInvalidIdException extends WebhookException
 
     public function getErrorCode(): string
     {
-        return 'SWAG_PAYPAL__WEBHOOK_ORDER_TRANSACTION_INVALID';
+        return self::ERROR_CODE;
     }
 }

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Resource;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Gateway\OrderGateway;
 use Shopware\PayPalSDK\Struct\V2\ConfirmOrder;
@@ -17,6 +18,8 @@ use Shopware\PayPalSDK\Struct\V2\Patch;
 use Shopware\PayPalSDK\Struct\V2\PatchCollection;
 use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 #[Package('checkout')]
 class OrderResource
@@ -27,6 +30,7 @@ class OrderResource
     public function __construct(
         private readonly OrderGateway $orderGateway,
         private readonly ApiContextFactoryInterface $apiContextFactory,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -56,7 +60,18 @@ class OrderResource
             ->withRequestId($requestId)
             ->withClientMetadataId($metaDataId);
 
-        return $this->orderGateway->createOrder($order, $context);
+        $response = $this->orderGateway->createOrder($order, $context);
+
+        $this->logger->info('Created PayPal order {paypalOrderId}', Log::context(
+            code: LogCode::CHECKOUT_ORDER_CREATED,
+            // the request's order, a minimal response only has ID and status
+            paypalOrder: $order,
+            salesChannelId: $salesChannelId,
+            paypalOrderId: $response->getId(),
+            partnerAttributionId: $partnerAttributionId,
+        ));
+
+        return $response;
     }
 
     /**

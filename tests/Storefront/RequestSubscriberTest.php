@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Storefront;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Generator;
@@ -34,7 +33,7 @@ class RequestSubscriberTest extends TestCase
 
     public function testAddNecessaryRequestParameter(): void
     {
-        $subscriber = new RequestSubscriber(new NullLogger());
+        $subscriber = new RequestSubscriber();
 
         $testData = $this->getParameterData();
         $storefrontRequest = new Request([], $testData, [
@@ -52,7 +51,7 @@ class RequestSubscriberTest extends TestCase
 
     public function testAddNecessaryRequestParameterNotSet(): void
     {
-        $subscriber = new RequestSubscriber(new NullLogger());
+        $subscriber = new RequestSubscriber();
 
         $storefrontRequest = new Request([], [], [
             '_route' => 'frontend.account.edit-order.update-order',
@@ -67,7 +66,7 @@ class RequestSubscriberTest extends TestCase
 
     public function testAddNecessaryRequestParameterWrongRoute(): void
     {
-        $subscriber = new RequestSubscriber(new NullLogger());
+        $subscriber = new RequestSubscriber();
 
         $storefrontRequest = new Request([], $this->getParameterData(), ['_route' => 'wrong.route']);
         $storeApiRequest = new Request();
@@ -80,7 +79,7 @@ class RequestSubscriberTest extends TestCase
 
     public function testAfterOrderId(): void
     {
-        $subscriber = new RequestSubscriber(new NullLogger());
+        $subscriber = new RequestSubscriber();
 
         $storefrontRequest = new Request([], [], [
             'orderId' => 'tada',
@@ -97,7 +96,7 @@ class RequestSubscriberTest extends TestCase
 
     public function testAfterOrderIdWrongRoute(): void
     {
-        $subscriber = new RequestSubscriber(new NullLogger());
+        $subscriber = new RequestSubscriber();
 
         $storefrontRequest = new Request([], [], ['orderId' => 'tada', '_route' => 'wrong.route']);
         $storeApiRequest = new Request();

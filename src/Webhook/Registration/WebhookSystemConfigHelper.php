@@ -12,6 +12,8 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 #[Package('checkout')]
@@ -85,7 +87,13 @@ class WebhookSystemConfigHelper
                 $this->webhookService->deregisterWebhook($salesChannelId);
             } catch (\Throwable $e) {
                 $errors[] = $e;
-                $this->logger->error($e->getMessage(), ['error' => $e]);
+                $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
+                $this->logger->warning('Could not remove the PayPal webhook, it stays registered at PayPal', Log::context(
+                    code: LogCode::WEBHOOK_DEREGISTRATION_FAILED,
+                    salesChannelId: $salesChannelId,
+                    webhookId: $webhookId,
+                    exception: $e,
+                ));
             }
         }
 
@@ -126,7 +134,11 @@ class WebhookSystemConfigHelper
                 $this->webhookService->registerWebhook($salesChannelId);
             } catch (\Throwable $e) {
                 $errors[] = $e;
-                $this->logger->error($e->getMessage(), ['error' => $e]);
+                $this->logger->error('Could not register the PayPal webhook, payment status changes only arrive through the status sync', Log::context(
+                    code: LogCode::WEBHOOK_REGISTRATION_FAILED,
+                    salesChannelId: $salesChannelId,
+                    exception: $e,
+                ));
             }
         }
 

@@ -9,11 +9,11 @@ namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
@@ -29,10 +29,13 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -42,11 +45,11 @@ use Symfony\Component\HttpFoundation\Response;
 #[CoversClass(OrderExecuteService::class)]
 class OrderExecuteServiceTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private OrderResource&MockObject $orderResource;
 
     private OrderTransactionStateHandler&MockObject $transactionStateHandler;
-
-    private LoggerInterface&MockObject $logger;
 
     private OrderExecuteService $orderExecuteService;
 
@@ -54,12 +57,11 @@ class OrderExecuteServiceTest extends TestCase
     {
         $this->orderResource = $this->createMock(OrderResource::class);
         $this->transactionStateHandler = $this->createMock(OrderTransactionStateHandler::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
         $this->orderExecuteService = new OrderExecuteService(
             $this->orderResource,
             $this->transactionStateHandler,
             static::createStub(OrderNumberPatchBuilder::class),
-            $this->logger,
+            $this->createPayPalLogger(),
         );
     }
 
@@ -103,6 +105,8 @@ class OrderExecuteServiceTest extends TestCase
         $finalized = $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
 
         static::assertTrue($finalized);
+        $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_PENDING, Level::Info, [Log::CAPTURE_STATUS => ConstantsV2::ORDER_CAPTURE_PENDING]);
+        $this->assertPayPalNotLogged(LogCode::CHECKOUT_PAYMENT_CAPTURED);
     }
 
     public function testCheckFinalizedStatusSetsInProgressOnPendingAuthorization(): void
@@ -299,9 +303,9 @@ class OrderExecuteServiceTest extends TestCase
         $this->orderResource->expects($this->never())->method('authorize');
         $this->transactionStateHandler->expects($this->never())->method('paid');
         $this->transactionStateHandler->expects($this->never())->method('authorize');
-        $this->logger->expects($this->once())->method('warning');
 
         static::assertFalse($this->orderExecuteService->isCancellationAllowed('paypal-order-id', 'sales-channel-id'));
+        $this->assertPayPalLogged(LogCode::CHECKOUT_CANCELLATION_UNVERIFIED, Level::Warning, [Log::PAYPAL_ORDER_ID => 'paypal-order-id']);
     }
 
     public static function orderLookupFailureProvider(): \Generator

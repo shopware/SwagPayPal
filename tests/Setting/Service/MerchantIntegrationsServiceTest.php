@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\Test\Setting\Service;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -19,6 +21,7 @@ use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
@@ -28,6 +31,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,6 +41,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class MerchantIntegrationsServiceTest extends TestCase
 {
     use GatewayTestBehaviour;
+    use PayPalLogTrait;
 
     private SystemConfigServiceMock $systemConfigService;
 
@@ -61,7 +66,7 @@ class MerchantIntegrationsServiceTest extends TestCase
 
     public function testGetInformationWithoutCredentials(): void
     {
-        $merchantIntegrationService = $this->createMerchantIntegrationService();
+        $merchantIntegrationService = $this->createMerchantIntegrationService($this->createPayPalLogger());
         $this->systemConfigService->set(Settings::CLIENT_ID, null);
         $this->systemConfigService->set(Settings::CLIENT_SECRET, null);
 
@@ -78,6 +83,8 @@ class MerchantIntegrationsServiceTest extends TestCase
 
         // without credentials no client token can be requested, so the eligibility stays unknown
         static::assertNull($information->getSdkV6Eligible());
+
+        $this->assertPayPalLogged(LogCode::SETTINGS_MERCHANT_INTEGRATIONS_UNAVAILABLE, Level::Warning);
     }
 
     public function testGetInformationWithoutMerchantId(): void
@@ -97,7 +104,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         static::assertNull($integrations);
     }
 
-    private function createMerchantIntegrationService(): MerchantIntegrationsService
+    private function createMerchantIntegrationService(LoggerInterface $logger = new NullLogger()): MerchantIntegrationsService
     {
         $this->systemConfigService = SystemConfigServiceMock::createWithCredentials();
 
@@ -146,6 +153,7 @@ class MerchantIntegrationsServiceTest extends TestCase
             new CredentialsUtil($this->systemConfigService),
             $dataRegistry,
             new SdkV6EligibilityService(self::tokenGateway(), $apiContextFactory, new NullLogger()),
+            $logger,
         );
     }
 }
