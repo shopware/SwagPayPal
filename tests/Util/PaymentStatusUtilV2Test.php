@@ -122,6 +122,11 @@ class PaymentStatusUtilV2Test extends TestCase
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
                 OrderTransactionStates::STATE_UNCONFIRMED,
             ],
+            [
+                static::createCapture(false),
+                OrderTransactionStates::STATE_PARTIALLY_PAID,
+                OrderTransactionStates::STATE_CANCELLED,
+            ],
         ];
     }
 
@@ -152,6 +157,33 @@ class PaymentStatusUtilV2Test extends TestCase
         );
 
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_CANCELLED);
+    }
+
+    #[DataProvider('dataProviderTestApplyVoidStateKeepsState')]
+    public function testApplyVoidStateKeepsState(string $orderTransactionState): void
+    {
+        $orderTransactionId = $this->createOrderTransaction(true, $orderTransactionState);
+
+        $orderTransactionStateHandler = $this->createMock(OrderTransactionStateHandler::class);
+        $orderTransactionStateHandler->expects($this->never())->method(static::anything());
+
+        $paymentStatusUtil = new PaymentStatusUtilV2(
+            $this->orderTransactionRepository,
+            $orderTransactionStateHandler,
+            new PriceFormatter()
+        );
+        $paymentStatusUtil->applyVoidState($orderTransactionId, $this->context);
+    }
+
+    public static function dataProviderTestApplyVoidStateKeepsState(): array
+    {
+        return [
+            [OrderTransactionStates::STATE_CANCELLED],
+            [OrderTransactionStates::STATE_PAID],
+            [OrderTransactionStates::STATE_PARTIALLY_PAID],
+            [OrderTransactionStates::STATE_PARTIALLY_REFUNDED],
+            [OrderTransactionStates::STATE_REFUNDED],
+        ];
     }
 
     #[DataProvider('dataProviderTestApplyRefundState')]
