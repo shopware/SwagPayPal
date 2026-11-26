@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
 use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -69,6 +70,16 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
     {
         $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
         $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook, OrderTransactionStates::STATE_PAID);
+    }
+
+    public function testInvokeWithPartialCaptureOnCancelledTransaction(): void
+    {
+        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
+        $capture = $webhook->getResource();
+        static::assertInstanceOf(Capture::class, $capture);
+        $capture->setFinalCapture(false);
+
+        $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_PAID, $webhook, OrderTransactionStates::STATE_CANCELLED);
     }
 
     public function testFetchingPUIInstructions(): void
