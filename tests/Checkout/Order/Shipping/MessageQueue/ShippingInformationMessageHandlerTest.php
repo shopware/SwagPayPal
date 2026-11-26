@@ -7,11 +7,11 @@
 
 namespace Swag\PayPal\Test\Checkout\Order\Shipping\MessageQueue;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
@@ -34,6 +34,9 @@ use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessageH
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -42,11 +45,11 @@ use Swag\PayPal\SwagPayPal;
 #[CoversClass(ShippingInformationMessageHandler::class)]
 class ShippingInformationMessageHandlerTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private EntityRepository&MockObject $orderDeliveryRepository;
 
     private OrderResource&MockObject $orderResource;
-
-    private LoggerInterface&MockObject $logger;
 
     private ShippingInformationMessageHandler $handler;
 
@@ -54,12 +57,11 @@ class ShippingInformationMessageHandlerTest extends TestCase
     {
         $this->orderDeliveryRepository = $this->createMock(EntityRepository::class);
         $this->orderResource = $this->createMock(OrderResource::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->handler = new ShippingInformationMessageHandler(
             $this->orderDeliveryRepository,
             $this->orderResource,
-            $this->logger,
+            $this->createPayPalLogger(),
         );
     }
 
@@ -74,6 +76,8 @@ class ShippingInformationMessageHandlerTest extends TestCase
         $carrier = $orderDelivery?->getShippingMethod()?->getCustomFieldsValue(SwagPayPal::SHIPPING_METHOD_CUSTOM_FIELDS_CARRIER) ?: Tracker::CARRIER_OTHER;
         $hasCapture = $payPalOrder->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->first() !== null;
         $hasLineItems = $orderDelivery?->getOrder()?->getLineItems() !== null;
+        $hasAdded = $addedTrackers !== [];
+        $hasRemoved = $removedTrackers !== [];
 
         $this->orderDeliveryRepository
             ->expects($this->once())
@@ -123,11 +127,33 @@ class ShippingInformationMessageHandlerTest extends TestCase
                 'paypal-partner-id'
             );
 
-        $this->logger
-            ->expects($hasCapture && $isDataComplete ? $this->exactly(((int) ($addedTrackers !== [])) + ((int) ($removedTrackers !== []))) : $this->never())
-            ->method('info');
-
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+
+        if (!$hasCapture || !$isDataComplete) {
+            static::assertSame([], $this->getPayPalLogRecords());
+
+            return;
+        }
+
+        $expected = [
+            Log::ORDER_NUMBER => '10000',
+            Log::ORDER_DELIVERY_ID => 'order-delivery-id',
+            Log::PAYPAL_ORDER_ID => 'paypal-order-id',
+        ];
+
+        if ($hasAdded) {
+            $record = $this->assertPayPalLogged(LogCode::TRACKING_CODES_ADDED, Level::Info, $expected);
+            static::assertIsString($record->context[Log::TRACKING_CODES]);
+        } else {
+            $this->assertPayPalNotLogged(LogCode::TRACKING_CODES_ADDED);
+        }
+
+        if ($hasRemoved) {
+            $record = $this->assertPayPalLogged(LogCode::TRACKING_CODES_REMOVED, Level::Info, $expected);
+            static::assertIsString($record->context[Log::TRACKING_CODES]);
+        } else {
+            $this->assertPayPalNotLogged(LogCode::TRACKING_CODES_REMOVED);
+        }
     }
 
     public static function provideInvokeData(): \Generator
@@ -302,11 +328,12 @@ class ShippingInformationMessageHandlerTest extends TestCase
                 'paypal-partner-id'
             );
 
-        $this->logger
-            ->expects($this->once())
-            ->method('error');
-
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+
+        $this->assertPayPalLogged(LogCode::TRACKING_CARRIER_UNSUPPORTED, Level::Warning, [
+            Log::CARRIER => 'invalid-carrier',
+            Log::ORDER_NUMBER => '10000',
+        ]);
     }
 
     public function testNoRetryOnOtherExceptions(): void
@@ -344,10 +371,6 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->expects($this->never())
             ->method('removeTracker');
 
-        $this->logger
-            ->expects($this->never())
-            ->method('error');
-
         static::expectExceptionObject($payPalException);
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
@@ -376,11 +399,12 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->expects($this->never())
             ->method('addTracker');
 
-        $this->logger
-            ->expects($this->once())
-            ->method('warning');
-
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+
+        $this->assertPayPalLogged(LogCode::TRACKING_PAYPAL_ORDER_NOT_FOUND, Level::Warning, [
+            Log::ORDER_NUMBER => '10000',
+            Log::PAYPAL_ORDER_ID => 'paypal-order-id',
+        ]);
     }
 
     public function testRateLimitedGetThrowsPayPalExceptionForRetryStrategy(): void
@@ -412,10 +436,6 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->expects($this->never())
             ->method('addTracker');
 
-        $this->logger
-            ->expects($this->never())
-            ->method('warning');
-
         try {
             ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
             static::fail('Expected PayPal API exception was not thrown.');
@@ -423,6 +443,8 @@ class ShippingInformationMessageHandlerTest extends TestCase
             static::assertSame($payPalException, $e);
             static::assertNotNull($e->getRetryAt());
         }
+
+        $this->assertPayPalNotLogged(LogCode::TRACKING_PAYPAL_ORDER_NOT_FOUND);
     }
 
     public function testRateLimitedAddTrackerThrowsPayPalExceptionForRetryStrategy(): void
@@ -456,10 +478,6 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->expects($this->never())
             ->method('removeTracker');
 
-        $this->logger
-            ->expects($this->never())
-            ->method('error');
-
         try {
             ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
             static::fail('Expected PayPal API exception was not thrown.');
@@ -467,6 +485,8 @@ class ShippingInformationMessageHandlerTest extends TestCase
             static::assertSame($payPalException, $e);
             static::assertNull($e->getRetryAt());
         }
+
+        static::assertSame([], $this->getPayPalLogRecords());
     }
 
     private static function createPayPalOrder(
@@ -540,6 +560,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
         $order = new OrderEntity();
         $order->setId('order-id');
         $order->setSalesChannelId('sales-channel-id');
+        $order->setOrderNumber('10000');
 
         if ($hasTransaction) {
             $orderTransaction = new OrderTransactionEntity();

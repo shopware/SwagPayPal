@@ -15,6 +15,7 @@ use Swag\PayPal\Pos\Api\Inventory\BulkChanges;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 class RemoteUpdater
@@ -69,7 +70,7 @@ class RemoteUpdater
         try {
             $status = $this->inventoryResource->changeInventoryBulk($inventoryContext->getPosSalesChannel(), $remoteChanges);
         } catch (PosApiException $e) {
-            $this->logger->error('Inventory sync error: ' . $e->getMessage(), ['error' => $e]);
+            $this->logger->error('Could not update the inventory at PayPal POS', [Log::EXCEPTION => $e]);
 
             return $changedProducts;
         }

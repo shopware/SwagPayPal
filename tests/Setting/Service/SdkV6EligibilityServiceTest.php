@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting\Service;
 
 use GuzzleHttp\Psr7\Response;
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -20,7 +21,10 @@ use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 /**
  * @internal
@@ -29,6 +33,8 @@ use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 #[CoversClass(SdkV6EligibilityService::class)]
 class SdkV6EligibilityServiceTest extends TestCase
 {
+    use PayPalLogTrait;
+
     public function testEligibleWhenTheEligibilityScopeIsGranted(): void
     {
         $service = $this->createService($this->createTokenGateway(\implode(' ', [
@@ -60,9 +66,20 @@ class SdkV6EligibilityServiceTest extends TestCase
     public function testUndeterminedWhenPayPalIsNotReachable(): void
     {
         $gateway = $this->createMock(TokenGatewayInterface::class);
-        $gateway->method('getToken')->willThrowException(new ApiException(ApiException::CODE_SERVICE_UNAVAILABLE, 'Service Unavailable', new Response(503)));
+        $exception = new ApiException(ApiException::CODE_SERVICE_UNAVAILABLE, 'Service Unavailable', new Response(503));
+        $gateway->method('getToken')->willThrowException($exception);
 
-        static::assertNull($this->createService($gateway)->isEligible());
+        $service = new SdkV6EligibilityService($gateway, new ApiContextFactoryMock(), $this->createPayPalLogger());
+
+        static::assertNull($service->isEligible('sales-channel-id'));
+
+        $record = $this->assertPayPalLogged(
+            LogCode::SETTINGS_SDK_V6_ELIGIBILITY_UNKNOWN,
+            Level::Warning,
+            [Log::SALES_CHANNEL_ID => 'sales-channel-id'],
+        );
+        static::assertSame($exception::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        static::assertSame($exception->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
     }
 
     public function testUndeterminedWithoutCredentials(): void
@@ -75,9 +92,10 @@ class SdkV6EligibilityServiceTest extends TestCase
         $gateway = $this->createMock(TokenGatewayInterface::class);
         $gateway->expects($this->never())->method('getToken');
 
-        $service = new SdkV6EligibilityService($gateway, $apiContextFactory, new NullLogger());
+        $service = new SdkV6EligibilityService($gateway, $apiContextFactory, $this->createPayPalLogger());
 
         static::assertNull($service->isEligible());
+        static::assertSame([], $this->getPayPalLogRecords());
     }
 
     public function testAnUncachedClientTokenIsRequestedForTheGivenSalesChannel(): void

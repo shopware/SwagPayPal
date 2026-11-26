@@ -7,9 +7,10 @@
 
 namespace Swag\PayPal\Tests\AgenticCommerce\SalesChannel\Response;
 
-use Monolog\Logger;
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -25,6 +26,9 @@ use Swag\PayPal\AgenticCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgenticCommerce\Routing\AgentSource;
 use Swag\PayPal\AgenticCommerce\SalesChannel\Response\AgentResponseExceptionSubscriber;
 use Swag\PayPal\Checkout\CheckoutException;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -37,6 +41,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
 #[CoversClass(AgentResponseExceptionSubscriber::class)]
 class AgentResponseExceptionSubscriberTest extends TestCase
 {
+    use PayPalLogTrait;
+
     public function testSubscribedEvents(): void
     {
         static::assertSame(
@@ -55,7 +61,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $event = self::createEvent($request, new \Exception('Test exception'));
 
-        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
+        $subscriber = new AgentResponseExceptionSubscriber(new NullLogger(), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
@@ -76,7 +82,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, new \stdClass());
         $event = self::createEvent($request, new \Exception('Test exception'));
 
-        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
+        $subscriber = new AgentResponseExceptionSubscriber(new NullLogger(), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
@@ -97,7 +103,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, new \Exception('Test exception'));
 
-        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
+        $subscriber = new AgentResponseExceptionSubscriber(new NullLogger(), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNull($event->getResponse());
@@ -113,7 +119,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, AgentException::requiredFieldsMissing('foo', 'bar'));
 
-        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
+        $subscriber = new AgentResponseExceptionSubscriber(new NullLogger(), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
@@ -155,7 +161,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, CheckoutException::preparedOrderRequired(TestPaymentHandler::class));
 
-        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
+        $subscriber = new AgentResponseExceptionSubscriber($this->createPayPalLogger(), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
@@ -168,6 +174,12 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
         static::assertInstanceOf(AgentError::class, $error);
         static::assertSame('PREPARED_ORDER_REQUIRED', $error->getName());
+        $this->assertPayPalLogged(
+            LogCode::AGENTIC_REQUEST_REJECTED,
+            Level::Notice,
+            [Log::HTTP_STATUS => 400],
+            'Rejected a request of an AI agent: {errorCode}',
+        );
         static::assertSame('PayPal Order ID does not exist in the request. The payment method Shopware\Core\Test\Integration\PaymentHandler\TestPaymentHandler requires a prepared PayPal order.', $error->getMessage());
         static::assertSame(400, $error->getCode());
         static::assertSame('debug-id', $error->getDebugId());
@@ -183,7 +195,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, new \Exception('Generic error'));
 
-        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
+        $subscriber = new AgentResponseExceptionSubscriber($this->createPayPalLogger(), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
@@ -196,7 +208,14 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
         static::assertInstanceOf(AgentError::class, $error);
         static::assertSame('UNKNOWN_ERROR', $error->getName());
-        static::assertSame('Generic error', $error->getMessage());
+        $record = $this->assertPayPalLogged(
+            LogCode::AGENTIC_REQUEST_FAILED,
+            Level::Error,
+            [Log::HTTP_STATUS => 500],
+            'Could not answer a request of an AI agent: {errorCode}',
+        );
+        static::assertSame(\Exception::class, $record->context[Log::EXCEPTION]['class'] ?? null);
+        static::assertSame('Generic error', $record->context[Log::EXCEPTION]['message'] ?? null);
         static::assertSame(500, $error->getCode());
         static::assertSame('debug-id', $error->getDebugId());
     }

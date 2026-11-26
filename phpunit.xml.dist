@@ -3,6 +3,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          bootstrap="tests/TestBootstrap.php"
+         defaultTestSuite="SwagPayPal Testsuite"
          executionOrder="random"
          cacheDirectory=".phpunit.cache">
 
@@ -18,6 +19,10 @@
     <testsuites>
         <testsuite name="SwagPayPal Testsuite">
             <directory>tests</directory>
+            <exclude>tests/DevOps</exclude>
+        </testsuite>
+        <testsuite name="devops">
+            <directory>tests/DevOps</directory>
         </testsuite>
     </testsuites>
 

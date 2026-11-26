@@ -1,0 +1,86 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Util\Log;
+
+use Shopware\Core\Checkout\Cart\CartException;
+use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\ShopwareHttpException;
+use Shopware\PayPalSDK\Exception\ApiException;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Util\IssueCategory;
+use Shopware\PayPalSDK\Util\IssueClassifier;
+use Swag\PayPal\Checkout\Card\Exception\CardValidationFailedException;
+use Swag\PayPal\Checkout\Exception\EmptyCartException;
+use Swag\PayPal\Checkout\Exception\OrderFailedException;
+use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
+
+/**
+ * Who has to act on a failure, based on the SDK's `IssueClassifier`: buyer failures are logged lower, merchant account failures critical.
+ *
+ * @internal
+ */
+#[Package('checkout')]
+final class FailureClassifier
+{
+    // cart exceptions with other codes are system failures, e.g. a cart that couldn't be loaded
+    private const BUYER_ERROR_CODES = [
+        CartException::CUSTOMER_NOT_LOGGED_IN_CODE,
+        CartException::CART_EMPTY,
+        CardValidationFailedException::PAYMENT_CARD_VALIDATION_FAILED,
+        EmptyCartException::ERROR_CODE,
+        PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL,
+    ];
+
+    // PayPal or the card issuer refused the payment, as with `INSTRUMENT_DECLINED`
+    private const REFUSED_PAYMENT_STATUSES = [
+        ConstantsV2::ORDER_CAPTURE_DECLINED,
+        ConstantsV2::ORDER_AUTHORIZATION_DENIED,
+    ];
+
+    public static function isCausedByBuyer(\Throwable $e): bool
+    {
+        if ($e instanceof PayerActionRequiredException) {
+            return true;
+        }
+
+        if ($e instanceof OrderFailedException && \in_array($e->getStatus(), self::REFUSED_PAYMENT_STATUSES, true)) {
+            return true;
+        }
+
+        if ($e instanceof PayPalApiException) {
+            // the SDK exception has every issue of the response, the wrapper only the last one
+            $previous = $e->getPrevious();
+            $category = $previous instanceof ApiException ? IssueClassifier::classify($previous) : IssueClassifier::classifyCodes($e->getName(), $e->getIssue());
+            if ($category === IssueCategory::BUYER || $category === IssueCategory::BUYER_RESOLVABLE) {
+                return true;
+            }
+
+            // the SDK counts it as a code issue, the plugin asks the buyer to change the cart or payment method
+            if ($e->is(ApiException::CODE_CANNOT_BE_ZERO_OR_NEGATIVE)) {
+                return true;
+            }
+        }
+
+        return $e instanceof ShopwareHttpException && \in_array($e->getErrorCode(), self::BUYER_ERROR_CODES, true);
+    }
+
+    public static function isCancelledByBuyer(\Throwable $e): bool
+    {
+        return $e instanceof ShopwareHttpException && $e->getErrorCode() === PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL;
+    }
+
+    /**
+     * @param string|null ...$codes the error name and issues of one response
+     */
+    public static function isMerchantAccountIssue(?string ...$codes): bool
+    {
+        return IssueClassifier::classifyCodes(...$codes) === IssueCategory::MERCHANT;
+    }
+}

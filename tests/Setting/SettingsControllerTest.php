@@ -114,6 +114,7 @@ class SettingsControllerTest extends TestCase
                 new CredentialsUtil($systemConfigService),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class),
                 $sdkV6EligibilityService,
+                new NullLogger(),
             ),
             $this->getContainer()->get(SystemConfigValidator::class),
             new SettingsSaver(
@@ -121,6 +122,7 @@ class SettingsControllerTest extends TestCase
                 $apiCredentialsService,
                 $this->createMock(WebhookSystemConfigHelper::class),
                 $sdkV6EligibilityService,
+                new NullLogger(),
             )
         );
     }

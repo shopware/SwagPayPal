@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\PUI\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
@@ -67,7 +68,7 @@ class PUIInstructionsFetchServiceTest extends TestCase
 
         $this->service = new PUIInstructionsFetchService(
             $this->orderTransactionRepository,
-            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock(), new NullLogger()),
             $this->getContainer()->get(OrderTransactionStateHandler::class),
             $this->getContainer()->get(TransactionDataService::class)
         );
