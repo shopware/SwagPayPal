@@ -217,7 +217,7 @@ export default abstract class SwagPaypalBase extends Plugin {
     /**
      * Rejects, if {@link promise} does not settle within {@link timeout} milliseconds.
      */
-    protected async _withTimeout<T>(promise: Promise<T>, timeout: number, name: string): Promise<T> {
+    private async _withTimeout<T>(promise: Promise<T>, timeout: number, name: string): Promise<T> {
         let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
         const timeoutPromise = new Promise<never>((_, reject) => {
