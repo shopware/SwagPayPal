@@ -19,6 +19,7 @@ use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\CancellationPolicy;
 use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
@@ -56,6 +57,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
         $criteria = new Criteria();
         $criteria->addAssociation('order');
+        $criteria->addAssociation('stateMachineState');
         $criteria->addFilter(
             new EqualsFilter(
                 \sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
@@ -89,7 +91,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         $criteria = new Criteria([$orderTransactionId]);
-        $criteria->addAssociation('order');
+        $criteria->addAssociations(['order', 'stateMachineState']);
         $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if ($orderTransaction === null) {
@@ -110,5 +112,10 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         return $state->getTechnicalName() !== $invalidStatus;
+    }
+
+    protected function isCancellationAllowed(OrderTransactionEntity $orderTransaction): bool
+    {
+        return CancellationPolicy::isAllowed($orderTransaction);
     }
 }

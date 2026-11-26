@@ -109,6 +109,10 @@ class PaymentStatusUtilV2
         // TODO PPI-59 - Do transition even if transaction is already partially paid.
         if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_PAID) {
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
+            // If the previous state is "cancelled", "paid_partially" is currently not allowed as direct transition
+            if ($stateMachineState->getTechnicalName() === OrderTransactionStates::STATE_CANCELLED) {
+                $this->orderTransactionStateHandler->reopen($transactionId, $context);
+            }
             $this->orderTransactionStateHandler->payPartially($transactionId, $context);
         }
     }
@@ -117,12 +121,18 @@ class PaymentStatusUtilV2
     {
         $transaction = $this->getOrderTransaction($orderTransactionId, $context);
 
+        if (!CancellationPolicy::isAllowed($transaction)) {
+            return;
+        }
+
         $this->orderTransactionStateHandler->cancel($transaction->getId(), $context);
     }
 
     private function getOrderTransaction(string $orderTransactionId, Context $context): OrderTransactionEntity
     {
         $criteria = new Criteria([$orderTransactionId]);
+        $criteria->addAssociation('stateMachineState');
+
         /** @var OrderTransactionEntity|null $transaction */
         $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
 
