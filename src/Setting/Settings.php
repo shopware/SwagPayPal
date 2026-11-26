@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Setting;
 
+use Monolog\Level;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
@@ -69,6 +70,8 @@ final class Settings
     public const AGENTIC_COMMERCE_ONBOARDED = self::SYSTEM_CONFIG_DOMAIN . 'agenticCommerceOnboarded';
     public const IS_LOCAL_ENVIRONMENT = self::SYSTEM_CONFIG_DOMAIN . 'isLocalEnvironment';
     public const SDK_V6_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'sdkV6Enabled';
+    // a `Monolog\Level` value, 0 is off
+    public const LOG_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'logLevel';
 
     /**
      * @internal these may change at any time
@@ -113,6 +116,7 @@ final class Settings
         self::CROSS_BORDER_BUYER_COUNTRY => null,
         self::IS_LOCAL_ENVIRONMENT => false,
         self::SDK_V6_ENABLED => false,
+        self::LOG_LEVEL => Level::Warning->value,
     ];
 
     public const LIVE_CREDENTIAL_KEYS = [

@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PayPal-Logzeilen ab dem Level "Warnung" werden jetzt für 30 Tage, höchstens 100.000 Zeilen, in der Datenbank gespeichert und im Tab "Diagnose" angezeigt. Das Level kann im Tab "Fortgeschritten" geändert oder ausgeschaltet werden, die Umgebungsvariable `PAYPAL_DB_LOGGER=0` schaltet es für Shops aus, die ihre Logs anderswo sammeln (shopware/SwagPayPal#800)
 - Fügt dem Tab "Diagnose" eine Webhook-Prüfung hinzu, die die Registrierung und den letzten Webhook anzeigt, von PayPal gesendete, aber nicht angekommene Ereignisse findet und Test-Webhooks sendet (shopware/SwagPayPal#800)
 - Fügt dem Tab "Diagnose" eine Prüfung des Express-Checkout-Callbacks hinzu, die den letzten Callback von PayPal anzeigt und testet, ob seine URLs erreichbar sind (shopware/SwagPayPal#800)
 - Fügt den Tab "Diagnose" zu den PayPal-Einstellungen hinzu, der anzeigt, wenn ein Theme oder ein anderes Plugin die PayPal-Buttons durch Überschreiben ihrer Templates ausblendet (shopware/SwagPayPal#800)

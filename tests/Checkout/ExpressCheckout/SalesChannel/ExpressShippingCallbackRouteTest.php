@@ -112,7 +112,8 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $response = $this->route->handleCallback($request, $salesChannelContext);
         static::assertEquals(\json_encode(['error' => 'Invalid payload']), $response->getContent());
 
-        $record = $this->assertPayPalLogged(LogCode::EXPRESS_CALLBACK_INVALID, Level::Warning, message: 'Rejected a shipping callback with an invalid payload');
+        static::assertFalse($response->headers->has(ReachabilityProbe::HEADER));
+        $record = $this->assertPayPalLogged(LogCode::EXPRESS_CALLBACK_INVALID, Level::Notice, message: 'Rejected a shipping callback with an invalid payload');
         static::assertArrayNotHasKey('callback', $record->context);
         static::assertNull($this->lastCallbackStorage->get($salesChannelContext->getSalesChannelId()));
     }

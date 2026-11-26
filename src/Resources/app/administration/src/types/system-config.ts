@@ -1,4 +1,4 @@
-import type { SYSTEM_CONFIG, LANDING_PAGES, BUTTON_COLORS, BUTTON_SHAPES, INTENTS, COUNTRY_OVERRIDES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
+import type { SYSTEM_CONFIG, LANDING_PAGES, BUTTON_COLORS, BUTTON_SHAPES, INTENTS, COUNTRY_OVERRIDES, LOG_LEVEL } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
 // @todo - Keys should be from SYSTEM_CONFIG
 export declare type SystemConfig = {
@@ -60,6 +60,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.agenticCommerceOnboarded'?: string;
     'SwagPayPal.settings.isLocalEnvironment'?: boolean;
     'SwagPayPal.settings.sdkV6Enabled'?: boolean;
+    'SwagPayPal.settings.logLevel'?: LOG_LEVEL;
 };
 
 /**
@@ -123,4 +124,5 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password'
 
     'SwagPayPal.settings.isLocalEnvironment': 'boolean',
     'SwagPayPal.settings.sdkV6Enabled': 'boolean',
+    'SwagPayPal.settings.logLevel': 'string',
 };

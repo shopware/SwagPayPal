@@ -202,7 +202,7 @@ class PayPalControllerTest extends TestCase
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
-        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Warning, [Log::CLIENT_CODE => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
+        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Notice, [Log::CLIENT_CODE => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
     }
 
     public function testOnHandleErrorWithTranslatableErrorCodeSkipsFlash(): void
@@ -224,7 +224,7 @@ class PayPalControllerTest extends TestCase
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
-        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Warning, [Log::CLIENT_CODE => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
+        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Notice, [Log::CLIENT_CODE => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
     }
 
     public function testOnHandleErrorWithNonTranslatableErrorCodeAddsFlash(): void
@@ -248,7 +248,7 @@ class PayPalControllerTest extends TestCase
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
-        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Warning, [Log::CLIENT_CODE => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
+        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Notice, [Log::CLIENT_CODE => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
     }
 
     public function testOnHandleErrorWithNonTranslatableErrorCodeSkipsFlash(): void
@@ -270,7 +270,7 @@ class PayPalControllerTest extends TestCase
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
-        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Warning, [Log::CLIENT_CODE => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
+        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Notice, [Log::CLIENT_CODE => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE', Log::FATAL => false]);
     }
 
     #[DataProvider('onHandleErrorDataProvider')]
@@ -318,10 +318,10 @@ class PayPalControllerTest extends TestCase
             yield 'user cancelled' . $suffix => ['SWAG_PAYPAL__USER_CANCELLED', $fatal, Level::Notice, LogCode::STOREFRONT_BUYER_CANCELLED, $cancelled];
             yield 'express user cancelled' . $suffix => ['SWAG_PAYPAL__EXPRESS_USER_CANCELLED', $fatal, Level::Notice, LogCode::STOREFRONT_BUYER_CANCELLED, $cancelled];
             yield 'declined' . $suffix => ['SWAG_PAYPAL__DECLINED_ERROR', $fatal, Level::Notice, LogCode::STOREFRONT_PAYMENT_DECLINED, $declined];
-            yield 'script error' . $suffix => ['SWAG_PAYPAL__SCRIPT_ERROR', $fatal, Level::Warning, LogCode::STOREFRONT_SCRIPT_FAILED, $script];
-            yield 'script not loaded' . $suffix => ['SWAG_PAYPAL__SCRIPT_NOT_LOADED', $fatal, Level::Warning, LogCode::STOREFRONT_SCRIPT_FAILED, $script];
-            yield 'generic error' . $suffix => ['SWAG_PAYPAL__GENERIC_ERROR', $fatal, Level::Warning, LogCode::STOREFRONT_ERROR_REPORTED, $reported];
-            yield 'script load failed' . $suffix => ['SWAG_PAYPAL__GENERIC_ERROR', $fatal, Level::Warning, LogCode::STOREFRONT_SCRIPT_FAILED, $script, 'SCRIPT_LOAD'];
+            yield 'script error' . $suffix => ['SWAG_PAYPAL__SCRIPT_ERROR', $fatal, Level::Notice, LogCode::STOREFRONT_SCRIPT_FAILED, $script];
+            yield 'script not loaded' . $suffix => ['SWAG_PAYPAL__SCRIPT_NOT_LOADED', $fatal, Level::Notice, LogCode::STOREFRONT_SCRIPT_FAILED, $script];
+            yield 'generic error' . $suffix => ['SWAG_PAYPAL__GENERIC_ERROR', $fatal, Level::Notice, LogCode::STOREFRONT_ERROR_REPORTED, $reported];
+            yield 'script load failed' . $suffix => ['SWAG_PAYPAL__GENERIC_ERROR', $fatal, Level::Notice, LogCode::STOREFRONT_SCRIPT_FAILED, $script, 'SCRIPT_LOAD'];
             yield 'browser unsupported' . $suffix => ['SWAG_PAYPAL__BROWSER_UNSUPPORTED', $fatal, Level::Debug, null, $unavailable];
             yield 'not eligible' . $suffix => ['SWAG_PAYPAL__NOT_ELIGIBLE', $fatal, Level::Debug, null, $unavailable];
         }
@@ -338,14 +338,14 @@ class PayPalControllerTest extends TestCase
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
-        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Warning, [
+        $this->assertPayPalLogged(LogCode::STOREFRONT_ERROR_REPORTED, Level::Notice, [
             Log::PAGE_TYPE => 'checkout {code} <script>',
             Log::CLIENT_CODE => 'EVIL {pageType} CODE',
             Log::CLIENT_ERROR => \str_repeat('e', 200),
         ], 'The browser reported a PayPal error');
     }
 
-    public function testRestoreContextWithInvalidTokenLogsWarning(): void
+    public function testRestoreContextWithInvalidTokenLogsNotice(): void
     {
         $this->returnTokenService->method('parse')->willThrowException(JWTException::invalidJwt('Invalid token'));
 
@@ -353,7 +353,7 @@ class PayPalControllerTest extends TestCase
 
         $this->controller->restoreContext($this->generateSalesChannelContext(), new Request(), 'invalid-token');
 
-        $record = $this->assertPayPalLogged(LogCode::STOREFRONT_RETURN_TOKEN_INVALID, Level::Warning);
+        $record = $this->assertPayPalLogged(LogCode::STOREFRONT_RETURN_TOKEN_INVALID, Level::Notice);
         static::assertSame(JWTException::class, $record->context[Log::EXCEPTION]['class'] ?? null);
     }
 

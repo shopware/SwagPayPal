@@ -8,6 +8,7 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
                 'sales_channel:read',
                 'sales_channel_payment_method:read',
                 'system_config:read',
+                'swag_paypal_log:read',
             ],
             dependencies: [],
         },

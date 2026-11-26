@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenDefinition;
 use Swag\PayPal\DataAbstractionLayer\VaultTokenMapping\VaultTokenMappingDefinition;
+use Swag\PayPal\Diagnostics\Log\DataAbstractionLayer\LogLineDefinition;
 use Swag\PayPal\Reporting\DataAbstractionLayer\TransactionReport\TransactionReportDefinition;
 use Swag\PayPal\Util\Lifecycle\Installer\TableInstaller;
 
@@ -28,6 +29,7 @@ class TableInstallerTest extends TestCase
         VaultTokenMappingDefinition::ENTITY_NAME,
         TransactionReportDefinition::ENTITY_NAME,
         'swag_paypal_order_transactions',
+        LogLineDefinition::ENTITY_NAME,
     ];
 
     public function testRemoveTablesDropsThePluginTables(): void

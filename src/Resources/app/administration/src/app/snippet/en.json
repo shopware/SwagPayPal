@@ -91,7 +91,8 @@
       "crossBorderMessagingEnabled" : "Enable cross-border localization of Pay Later message",
       "crossBorderBuyerCountry" : "Localization",
       "isLocalEnvironment": "Local development environment",
-      "sdkV6Enabled": "Use PayPal SDK v6"
+      "sdkV6Enabled": "Use PayPal SDK v6",
+      "logLevel": "Log level"
     },
     "helpText": {
       "clientId": "The REST API client ID is used to authenticate this plugin with the PayPal API.",
@@ -126,7 +127,8 @@
       "puiCustomerServiceInstructions": "These instructions will be submitted to PayPal & RatePay and shown in emails for the customer.",
       "spbButtonLanguageIso": "If not set, the sales channel language will be used.",
       "spbAlternativePaymentMethodsEnabled": "Alternative payment methods are credit- and debit cards and more.",
-      "spbAppSwitchEnabled": "Allows eligible mobile PayPal checkouts to continue in the PayPal app and return to the storefront. Requires PayPal App Switch support for the buyer's device and browser."
+      "spbAppSwitchEnabled": "Allows eligible mobile PayPal checkouts to continue in the PayPal app and return to the storefront. Requires PayPal App Switch support for the buyer's device and browser.",
+      "logLevel": "Applies to all Sales Channels. Debug also stores every request to PayPal; set it only while analysing a problem."
     },
     "hintText": {
       "landingPage": {
