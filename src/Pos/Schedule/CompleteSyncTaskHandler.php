@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Pos\Schedule;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -25,10 +26,11 @@ class CompleteSyncTaskHandler extends AbstractSyncTaskHandler
 
     public function __construct(
         EntityRepository $scheduledTaskRepository,
+        LoggerInterface $logger,
         EntityRepository $salesChannelRepository,
         CompleteTask $completeTask,
     ) {
-        parent::__construct($scheduledTaskRepository, $salesChannelRepository);
+        parent::__construct($scheduledTaskRepository, $logger, $salesChannelRepository);
         $this->completeTask = $completeTask;
     }
 

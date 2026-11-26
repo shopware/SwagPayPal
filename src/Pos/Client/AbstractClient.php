@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Exception\PosException;
+use Swag\PayPal\Util\Log\Log;
 
 #[Package('checkout')]
 abstract class AbstractClient
@@ -78,7 +79,7 @@ abstract class AbstractClient
         $exceptionResponse = $requestException->getResponse();
 
         if ($exceptionResponse === null) {
-            $this->logger->error($exceptionMessage, [$data]);
+            $this->logger->error('Could not reach the PayPal POS API', [Log::EXCEPTION => $requestException]);
 
             return new PosException('General Error', $exceptionMessage, (int) $requestException->getCode());
         }

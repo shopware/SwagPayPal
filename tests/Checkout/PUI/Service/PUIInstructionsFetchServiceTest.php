@@ -66,7 +66,7 @@ class PUIInstructionsFetchServiceTest extends TestCase
 
         $this->service = new PUIInstructionsFetchService(
             $this->orderTransactionRepository,
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger()), new NullLogger()),
             $this->getContainer()->get(OrderTransactionStateHandler::class),
             $this->getContainer()->get(TransactionDataService::class)
         );

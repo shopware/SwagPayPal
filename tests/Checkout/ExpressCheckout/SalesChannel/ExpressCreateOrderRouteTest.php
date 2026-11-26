@@ -7,8 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -39,6 +37,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
@@ -57,14 +56,12 @@ class ExpressCreateOrderRouteTest extends TestCase
 {
     use CheckoutRouteTrait;
     use IntegrationTestBehaviour;
-
-    private TestHandler $logger;
+    use PayPalLogTrait;
 
     private PayPalClientFactoryMock $clientFactory;
 
     protected function setUp(): void
     {
-        $this->logger = new TestHandler();
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
     }
 
@@ -81,7 +78,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         $route = new ExpressCreateOrderRoute(
             $cartService,
             $this->getContainer()->get(PayPalOrderBuilder::class),
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger()), new NullLogger()),
             $this->getContainer()->get(CartPriceService::class),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
@@ -105,7 +102,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         $route = new ExpressCreateOrderRoute(
             $cartService,
             $this->createMock(PayPalOrderBuilder::class),
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger()), new NullLogger()),
             $this->getContainer()->get(CartPriceService::class),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
@@ -126,7 +123,9 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        static::assertTrue($this->logger->hasDebug('Configured shipping callback'));
+        $records = $this->getPayPalLogRecords();
+        static::assertCount(1, $records);
+        static::assertSame('Requested shipping callbacks from PayPal', $records[0]->message);
     }
 
     public function testCreateWithLocalEnvironmentActive(): void
@@ -138,7 +137,9 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        static::assertTrue($this->logger->hasDebug('Skipped shipping callback due to being disabled in system config'));
+        $records = $this->getPayPalLogRecords();
+        static::assertCount(1, $records);
+        static::assertSame('Did not request shipping callbacks, because they are disabled in the settings', $records[0]->message);
     }
 
     public function testCreateWithShippingCallbackDisabled(): void
@@ -150,7 +151,9 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        static::assertTrue($this->logger->hasDebug('Skipped shipping callback due to being disabled in system config'));
+        $records = $this->getPayPalLogRecords();
+        static::assertCount(1, $records);
+        static::assertSame('Did not request shipping callbacks, because they are disabled in the settings', $records[0]->message);
     }
 
     public function testCreateShippingCallbackStoreApi(): void
@@ -228,7 +231,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         $route = new ExpressCreateOrderRoute(
             $cartService,
             $paypalOrderBuilder,
-            new OrderResource($this->clientFactory),
+            new OrderResource($this->clientFactory, new NullLogger()),
             $this->getContainer()->get(CartPriceService::class),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
@@ -277,11 +280,11 @@ class ExpressCreateOrderRouteTest extends TestCase
         return new ExpressCreateOrderRoute(
             $this->getContainer()->get(CartService::class),
             $paypalOrderBuilder,
-            new OrderResource($this->clientFactory),
+            new OrderResource($this->clientFactory, new NullLogger()),
             $this->getContainer()->get(CartPriceService::class),
             $systemConfig,
             $router ?? $this->createMock(RouterInterface::class),
-            new Logger('test', [$this->logger]),
+            $this->createPayPalLogger(),
         );
     }
 }

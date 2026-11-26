@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -70,7 +69,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         private readonly PaymentMethodUtil $paymentMethodUtil,
         private readonly ExcludedProductValidator $excludedProductValidator,
         private readonly EntityRepository $customerRepository,
-        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -141,7 +139,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
             $expressCheckoutButtonData
         );
-        $this->logger->debug('Added data to page {page}', ['page' => $event::class]);
     }
 
     public function addExpressCheckoutDataToPagelet(PageletLoadedEvent $event): void
@@ -289,7 +286,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
         $filtered = $confirmPage->getPaymentMethods()->filterByProperty('id', $payPalMethod->getId());
         $confirmPage->setPaymentMethods($filtered);
-        $this->logger->debug('Removed other payment methods from selection for Express Checkout');
     }
 
     public function mapShippingCallbackContextToken(ControllerEvent $event): void

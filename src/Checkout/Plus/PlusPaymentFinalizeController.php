@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\Plus;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -43,8 +42,6 @@ class PlusPaymentFinalizeController extends AbstractController
 
     private OrderTransactionStateHandler $transactionStateHandler;
 
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
@@ -53,13 +50,11 @@ class PlusPaymentFinalizeController extends AbstractController
         AsynchronousPaymentHandlerInterface $paymentHandler,
         OrderTransactionStateHandler $transactionStateHandler,
         RouterInterface $router,
-        LoggerInterface $logger,
     ) {
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentHandler = $paymentHandler;
         $this->transactionStateHandler = $transactionStateHandler;
         $this->router = $router;
-        $this->logger = $logger;
     }
 
     /**
@@ -69,7 +64,6 @@ class PlusPaymentFinalizeController extends AbstractController
     public function finalizeTransaction(Request $request, SalesChannelContext $salesChannelContext): RedirectResponse
     {
         $token = $request->query->get('token');
-        $this->logger->debug('Starting with token {token}.', ['token' => $token]);
 
         $criteria = new Criteria();
         $criteria->addAssociation('order');
@@ -118,13 +112,8 @@ class PlusPaymentFinalizeController extends AbstractController
         ]);
 
         try {
-            $this->logger->debug('Forwarding to payment handler.');
             $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
         } catch (PaymentException $paymentException) {
-            $this->logger->warning(
-                '{message}. Redirecting to confirm page.',
-                ['message' => $paymentException->getMessage(), 'error' => $paymentException]
-            );
             $finishUrl = $this->redirectToConfirmPageWorkflow(
                 $paymentException,
                 $context,
@@ -161,10 +150,6 @@ class PlusPaymentFinalizeController extends AbstractController
             return \sprintf('%s%serror-code=%s', $errorUrl, $urlQuery, $paymentException->getErrorCode());
         }
 
-        $this->logger->error(
-            $paymentException->getMessage(),
-            ['orderTransactionId' => $transactionId, 'error' => $paymentException]
-        );
         $this->transactionStateHandler->fail(
             $transactionId,
             $context

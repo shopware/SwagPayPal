@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -22,11 +23,13 @@ use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -37,6 +40,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class OrderPaymentBuilderTest extends TestCase
 {
     use PaymentTransactionTrait;
+    use PayPalLogTrait;
     use ServicesTrait;
 
     public const TEST_ORDER_NUMBER = 'TEST_12345_TEST';
@@ -142,7 +146,14 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentLabelTooLongIsTruncated(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $paymentBuilder = new OrderPaymentBuilder(
+            $this->createMock(LocaleCodeProvider::class),
+            new PriceFormatter(),
+            $this->createMock(EventDispatcherInterface::class),
+            $this->createPayPalLogger(),
+            $this->createDefaultSystemConfig(),
+            new CurrencyRepoMock()
+        );
 
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $context = Context::createDefaultContext();
@@ -161,11 +172,19 @@ class OrderPaymentBuilderTest extends TestCase
 
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
         static::assertSame($expectedItemName, $itemList->getItems()->first()?->getName());
+        $this->assertPayPalLogged(null, Level::Debug, [Log::LINE_ITEM_ID => $firstOrderLineItem->getId()], 'Shortened the item name of line item {lineItemId} to PayPal\'s maximum length');
     }
 
     public function testGetPaymentProductNumberTooLongIsTruncated(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $paymentBuilder = new OrderPaymentBuilder(
+            $this->createMock(LocaleCodeProvider::class),
+            new PriceFormatter(),
+            $this->createMock(EventDispatcherInterface::class),
+            $this->createPayPalLogger(),
+            $this->createDefaultSystemConfig(),
+            new CurrencyRepoMock()
+        );
 
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $context = Context::createDefaultContext();
@@ -184,6 +203,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
         static::assertSame($expectedItemSku, $itemList->getItems()->first()?->getSku());
+        $this->assertPayPalLogged(null, Level::Debug, [Log::LINE_ITEM_ID => $firstOrderLineItem->getId()], 'Shortened the SKU of line item {lineItemId} to PayPal\'s maximum length');
     }
 
     public function testGetPaymentMissingProductNumberInPayload(): void

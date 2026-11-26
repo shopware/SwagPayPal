@@ -35,16 +35,20 @@
         </service>
 
         <service id="monolog.processor.paypal.introspection" class="Swag\PayPal\Util\IntrospectionProcessor">
+            <argument key="$requestStack" type="service" id="request_stack"/>
             <tag name="monolog.processor" channel="paypal" />
         </service>
 
-        <service id="monolog.processor.paypal.web" class="Symfony\Bridge\Monolog\Processor\WebProcessor">
-            <argument type="collection">
-                <argument key="url">REQUEST_URI</argument>
-                <argument key="http_method">REQUEST_METHOD</argument>
-                <argument key="server">SERVER_NAME</argument>
-            </argument>
+        <service id="monolog.processor.paypal.uid" class="Monolog\Processor\UidProcessor">
             <tag name="monolog.processor" channel="paypal" />
+            <tag name="kernel.reset" method="reset" />
+        </service>
+
+        <service id="Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Swag\PayPal\Util\Lifecycle\ActivateDeactivate">

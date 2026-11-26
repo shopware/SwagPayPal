@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class EmptyCartException extends ShopwareHttpException
 {
+    public const ERROR_CODE = 'SWAG_PAYPAL__EXPRESS_EMPTY_CART';
+
     public function __construct()
     {
         parent::__construct('PayPal Express Checkout is unable to process an empty shopping cart');
@@ -26,6 +28,6 @@ class EmptyCartException extends ShopwareHttpException
 
     public function getErrorCode(): string
     {
-        return 'SWAG_PAYPAL__EXPRESS_EMPTY_CART';
+        return self::ERROR_CODE;
     }
 }

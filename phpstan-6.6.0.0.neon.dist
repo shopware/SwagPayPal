@@ -220,3 +220,13 @@ parameters:
 			message: "#^Call to method getMessage\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
 			count: 1
 			path: tests/AgenticCommerce/Security/PayPalJwksProviderTest.php
+
+		-
+			message: "#^Method Swag\\\\PayPal\\\\DevOps\\\\StaticAnalyze\\\\PHPStan\\\\Rules\\\\LogCallRule\\:\\:error\\(\\) should return PHPStan\\\\Rules\\\\IdentifierRuleError but returns PHPStan\\\\Rules\\\\RuleError\\.$#"
+			count: 1
+			path: src/DevOps/StaticAnalyze/PHPStan/Rules/LogCallRule.php
+
+		-
+			message: "#^Cannot access property \\$level on Monolog\\\\LogRecord\\|false\\.$#"
+			count: 1
+			path: tests/Webhook/WebhookControllerTest.php

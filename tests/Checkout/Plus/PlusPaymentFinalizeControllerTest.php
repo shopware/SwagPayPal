@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Checkout\Plus;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
@@ -118,7 +117,6 @@ class PlusPaymentFinalizeControllerTest extends TestCase
             new AsyncPaymentHandlerMock(),
             $this->orderTransactionStateHandler,
             $router,
-            new NullLogger()
         );
     }
 }

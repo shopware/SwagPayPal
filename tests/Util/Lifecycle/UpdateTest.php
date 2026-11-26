@@ -667,6 +667,7 @@ class UpdateTest extends TestCase
             new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]),
             $systemConfigService,
             $this->createMock(RouterInterface::class),
+            new NullLogger(),
         );
     }
 

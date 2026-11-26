@@ -192,7 +192,7 @@ class CreateOrderRouteTest extends TestCase
             $applePayOrderBuilder,
             $googlePayOrderBuilder,
             $venmoOrderBuilder,
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger()), new NullLogger()),
             new NullLogger(),
             new PaymentTransactionStructFactory(),
         );

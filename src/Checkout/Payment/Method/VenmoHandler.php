@@ -51,7 +51,10 @@ class VenmoHandler extends AbstractSyncAPMHandler implements RecurringPaymentHan
         $transactionId = $transaction->getOrderTransaction()->getId();
         $subscription = $this->vaultTokenService->getSubscription($transaction);
         if (!$subscription) {
-            throw PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
+            $exception = PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
+            $this->logPaymentFailure($exception, $transaction);
+
+            throw $exception;
         }
 
         $salesChannelContext = $this->orderConverter->assembleSalesChannelContext($transaction->getOrder(), $context);
@@ -83,9 +86,11 @@ class VenmoHandler extends AbstractSyncAPMHandler implements RecurringPaymentHan
                 PartnerAttributionId::PAYPAL_PPCP
             );
         } catch (PaymentException $e) {
+            $this->logPaymentFailure($e, $transaction);
+
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logPaymentFailure($e, $transaction);
 
             throw PaymentException::recurringInterrupted($transactionId, $e->getMessage());
         }

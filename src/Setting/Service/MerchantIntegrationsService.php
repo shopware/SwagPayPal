@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Setting\Service;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
@@ -19,6 +20,8 @@ use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 
 #[Package('checkout')]
 class MerchantIntegrationsService
@@ -31,6 +34,7 @@ class MerchantIntegrationsService
         private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
         private readonly PayPalClientFactoryInterface $payPalClientFactory,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -59,8 +63,13 @@ class MerchantIntegrationsService
                 $salesChannelId,
                 $this->credentialsUtil->isSandbox($salesChannelId)
             );
-        } catch (PayPalApiException|PayPalSettingsInvalidException) {
-            // just catch exceptions thrown in case of invalid credentials
+        } catch (PayPalApiException|PayPalSettingsInvalidException $e) {
+            // e.g. invalid credentials, the settings still load
+            $this->logger->warning(
+                'Could not load the merchant integrations from PayPal, the Administration shows no capabilities of the PayPal account',
+                Log::context(code: LogCode::SETTINGS_MERCHANT_INTEGRATIONS_UNAVAILABLE, salesChannelId: $salesChannelId, exception: $e),
+            );
+
             return null;
         }
     }

@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class PayPalApiException extends PaymentException
 {
+    public const ERROR_CODE_PREFIX = 'SWAG_PAYPAL__API_';
     public const ERROR_CODE_INVALID_CREDENTIALS = 'INVALID_CREDENTIALS';
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
     /**
@@ -45,7 +46,7 @@ class PayPalApiException extends PaymentException
     ) {
         parent::__construct(
             $payPalApiStatusCode,
-            'SWAG_PAYPAL__API_' . ($issue ?? 'EXCEPTION'),
+            self::ERROR_CODE_PREFIX . ($issue ?? 'EXCEPTION'),
             'The error "{{ name }}" occurred with the following message: {{ message }}',
             [
                 'name' => $name,

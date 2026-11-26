@@ -478,7 +478,6 @@ class PlusSubscriberTest extends TestCase
             $plusDataService,
             $this->paymentMethodUtil,
             $translator,
-            new NullLogger()
         );
     }
 

@@ -7,8 +7,8 @@
 
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -20,9 +20,11 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -34,6 +36,7 @@ class CartPaymentBuilderTest extends TestCase
 {
     use CartTrait;
     use IntegrationTestBehaviour;
+    use PayPalLogTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
 
@@ -67,6 +70,7 @@ class CartPaymentBuilderTest extends TestCase
 
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
         static::assertSame($expectedItemName, $itemList->getItems()->first()?->getName());
+        $this->assertPayPalLogged(null, Level::Debug, [Log::LINE_ITEM_ID => $product->getId()], 'Shortened the item name of line item {lineItemId} to PayPal\'s maximum length');
     }
 
     public function testGetPaymentProductNumberTooLongIsTruncated(): void
@@ -85,6 +89,7 @@ class CartPaymentBuilderTest extends TestCase
 
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
         static::assertSame($expectedItemSku, $itemList->getItems()->first()?->getSku());
+        $this->assertPayPalLogged(null, Level::Debug, [Log::LINE_ITEM_ID => $product->getId()], 'Shortened the SKU of line item {lineItemId} to PayPal\'s maximum length');
     }
 
     public function testGetPaymentWithoutTransaction(): void
@@ -109,7 +114,7 @@ class CartPaymentBuilderTest extends TestCase
             $this->getContainer()->get(LocaleCodeProvider::class),
             new PriceFormatter(),
             $this->createMock(EventDispatcherInterface::class),
-            new NullLogger(),
+            $this->createPayPalLogger(),
             $settings
         );
     }

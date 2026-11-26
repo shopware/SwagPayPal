@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment\Handler;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -54,6 +55,9 @@ use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -62,6 +66,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class PayPalHandlerTest extends TestCase
 {
+    use PayPalLogTrait;
+
     public function testFinalize(): void
     {
         $orderTransaction = new OrderTransactionEntity();
@@ -404,6 +410,7 @@ class PayPalHandlerTest extends TestCase
         $orderTransaction->setId(Uuid::randomHex());
         $order = new OrderEntity();
         $order->setId(Uuid::randomHex());
+        $order->setOrderNumber('10000');
         $order->setTransactions(new OrderTransactionCollection([$orderTransaction]));
 
         $struct = new AsyncPaymentTransactionStruct($orderTransaction, $order, 'https://shop.test/payment/finalize-transaction?_sw_payment_token=token');
@@ -459,7 +466,7 @@ class PayPalHandlerTest extends TestCase
             $this->createMock(OrderPatchService::class),
             $this->createMock(TransactionDataService::class),
             $this->createMock(VaultTokenService::class),
-            new NullLogger(),
+            $this->createPayPalLogger(),
         );
 
         $response = $handler->handlePreparedOrder(
@@ -473,6 +480,12 @@ class PayPalHandlerTest extends TestCase
         );
 
         static::assertSame('https://paypal.test/payer-action', $response->getTargetUrl());
+        $this->assertPayPalLogged(
+            LogCode::CHECKOUT_PAYER_ACTION_REDIRECT,
+            Level::Info,
+            [Log::PAYPAL_ORDER_ID => 'paypalOrderId', Log::ORDER_NUMBER => '10000'],
+            'Redirected the buyer to PayPal to approve the payment of order {orderNumber} again',
+        );
     }
 
     /**

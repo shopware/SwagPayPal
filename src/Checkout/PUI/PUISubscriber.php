@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\PUI;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -35,18 +34,14 @@ class PUISubscriber implements EventSubscriberInterface
 
     private PUIPaymentInstructionDataService $puiPaymentInstructionDataService;
 
-    private LoggerInterface $logger;
-
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         PUIFraudNetDataService $puiFraudNetDataService,
         PUIPaymentInstructionDataService $puiPaymentInstructionDataService,
-        LoggerInterface $logger,
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->puiFraudNetDataService = $puiFraudNetDataService;
         $this->puiPaymentInstructionDataService = $puiPaymentInstructionDataService;
-        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -64,11 +59,9 @@ class PUISubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->logger->debug('Adding data');
         $buttonData = $this->puiFraudNetDataService->buildCheckoutData($event->getSalesChannelContext());
 
         $event->getPage()->addExtension(self::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID, $buttonData);
-        $this->logger->debug('Added data');
     }
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
@@ -80,8 +73,6 @@ class PUISubscriber implements EventSubscriberInterface
         if ($event->getPage()->getCart()->getErrors()->blockOrder()) {
             return;
         }
-
-        $this->logger->debug('Adding data');
 
         $puiFraudNetData = $this->puiFraudNetDataService->buildCheckoutData($event->getSalesChannelContext());
         $event->getPage()->addExtension(self::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID, $puiFraudNetData);
@@ -97,8 +88,6 @@ class PUISubscriber implements EventSubscriberInterface
         if (!$transactions || !($transaction = $transactions->last())) {
             return;
         }
-
-        $this->logger->debug('Adding data');
 
         $puiPaymentInstructionData = $this->puiPaymentInstructionDataService->buildFinishData($transaction, $event->getSalesChannelContext());
         if (!$puiPaymentInstructionData) {

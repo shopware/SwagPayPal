@@ -13,6 +13,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Util\Log\LogRedactor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,6 +28,11 @@ abstract class AbstractClient
         'PayPal-Request-Id',
         'Date',
     ];
+
+    private const TOKEN_PATH_SUFFIX = '/v1/oauth2/token';
+
+    // one message for every request, level and code tell failures apart
+    private const LOG_MESSAGE = 'Requested the PayPal API: {httpMethod} {httpPath} returned {httpStatus}';
 
     protected ClientInterface $client;
 
@@ -69,73 +78,44 @@ abstract class AbstractClient
 
     private function request(string $method, string $uri, array $options = []): array
     {
-        $this->logger->debug(
-            'Sending {method} request to {uri} with the following content: {content}',
-            [
-                'method' => \mb_strtoupper($method),
-                'uri' => $uri,
-                'content' => $options,
-            ]
-        );
-
         try {
             $response = $this->client->request($method, $uri, $options);
             $body = $response->getBody()->getContents();
         } catch (RequestException $requestException) {
-            throw $this->handleRequestException($requestException, $options);
+            throw $this->handleRequestException($requestException, $method, $uri, $options);
         }
 
-        $this->logger->debug(
-            'Received {code} from {method} {uri} with following response: {response}',
-            [
-                'method' => \mb_strtoupper($method),
-                'code' => \sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase()),
-                'uri' => $uri,
-                'headers' => $response->getHeaders(),
-                'response' => $body,
-            ]
-        );
+        $this->logRequest($method, $uri, $options, $response, $body);
 
         return \json_decode($body, true) ?? [];
     }
 
     private function requestHeaders(string $method, string $uri, array $options = []): array
     {
-        $this->logger->debug(
-            'Sending {method} request to {uri} with the following content: {content}',
-            [
-                'method' => \mb_strtoupper($method),
-                'uri' => $uri,
-                'content' => $options,
-            ]
-        );
-
         try {
             $response = $this->client->request($method, $uri, $options);
         } catch (RequestException $requestException) {
-            throw $this->handleRequestException($requestException, $options);
+            throw $this->handleRequestException($requestException, $method, $uri, $options);
         }
 
-        $this->logger->debug(
-            'Received {code} from {method} {uri} with following response: {response}',
-            [
-                'method' => \mb_strtoupper($method),
-                'code' => \sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase()),
-                'uri' => $uri,
-                'headers' => $response->getHeaders(),
-            ]
-        );
+        $this->logRequest($method, $uri, $options, $response, $response->getBody()->getContents());
 
         return $response->getHeaders();
     }
 
-    private function handleRequestException(RequestException $requestException, array $data): PayPalApiException
+    private function handleRequestException(RequestException $requestException, string $method, string $uri, array $options): PayPalApiException
     {
         $exceptionMessage = $requestException->getMessage();
         $exceptionResponse = $requestException->getResponse();
 
         if ($exceptionResponse === null) {
-            $this->logger->error($exceptionMessage, ['data' => $data]);
+            $this->logger->error('Requesting the PayPal API failed without a response: {httpMethod} {httpPath}', Log::context(
+                code: LogCode::API_REQUEST_FAILED,
+                httpMethod: \mb_strtoupper($method),
+                httpPath: $this->getPath($uri),
+                paypalRequestId: $this->getRequestId($options),
+                exception: $requestException,
+            ));
 
             return new PayPalApiException('General Error', $exceptionMessage);
         }
@@ -143,12 +123,9 @@ abstract class AbstractClient
         $content = $exceptionResponse->getBody()->getContents();
         $error = \json_decode($content, true) ?: [];
         $issue = null;
+        $issues = [];
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
-            $this->logger->error($exceptionMessage, [
-                'error' => $error,
-                'headers' => $this->extractHeaders($exceptionResponse),
-                'data' => $data,
-            ]);
+            $this->logFailure($method, $uri, $options, $exceptionResponse, $content, $error['error']);
 
             if ($exceptionResponse->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
                 $issue = PayPalApiException::ERROR_CODE_INVALID_CREDENTIALS;
@@ -171,6 +148,7 @@ abstract class AbstractClient
                 }
                 if (isset($detail['issue'])) {
                     $issue = $detail['issue'];
+                    $issues[] = $detail['issue'];
                     $message .= \sprintf('%s ', $detail['issue']);
                 }
                 if (isset($detail['field'])) {
@@ -179,24 +157,94 @@ abstract class AbstractClient
             }
         }
 
-        $this->logger->error(\sprintf('%s %s', $exceptionMessage, $message), [
-            'error' => $error,
-            'headers' => $this->extractHeaders($exceptionResponse),
-            'data' => $data,
-        ]);
+        $name = $error['name'] ?? 'UNCLASSIFIED_ERROR';
+        $this->logFailure($method, $uri, $options, $exceptionResponse, $content, $name, $issues);
 
         if ($exceptionResponse->getStatusCode() === Response::HTTP_SERVICE_UNAVAILABLE) {
             return new PayPalApiException('PayPal is not available', $message, $exceptionResponse->getStatusCode(), PayPalApiException::ISSUE_NOT_AVAILABLE);
         }
 
-        return new PayPalApiException($error['name'] ?? 'UNCLASSIFIED_ERROR', $message, $exceptionResponse->getStatusCode(), $issue);
+        return new PayPalApiException($name, $message, $exceptionResponse->getStatusCode(), $issue);
     }
 
-    private function extractHeaders(ResponseInterface $response): array
+    private function logRequest(string $method, string $uri, array $options, ResponseInterface $response, string $body): void
     {
-        return \array_combine(
-            self::HEADER_WHITELIST,
-            \array_map(static fn (string $name) => $response->getHeader($name), self::HEADER_WHITELIST),
-        );
+        $this->logger->debug(self::LOG_MESSAGE, Log::context(
+            ...$this->getHttpContext($method, $uri, $options, $response),
+            request: $this->getRequestBodyForLog($uri, $options),
+            response: $this->isTokenRequest($uri) ? LogRedactor::REDACTED : $body,
+        ));
+    }
+
+    /**
+     * @param list<string> $issues
+     */
+    private function logFailure(string $method, string $uri, array $options, ResponseInterface $response, string $content, string $name, array $issues = []): void
+    {
+        $http = $this->getHttpContext($method, $uri, $options, $response);
+
+        if (FailureClassifier::isMerchantAccountIssue($name, ...$issues)) {
+            $this->logger->critical(self::LOG_MESSAGE, Log::context(...$http, paypalError: $name, paypalIssues: $issues, code: LogCode::API_MERCHANT_ACCOUNT_REJECTED));
+        } else {
+            $this->logger->info(self::LOG_MESSAGE, Log::context(...$http, paypalError: $name, paypalIssues: $issues, code: LogCode::API_REQUEST_FAILED));
+        }
+
+        $this->logger->debug(self::LOG_MESSAGE, Log::context(
+            ...$http,
+            request: $this->getRequestBodyForLog($uri, $options),
+            response: $this->isTokenRequest($uri) ? LogRedactor::REDACTED : $content,
+        ));
+    }
+
+    /**
+     * @return array{httpMethod: string, httpPath: string, httpStatus: int, paypalDebugId: string, paypalRequestId: string|null}
+     */
+    private function getHttpContext(string $method, string $uri, array $options, ResponseInterface $response): array
+    {
+        return [
+            Log::HTTP_METHOD => \mb_strtoupper($method),
+            Log::HTTP_PATH => $this->getPath($uri),
+            Log::HTTP_STATUS => $response->getStatusCode(),
+            Log::PAYPAL_DEBUG_ID => $response->getHeaderLine('paypal-debug-id'),
+            Log::PAYPAL_REQUEST_ID => $this->getRequestId($options),
+        ];
+    }
+
+    private function getPath(string $uri): string
+    {
+        return \parse_url($uri, \PHP_URL_PATH) ?: $uri;
+    }
+
+    private function isTokenRequest(string $uri): bool
+    {
+        return \str_ends_with($this->getPath($uri), self::TOKEN_PATH_SUFFIX);
+    }
+
+    private function getRequestId(array $options): ?string
+    {
+        foreach ($options['headers'] ?? [] as $name => $value) {
+            if (\strcasecmp((string) $name, 'paypal-request-id') === 0) {
+                return \is_array($value) ? \implode(', ', $value) : (string) $value;
+            }
+        }
+
+        return null;
+    }
+
+    private function getRequestBodyForLog(string $uri, array $options): string
+    {
+        if ($this->isTokenRequest($uri)) {
+            return LogRedactor::REDACTED;
+        }
+
+        if (\array_key_exists('json', $options)) {
+            return \json_encode($options['json']) ?: '';
+        }
+
+        if (\array_key_exists('form_params', $options)) {
+            return \http_build_query($options['form_params']);
+        }
+
+        return (string) ($options['body'] ?? '');
     }
 }

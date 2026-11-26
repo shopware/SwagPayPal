@@ -23,6 +23,7 @@ use Swag\PayPal\RestApi\V2\Api\Common\Money;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -97,7 +98,7 @@ class ItemListProvider
         try {
             $item->setName($label);
         } catch (\LengthException $e) {
-            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $this->logger->debug('Shortened the item name of line item {lineItemId} to PayPal\'s maximum length', Log::context(lineItemId: $lineItem->getId()));
             $item->setName(\mb_substr($label, 0, Item::MAX_LENGTH_NAME));
         }
     }
@@ -114,7 +115,7 @@ class ItemListProvider
         try {
             $item->setSku($productNumber);
         } catch (\LengthException $e) {
-            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $this->logger->debug('Shortened the SKU of line item {lineItemId} to PayPal\'s maximum length', Log::context(lineItemId: $lineItem->getId()));
             $item->setSku(\mb_substr($productNumber, 0, Item::MAX_LENGTH_SKU));
         }
     }

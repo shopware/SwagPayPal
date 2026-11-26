@@ -22,6 +22,9 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Util\Log\FailureClassifier;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -72,8 +75,9 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     #[Route(path: '/store-api/paypal/express/prepare-checkout', name: 'store-api.paypal.express.prepare_checkout', methods: ['POST'])]
     public function prepareCheckout(SalesChannelContext $salesChannelContext, Request $request): ContextTokenResponse
     {
+        $paypalOrderId = null;
+
         try {
-            $this->logger->debug('Started', ['request' => $request->request->all()]);
             $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
 
             if (!\is_string($paypalOrderId)) {
@@ -86,7 +90,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             // Since a new customer was logged in, the context changed in the system,
             // but this doesn't effect the current context given as parameter.
             // Because of that a new context for the following operations is created
-            $this->logger->debug('Getting new context');
             $newSalesChannelContext = $this->salesChannelContextFactory->create(
                 $newContextToken,
                 $salesChannelContext->getSalesChannel()->getId()
@@ -100,12 +103,17 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             $cart->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);
 
             // The cart needs to be saved.
-            $this->logger->debug('Recalculating cart');
             $this->cartService->recalculate($cart, $newSalesChannelContext);
 
             return new ContextTokenResponse($cart->getToken());
         } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $paypalOrderId = \is_string($paypalOrderId) ? $paypalOrderId : null;
+
+            if (FailureClassifier::isCausedByBuyer($e)) {
+                $this->logger->notice('Could not continue the Express Checkout: {errorCode}', Log::context(code: LogCode::EXPRESS_PREPARATION_DECLINED, paypalOrderId: $paypalOrderId, exception: $e));
+            } else {
+                $this->logger->error('Could not continue the Express Checkout: {errorCode}, the buyer sees an error', Log::context(code: LogCode::EXPRESS_PREPARATION_FAILED, paypalOrderId: $paypalOrderId, exception: $e));
+            }
 
             throw $e;
         }

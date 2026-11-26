@@ -17,6 +17,7 @@ parameters:
         - tests
     excludePaths:
         - src/Resources
+        - tests/DevOps/StaticAnalyze/PHPStan/Rules/data
         # tag:v6.7.0 - does not fully understand overwrite multiple definitions of DefaultPayment
         - src/Pos/Payment/PosPayment.php
 
@@ -114,6 +115,12 @@ parameters:
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
           path: '**/*.php'
 
+        - # only the nullable return type is deprecated, the lines handle null; kept out of the files, so they match trunk's
+          message: '#Call to deprecated method getTechnicalName\(\) of class Shopware\\Core\\Checkout\\Payment\\PaymentMethodEntity#'
+          paths:
+              - src/Util/Log/Log.php
+              - src/Storefront/Controller/PayPalController.php
+
 services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
         class: Symplify\PHPStanRules\Rules\NoReturnSetterMethodRule
@@ -147,3 +154,6 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Symplify\NoReturnSetterMethodWithFluentSettersRule
     - Symplify\PHPStanRules\Rules\UppercaseConstantRule
     - Symplify\PHPStanRules\Rules\CheckClassNamespaceFollowPsr4Rule
+
+    # Plugin rules
+    - Swag\PayPal\DevOps\StaticAnalyze\PHPStan\Rules\LogCallRule

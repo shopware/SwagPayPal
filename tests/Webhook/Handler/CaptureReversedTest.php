@@ -64,7 +64,7 @@ class CaptureReversedTest extends AbstractWebhookHandlerTestCase
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->getContainer()->get(PaymentStatusUtilV2::class),
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger()), new NullLogger()),
         );
     }
 }

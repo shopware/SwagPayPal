@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
@@ -27,6 +27,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -36,6 +38,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 #[Package('checkout')]
 class ItemListProviderTest extends TestCase
 {
+    use PayPalLogTrait;
+
     public function testNestedLineItems(): void
     {
         $order = $this->createOrder('Test Product Name', 10);
@@ -145,6 +149,7 @@ class ItemListProviderTest extends TestCase
 
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn';
         static::assertSame($expectedItemName, $itemList->first()?->getName());
+        $this->assertPayPalLogged(null, Level::Debug, [Log::LINE_ITEM_ID => $order->getLineItems()?->first()?->getId()], 'Shortened the item name of line item {lineItemId} to PayPal\'s maximum length');
     }
 
     public function testLineItemLabelTooLongIsTruncatedWithPriceMismatch(): void
@@ -210,6 +215,7 @@ class ItemListProviderTest extends TestCase
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
         static::assertSame($expectedItemSku, $itemList->first()?->getSku());
+        $this->assertPayPalLogged(null, Level::Debug, [Log::LINE_ITEM_ID => $order->getLineItems()?->first()?->getId()], 'Shortened the SKU of line item {lineItemId} to PayPal\'s maximum length');
     }
 
     /**
@@ -263,7 +269,7 @@ class ItemListProviderTest extends TestCase
         return new ItemListProvider(
             new PriceFormatter(),
             $this->createMock(EventDispatcher::class),
-            new NullLogger()
+            $this->createPayPalLogger(),
         );
     }
 

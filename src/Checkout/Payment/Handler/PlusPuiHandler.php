@@ -29,6 +29,8 @@ use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
@@ -85,7 +87,6 @@ class PlusPuiHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer,
     ): RedirectResponse {
-        $this->logger->debug('Started');
         $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
         $paypalToken = $dataBag->get(self::PAYPAL_PAYMENT_TOKEN_INPUT_NAME);
         $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext(), $paypalToken);
@@ -119,9 +120,7 @@ class PlusPuiHandler
         string $payerId,
         string $partnerAttributionId,
     ): void {
-        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
-        $orderNumber = $transaction->getOrder()->getOrderNumber();
 
         try {
             $response = $this->paymentResource->execute(
@@ -139,7 +138,12 @@ class PlusPuiHandler
                 );
             }
 
-            $this->logger->warning('Duplicate order number {orderNumber} detected. Retrying payment without order number.', ['orderNumber' => $orderNumber]);
+            $this->logger->warning('PayPal already has a payment with the same invoice ID, retried without it', Log::context(
+                code: LogCode::CHECKOUT_INVOICE_ID_DUPLICATE,
+                exception: $e,
+                salesChannelId: $salesChannelId,
+                orderTransactionId: $transactionId,
+            ));
 
             try {
                 $this->paymentResource->patch(

@@ -7,8 +7,11 @@
 
 namespace Swag\PayPal\Test\Setting\Service;
 
+use Monolog\Level;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClient;
@@ -18,6 +21,7 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
@@ -26,6 +30,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -34,6 +39,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 #[Package('checkout')]
 class MerchantIntegrationsServiceTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private SystemConfigServiceMock $systemConfigService;
 
     private PayPalClientFactory&MockObject $clientFactory;
@@ -66,7 +73,7 @@ class MerchantIntegrationsServiceTest extends TestCase
 
     public function testGetInformationWithoutCredentials(): void
     {
-        $merchantIntegrationService = $this->createMerchantIntegrationService();
+        $merchantIntegrationService = $this->createMerchantIntegrationService($this->createPayPalLogger());
 
         $this->clientFactory
             ->method('getPayPalClient')
@@ -82,6 +89,8 @@ class MerchantIntegrationsServiceTest extends TestCase
 
         $integrations = $information->getMerchantIntegrations();
         static::assertNull($integrations);
+
+        $this->assertPayPalLogged(LogCode::SETTINGS_MERCHANT_INTEGRATIONS_UNAVAILABLE, Level::Warning);
     }
 
     public function testGetInformationWithoutMerchantId(): void
@@ -101,7 +110,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         static::assertNull($integrations);
     }
 
-    private function createMerchantIntegrationService(): MerchantIntegrationsService
+    private function createMerchantIntegrationService(LoggerInterface $logger = new NullLogger()): MerchantIntegrationsService
     {
         $this->systemConfigService = SystemConfigServiceMock::createWithCredentials();
         $this->clientFactory = $this->createMock(PayPalClientFactory::class);
@@ -144,6 +153,7 @@ class MerchantIntegrationsServiceTest extends TestCase
             new CredentialsUtil($this->systemConfigService),
             $dataRegistry,
             $this->clientFactory,
+            $logger,
         );
     }
 }

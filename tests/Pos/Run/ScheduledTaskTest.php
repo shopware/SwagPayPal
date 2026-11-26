@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Run;
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -49,7 +50,7 @@ class ScheduledTaskTest extends TestCase
         $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
         $completeTask = new CompleteTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class)), $runService);
 
-        $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $completeTask);
+        $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $completeTask);
 
         static::assertEmpty($runRepository->getCollection());
 
@@ -74,7 +75,7 @@ class ScheduledTaskTest extends TestCase
         $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
         $inventoryTask = new InventoryTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class)), $runService);
 
-        $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $inventoryTask);
+        $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $inventoryTask);
 
         static::assertEmpty($runRepository->getCollection());
 
@@ -107,7 +108,7 @@ class ScheduledTaskTest extends TestCase
         $runRepository->addMockEntity($runB);
         $logCleaner = new LogCleaner($runRepository);
 
-        $taskHandler = new CleanUpLogTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $logCleaner);
+        $taskHandler = new CleanUpLogTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $logCleaner);
 
         static::assertCount(2, $runRepository->getCollection());
 

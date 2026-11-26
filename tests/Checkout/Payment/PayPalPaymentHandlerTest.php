@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment;
 
+use Monolog\Level;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -57,6 +58,7 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
@@ -74,6 +76,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -88,6 +92,7 @@ class PayPalPaymentHandlerTest extends TestCase
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use PaymentTransactionTrait;
+    use PayPalLogTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
 
@@ -463,7 +468,12 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 A PayPal test error occurred.');
-        $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+
+        try {
+            $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+        } finally {
+            $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_FAILED, Level::Error, [Log::ORDER_TRANSACTION_ID => $transactionId]);
+        }
     }
 
     public function testPayWithInvalidSettingsException(): void
@@ -495,7 +505,12 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 Customer is not logged in.');
-        $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+
+        try {
+            $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+        } finally {
+            $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_DECLINED, Level::Notice, [Log::ORDER_TRANSACTION_ID => $transactionId]);
+        }
     }
 
     public function testPayWithoutApprovalURL(): void
@@ -602,17 +617,22 @@ No approve link provided by PayPal');
     {
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
-        $this->createPayPalPaymentHandler()->finalize(
-            $this->createPaymentTransactionStruct(
-                ConstantsForTesting::VALID_ORDER_ID,
-                'testTransactionId',
-                null,
-                $this->getContainer(),
-                Context::createDefaultContext()
-            ),
-            new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
-            Generator::createSalesChannelContext()
-        );
+
+        try {
+            $this->createPayPalPaymentHandler()->finalize(
+                $this->createPaymentTransactionStruct(
+                    ConstantsForTesting::VALID_ORDER_ID,
+                    'testTransactionId',
+                    null,
+                    $this->getContainer(),
+                    Context::createDefaultContext()
+                ),
+                new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
+                Generator::createSalesChannelContext()
+            );
+        } finally {
+            $this->assertPayPalLogged(LogCode::CHECKOUT_PAYMENT_CANCELLED, Level::Notice, [Log::ORDER_TRANSACTION_ID => 'testTransactionId']);
+        }
     }
 
     public function testFinalizePaymentNotCompleted(): void
@@ -746,9 +766,9 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
     ): PayPalPaymentHandler {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($this->clientFactory);
+        $orderResource = new OrderResource($this->clientFactory, new NullLogger());
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
-        $logger = new NullLogger();
+        $logger = $this->createPayPalLogger();
         /** @var EntityRepository&MockObject $orderTransactionRepositoryMock */
         $orderTransactionRepositoryMock = $this->createMock(EntityRepository::class);
         $paymentBuilder = $this->createPaymentBuilder($systemConfig);

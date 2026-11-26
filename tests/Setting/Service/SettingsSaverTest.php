@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\Test\Setting\Service;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\Service\SettingsSaver;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Util\Log\Log;
+use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 
 /**
@@ -23,6 +28,8 @@ use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 #[Package('checkout')]
 class SettingsSaverTest extends TestCase
 {
+    use PayPalLogTrait;
+
     private const VALID_LIVE_CREDENTIALS_1 = [
         Settings::CLIENT_ID => 'valid-client-id-1',
         Settings::CLIENT_SECRET => 'valid-client-secret-1',
@@ -64,7 +71,8 @@ class SettingsSaverTest extends TestCase
         $this->settingsSaver = new SettingsSaver(
             $this->systemConfigService,
             $this->apiCredentialService,
-            $this->webhookSystemConfigHelper
+            $this->webhookSystemConfigHelper,
+            new NullLogger(),
         );
     }
 
@@ -423,9 +431,71 @@ class SettingsSaverTest extends TestCase
             ->method('testApiCredentials')
             ->willThrowException(new \RuntimeException('error'));
 
-        $information = $this->settingsSaver->save($newSettings, $salesChannelId);
+        $information = $this->createSettingsSaver()->save($newSettings, $salesChannelId);
 
         static::assertTrue($information->getLiveCredentialsChanged());
         static::assertFalse($information->getLiveCredentialsValid());
+        $this->assertPayPalLogged(LogCode::SETTINGS_CREDENTIALS_UNVERIFIED, Level::Warning, [Log::SANDBOX => false]);
+    }
+
+    public function testSaveLogsChangedKeysWithoutValues(): void
+    {
+        $stored = [
+            Settings::BRAND_NAME => 'old-brand-secret-value',
+            Settings::INTENT => 'sale',
+        ];
+        $this->systemConfigService->method('get')->willReturnCallback(static fn (string $key) => $stored[$key] ?? null);
+        $this->systemConfigService->method('getBool')->willReturnCallback(static fn (string $key) => $key === Settings::SANDBOX);
+
+        $this->createSettingsSaver()->save([
+            Settings::BRAND_NAME => 'new-brand-secret-value',
+            Settings::INTENT => 'sale',
+        ], 'sales-channel-id');
+
+        $record = $this->assertPayPalLogged(
+            LogCode::SETTINGS_SAVED,
+            Level::Info,
+            [
+                Log::CHANGED_KEYS => 'brandName',
+                Log::SALES_CHANNEL_ID => 'sales-channel-id',
+                Log::SANDBOX => true,
+            ],
+            'Saved the PayPal settings, changed: {changedKeys}',
+        );
+        static::assertStringNotContainsString('secret-value', \json_encode($record->context, \JSON_THROW_ON_ERROR));
+    }
+
+    public function testSaveTreatsInheritedValuesAsChangedOnlyIfTheSalesChannelHadItsOwnValue(): void
+    {
+        // the sales channel inherits the brand name, but has its own intent
+        $this->systemConfigService->method('get')->willReturnCallback(static fn (string $key, ?string $salesChannelId = null) => match ($key) {
+            Settings::BRAND_NAME => 'global-brand',
+            Settings::INTENT => $salesChannelId === null ? 'CAPTURE' : 'AUTHORIZE',
+            default => null,
+        });
+
+        // the Administration sends null for every inherited value
+        $this->createSettingsSaver()->save([Settings::BRAND_NAME => null, Settings::INTENT => null], 'sales-channel-id');
+
+        $this->assertPayPalLogged(LogCode::SETTINGS_SAVED, Level::Info, [Log::CHANGED_KEYS => 'intent']);
+    }
+
+    public function testSaveLogsNothingWithoutChanges(): void
+    {
+        $this->systemConfigService->method('get')->willReturnCallback(static fn (string $key) => $key === Settings::BRAND_NAME ? 'brand' : null);
+
+        $this->createSettingsSaver()->save([Settings::BRAND_NAME => 'brand']);
+
+        static::assertSame([], $this->getPayPalLogRecords());
+    }
+
+    private function createSettingsSaver(): SettingsSaver
+    {
+        return new SettingsSaver(
+            $this->systemConfigService,
+            $this->apiCredentialService,
+            $this->webhookSystemConfigHelper,
+            $this->createPayPalLogger(),
+        );
     }
 }
