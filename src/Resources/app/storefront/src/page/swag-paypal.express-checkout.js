@@ -3,6 +3,10 @@ import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
+// Core emits `addToCartWithoutOffcanvas` instead of `openOffCanvasCart` if the offcanvas cart is disabled.
+const ADD_TO_CART_EVENTS = ['openOffCanvasCart', 'addToCartWithoutOffcanvas'];
+let addToCartCalls = 0;
+
 /**
  * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.express.*.ts`
  */
@@ -334,11 +338,17 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         const buyButton = DomAccess.querySelector(buyForm, this.options.buyButtonSelector);
         const plugin = window.PluginManager.getPluginInstanceFromElement(buyForm, 'AddToCart');
 
-        return new Promise(resolve => {
-            plugin.$emitter.subscribe('openOffCanvasCart', () => {
-                resolve();
-            });
+        // Unsubscribing removes every listener of an event name, so each call uses its own suffix.
+        addToCartCalls += 1;
+        const events = ADD_TO_CART_EVENTS.map((event) => `${event}.SwagPayPalExpress${addToCartCalls}`);
 
+        return new Promise((resolve) => {
+            const onAdded = () => {
+                events.forEach((event) => plugin.$emitter.unsubscribe(event));
+                resolve();
+            };
+
+            events.forEach((event) => plugin.$emitter.subscribe(event, onAdded));
             buyButton.click();
         });
     }

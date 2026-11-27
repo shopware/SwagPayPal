@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem das Fenster des PayPal Express Checkouts auf Produktdetail-, Listing- und Suchergebnisseiten leer blieb, wenn "Offcanvas-Warenkorb nach dem Hinzufügen eines Produkts öffnen" deaktiviert war (shopware/SwagPayPal#858)
 - Behebt ein Problem, bei dem eine abgebrochene Zahlung nicht als teilweise bezahlt markiert wurde, wenn danach ein Teilbetrag eingezogen wurde (shopware/SwagPayPal#841)
 - Behebt ein Problem, bei dem das Abbrechen der Autorisierung in der Administration eine bezahlte oder teilweise bezahlte Zahlung als abgebrochen markierte (shopware/SwagPayPal#841)
 - Behebt ein Problem, bei dem der Checkout dauerhaft lud und nicht abgeschlossen werden konnte, wenn das PayPal JS SDK v6 aktiviert war und ein Inhaltsblocker Anfragen an PayPal blockierte. Stattdessen wird eine Fehlermeldung angezeigt (shopware/shopware#23165)
