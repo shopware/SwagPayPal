@@ -260,7 +260,7 @@ class ExpressCallbackDiagnosticsTest extends TestCase
     public function testThrowsForAnUnknownSalesChannel(): void
     {
         $diagnostics = new ExpressCallbackDiagnostics(
-            new StaticEntityRepository([new SalesChannelCollection()]),
+            $this->createSalesChannelRepository(new SalesChannelCollection()),
             new StaticSystemConfigService(),
             $this->createPaymentMethodUtil(),
             new LastCallbackStorage(new KeyValueStorageMock(), new MockClock(), new NullLogger()),
@@ -274,6 +274,17 @@ class ExpressCallbackDiagnosticsTest extends TestCase
         $this->expectExceptionObject(SalesChannelException::salesChannelNotFound($this->salesChannelId));
 
         $diagnostics->check($this->salesChannelId, Context::createDefaultContext(), false);
+    }
+
+    /**
+     * @return StaticEntityRepository<SalesChannelCollection>
+     */
+    private function createSalesChannelRepository(SalesChannelCollection $salesChannels): StaticEntityRepository
+    {
+        /** @var StaticEntityRepository<SalesChannelCollection> $repository */
+        $repository = new StaticEntityRepository([$salesChannels]);
+
+        return $repository;
     }
 
     /**
@@ -309,7 +320,7 @@ class ExpressCallbackDiagnosticsTest extends TestCase
         }
 
         return new ExpressCallbackDiagnostics(
-            new StaticEntityRepository([new SalesChannelCollection([$salesChannel])]),
+            $this->createSalesChannelRepository(new SalesChannelCollection([$salesChannel])),
             new StaticSystemConfigService($settings),
             $this->createPaymentMethodUtil(),
             $storage,
