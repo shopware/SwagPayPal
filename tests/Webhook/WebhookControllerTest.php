@@ -247,6 +247,7 @@ class WebhookControllerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->lastWebhookStorage,
             new WebhookUrlBuilder($this->createMock(Router::class), new RequestStack(), ''),
+            new RequestStack(),
         );
 
         try {
