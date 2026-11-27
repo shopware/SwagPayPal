@@ -17,6 +17,7 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelException;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
@@ -598,8 +599,11 @@ class WebhookDiagnosticsTest extends TestCase
         $gateways->setCachedToken($contextFactory->getApiContext($this->salesChannelId));
         $gateway = new WebhookEventGateway($client, $gateways->tokenGateway(), new RequestService());
 
+        /** @var StaticEntityRepository<SalesChannelCollection> $salesChannelRepository */
+        $salesChannelRepository = new StaticEntityRepository(\array_fill(0, 10, $salesChannelExists ? [$this->salesChannelId] : []));
+
         return new WebhookDiagnostics(
-            new StaticEntityRepository(\array_fill(0, 10, $salesChannelExists ? [$this->salesChannelId] : [])),
+            $salesChannelRepository,
             $registrationChecker,
             new WebhookUrlBuilder($router ?? $this->createRouter('http', 8000), $requestStack, $appUrl),
             new StaticSystemConfigService($settings),
