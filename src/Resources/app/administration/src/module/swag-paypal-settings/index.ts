@@ -1,3 +1,5 @@
+Shopware.Component.register('swag-paypal-settings-diagnostics-item', () => import('./components/swag-paypal-settings-diagnostics-item'));
+Shopware.Component.register('swag-paypal-settings-diagnostics-section', () => import('./components/swag-paypal-settings-diagnostics-section'));
 Shopware.Component.register('swag-paypal-settings-icon', () => import('./components/swag-paypal-settings-icon'));
 Shopware.Component.register('swag-paypal-settings-locale-select', () => import('./components/swag-paypal-settings-locale-select'));
 Shopware.Component.register('swag-paypal-settings-sales-channel-switch', () => import('./components/swag-paypal-settings-sales-channel-switch'));

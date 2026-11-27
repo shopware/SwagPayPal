@@ -17,6 +17,7 @@ import type SwagPayPalPosWebhookRegisterService from './core/service/api/swag-pa
 import type SwagPayPalPosApiService from './core/service/api/swag-paypal-pos.api.service';
 import type SwagPayPalWebhookService from './core/service/api/swag-paypal-webhook.service';
 import type SwagPayPalSettingsService from './core/service/api/swag-paypal-settings.service';
+import type SwagPayPalDiagnosticsService from './core/service/api/swag-paypal-diagnostics.service';
 import type { MerchantInformationStore } from './app/store/swag-paypal-merchant-information.store';
 import type { SettingsStore } from './app/store/swag-paypal-settings.store';
 import type { I18n } from 'vue-i18n';
@@ -47,6 +48,7 @@ declare global {
         SwagPaypalPaymentMethodService: SwagPaypalPaymentMethodService;
         SwagPayPalDisputeApiService: SwagPayPalDisputeApiService;
         SwagPayPalSettingsService: SwagPayPalSettingsService;
+        SwagPayPalDiagnosticsService: SwagPayPalDiagnosticsService;
     }
 
     interface PiniaRootState {

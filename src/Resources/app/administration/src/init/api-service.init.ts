@@ -7,6 +7,7 @@ import SwagPayPalOrderService from '../core/service/api/swag-paypal-order.servic
 import SwagPaypalPaymentMethodService from '../core/service/api/swag-paypal-payment-method.service';
 import SwagPayPalDisputeApiService from '../core/service/api/swag-paypal-dispute.api.service';
 import SwagPayPalSettingsService from '../core/service/api/swag-paypal-settings.service';
+import SwagPayPalDiagnosticsService from '../core/service/api/swag-paypal-diagnostics.service';
 import SwagPayPalHoneyWebhookService from "SwagPayPal/core/service/api/swag-paypal-honey-webhook.service";
 
 const { Application } = Shopware;
@@ -60,4 +61,9 @@ Application.addServiceProvider(
 Application.addServiceProvider(
     'SwagPayPalSettingsService',
     (container) => new SwagPayPalSettingsService(initContainer.httpClient, container.loginService),
+);
+
+Application.addServiceProvider(
+    'SwagPayPalDiagnosticsService',
+    (container) => new SwagPayPalDiagnosticsService(initContainer.httpClient, container.loginService),
 );

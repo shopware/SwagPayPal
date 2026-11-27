@@ -100,6 +100,7 @@ class GenerateOpenApi extends Command
         $openApi = $generator->generate([
             self::ROOT_DIR . '/src/RestApi',
             self::ROOT_DIR . '/src/Administration',
+            self::ROOT_DIR . '/src/Diagnostics',
             self::ROOT_DIR . '/src/Dispute',
             self::ROOT_DIR . '/src/OrdersApi',
             self::ROOT_DIR . '/src/PaymentsApi',

@@ -144,6 +144,16 @@
       "bannerText": "Aktiviere das neueste PayPal SDK v6 für verbesserte Leistung und Sicherheit in Deinem Shop.",
       "ineligible": "Das PayPal SDK v6 ist für dein PayPal-Konto noch nicht aktiviert. Du kannst es in deinem PayPal-Händlerkonto aktivieren.",
       "undetermined": "Es konnte nicht ermittelt werden, ob das PayPal SDK v6 für dein PayPal-Konto aktiviert ist. Bitte stelle sicher, dass deine API-Zugangsdaten gültig sind und PayPal erreichbar ist."
+    },
+    "diagnostics": {
+      "status": {
+        "error": "Fehler",
+        "warning": "Warnung",
+        "info": "Info",
+        "passed": "Bestanden",
+        "not-observed": "Nicht beobachtet"
+      },
+      "sectionActivity": "Konfiguration & Aktivität"
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

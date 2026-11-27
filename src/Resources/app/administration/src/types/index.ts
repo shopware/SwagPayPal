@@ -21,6 +21,8 @@ export type V3<T extends PartialKey<keyof components['schemas'], 'paypal_v3_'>> 
 
 export type Setting<T extends PartialKey<keyof components['schemas'], 'swag_paypal_setting_'>> = components['schemas'][`swag_paypal_setting_${T}`];
 
+export type Diagnostics<T extends PartialKey<keyof components['schemas'], 'swag_paypal_diagnostics_'>> = components['schemas'][`swag_paypal_diagnostics_${T}`];
+
 export namespace Api {
     export type Operations<T extends keyof operations> =
         // Does the operation have a 200 response?

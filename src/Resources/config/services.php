@@ -18,6 +18,7 @@ return static function (ContainerBuilder $container): void {
     $loader->load('checkout.php');
     $loader->load('dal.php');
     $loader->load('dev_ops.php');
+    $loader->load('diagnostics.php');
     $loader->load('dispute.php');
     $loader->load('document.php');
     $loader->load('express_checkout.php');
