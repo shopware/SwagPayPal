@@ -19,4 +19,9 @@ enum WebhookRegistrationStatus: string
     case Invalid = 'invalid';
     case Missing = 'missing';
     case Disabled = 'disabled';
+
+    /**
+     * Only the diagnostics use it, the {@see WebhookRegistrationChecker} throws instead.
+     */
+    case Unknown = 'unknown';
 }

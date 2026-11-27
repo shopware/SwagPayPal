@@ -33,7 +33,7 @@ function createResult(result: Partial<ReachabilityResult> = {}): ReachabilityRes
 
 async function createWrapper(
     props: Record<string, unknown> = {},
-    service: { callback?: () => Promise<ReachabilityResult[]> } = {},
+    service: { callback?: () => Promise<ReachabilityResult[]>; webhook?: () => Promise<ReachabilityResult[]> } = {},
 ) {
     return mount(
         await Shopware.Component.build('swag-paypal-settings-diagnostics-reachability') as typeof SwagPayPalSettingsDiagnosticsReachability,
@@ -47,6 +47,7 @@ async function createWrapper(
                 provide: {
                     SwagPayPalDiagnosticsService: {
                         expressCallbackReachability: jest.fn(service.callback ?? (() => Promise.resolve([]))),
+                        webhookReachability: jest.fn(service.webhook ?? (() => Promise.resolve([]))),
                     },
                 },
             },
@@ -60,6 +61,7 @@ describe('swag-paypal-settings-diagnostics-reachability', () => {
         const wrapper = await createWrapper({}, { callback: () => new Promise((resolve) => { finish = resolve; }) });
 
         expect(wrapper.vm.SwagPayPalDiagnosticsService.expressCallbackReachability).toHaveBeenCalledWith(SALES_CHANNEL_ID);
+        expect(wrapper.vm.SwagPayPalDiagnosticsService.webhookReachability).not.toHaveBeenCalled();
         expect(wrapper.find(`${BLOCK}__testing`).exists()).toBe(true);
         expect(wrapper.text()).toContain('swag-paypal-settings.diagnostics.reachability.title');
         expect(wrapper.text()).toContain('swag-paypal-settings.diagnostics.reachability.description');
@@ -70,6 +72,14 @@ describe('swag-paypal-settings-diagnostics-reachability', () => {
 
         expect(wrapper.find(`${BLOCK}__testing`).exists()).toBe(false);
         expect(wrapper.emitted('busy-change')).toEqual([[true], [false]]);
+    });
+
+    it('should test the webhook URLs for the webhook subject', async () => {
+        const wrapper = await createWrapper({ subject: 'webhook' });
+        await flushPromises();
+
+        expect(wrapper.vm.SwagPayPalDiagnosticsService.webhookReachability).toHaveBeenCalledWith(SALES_CHANNEL_ID);
+        expect(wrapper.vm.SwagPayPalDiagnosticsService.expressCallbackReachability).not.toHaveBeenCalled();
     });
 
     it('should test each Sales Channel once', async () => {
@@ -136,6 +146,19 @@ describe('swag-paypal-settings-diagnostics-reachability', () => {
         expect(wrapper.find(`${BLOCK}__results-summary`).text())
             .toContain('swag-paypal-settings.diagnostics.reachability.viewResults');
         expect(wrapper.find(`${BLOCK}__results`).attributes('open')).toBeUndefined();
+    });
+
+    it('should name the webhook in the summary of a webhook', async () => {
+        const results = [createResult({ error: 'timeout', severity: 'warning' })];
+        const wrapper = await createWrapper({ subject: 'webhook' }, { webhook: () => Promise.resolve(results) });
+        await flushPromises();
+
+        const summary = wrapper.find(`${BLOCK}__summary`);
+        expect(itemStatus(summary.classes())).toBe('swag-paypal-settings-diagnostics-item--warning');
+        expect(summary.find('.swag-paypal-settings-diagnostics-item__title').text())
+            .toBe('swag-paypal-settings.diagnostics.reachability.summary.webhook.warning');
+        expect(summary.element.tagName).toBe('DETAILS');
+        expect(summary.text()).toContain('swag-paypal-settings.diagnostics.reachability.summary.action.warning');
     });
 
     it('should pass when every endpoint is reachable', async () => {

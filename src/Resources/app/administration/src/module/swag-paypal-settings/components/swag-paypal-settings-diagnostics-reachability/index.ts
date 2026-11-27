@@ -39,7 +39,7 @@ export default Shopware.Component.wrapComponentConfig({
         },
 
         subject: {
-            type: String as PropType<'callback'>,
+            type: String as PropType<'callback' | 'webhook'>,
             required: true,
         },
     },
@@ -114,7 +114,9 @@ export default Shopware.Component.wrapComponentConfig({
             this.tests[salesChannelId] = { status: 'testing' };
 
             try {
-                const results = await this.SwagPayPalDiagnosticsService.expressCallbackReachability(salesChannelId);
+                const results = this.subject === 'callback'
+                    ? await this.SwagPayPalDiagnosticsService.expressCallbackReachability(salesChannelId)
+                    : await this.SwagPayPalDiagnosticsService.webhookReachability(salesChannelId);
 
                 this.tests[salesChannelId] = { status: 'done', results };
             } catch (errorResponse) {

@@ -10,6 +10,8 @@ namespace Swag\PayPal\Util\Lifecycle\Installer;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Diagnostics\ExpressCallback\Recording\LastCallbackStorage;
+use Swag\PayPal\Diagnostics\Webhook\Recording\LastWebhookStorage;
+use Swag\PayPal\Diagnostics\Webhook\Recording\TestWebhookStorage;
 
 /**
  * @internal
@@ -26,7 +28,7 @@ class DiagnosticsInstaller
 
     public function removeDiagnosticsData(): void
     {
-        foreach ([LastCallbackStorage::KEY_PREFIX] as $prefix) {
+        foreach ([LastCallbackStorage::KEY_PREFIX, LastWebhookStorage::KEY_PREFIX, TestWebhookStorage::KEY_PREFIX] as $prefix) {
             $this->connection->executeStatement(
                 'DELETE FROM `app_config` WHERE `key` LIKE :prefix',
                 ['prefix' => \addcslashes($prefix, '%_') . '%'],

@@ -3,6 +3,7 @@ Shopware.Component.register('swag-paypal-settings-diagnostics-item', () => impor
 Shopware.Component.register('swag-paypal-settings-diagnostics-reachability', () => import('./components/swag-paypal-settings-diagnostics-reachability'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-section', () => import('./components/swag-paypal-settings-diagnostics-section'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-twig', () => import('./components/swag-paypal-settings-diagnostics-twig'));
+Shopware.Component.register('swag-paypal-settings-diagnostics-webhook', () => import('./components/swag-paypal-settings-diagnostics-webhook'));
 Shopware.Component.register('swag-paypal-settings-icon', () => import('./components/swag-paypal-settings-icon'));
 Shopware.Component.register('swag-paypal-settings-locale-select', () => import('./components/swag-paypal-settings-locale-select'));
 Shopware.Component.register('swag-paypal-settings-sales-channel-switch', () => import('./components/swag-paypal-settings-sales-channel-switch'));

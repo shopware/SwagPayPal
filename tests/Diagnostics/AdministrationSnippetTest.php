@@ -15,6 +15,7 @@ use Swag\PayPal\Diagnostics\ExpressCallback\ExpressCallbackStatus;
 use Swag\PayPal\Diagnostics\Reachability\ReachabilityError;
 use Swag\PayPal\Diagnostics\Twig\Override\TemplateOverrideType;
 use Swag\PayPal\Diagnostics\Twig\TemplateArea;
+use Swag\PayPal\Diagnostics\Webhook\WebhookFindingType;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -90,6 +91,12 @@ class AdministrationSnippetTest extends TestCase
         $reachable = $snippets['swag-paypal-settings']['diagnostics']['reachability']['reachable'] ?? null;
         static::assertIsArray($reachable);
         static::assertSame(['title'], \array_keys($reachable));
+    }
+
+    #[DataProvider('languageProvider')]
+    public function testEveryWebhookFindingHasATitleAndSummary(string $language): void
+    {
+        $this->assertTitleAnd($this->getSnippets($language, 'webhook', 'findings'), WebhookFindingType::cases(), 'summary');
     }
 
     public static function languageProvider(): \Generator

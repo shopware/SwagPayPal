@@ -204,6 +204,78 @@
           }
         }
       },
+      "webhook": {
+        "title": "Webhooks",
+        "subtitle": "PayPal tells this shop about payment changes, for example completed captures or refunds.",
+        "buttonCheck": "Check again",
+        "buttonTest": "Send test webhook",
+        "selectSalesChannel": "Select a Sales Channel to check its webhook.",
+        "failed": "The webhook couldn't be checked.",
+        "errorMessage": "The webhook couldn't be checked:<br>{message}",
+        "test": {
+          "waiting": "Waiting for PayPal's test webhook…",
+          "arrived": {
+            "title": "Test webhook arrived",
+            "subtitle": "{url}, after {seconds} s"
+          },
+          "missing": {
+            "title": "Test webhook didn't arrive",
+            "description": "PayPal sent a test webhook to the registered URL, but it didn't arrive within a minute. PayPal only sends test webhooks to HTTPS URLs on port 443, and the shop rejects webhooks with an outdated token. The reachability test below shows whether the URL answers.",
+            "descriptionCandidate": "PayPal sent a test webhook to this URL, but it didn't arrive within a minute. If you register it, webhooks won't arrive there either. PayPal only sends webhooks to HTTPS URLs on port 443."
+          },
+          "failed": "PayPal couldn't send a test webhook.",
+          "errorMessage": "PayPal couldn't send a test webhook:<br>{message}"
+        },
+        "disabled": {
+          "title": "Local development environment is on",
+          "summary": "Payment changes only arrive with the hourly status sync. Turn it off in the {advancedTab} of a live shop."
+        },
+        "registered": {
+          "title": "Webhook registered for this shop"
+        },
+        "labelRegisteredUrl": "Registered URL",
+        "labelAdministrationUrl": "Administration URL",
+        "labelAppUrl": "Shop URL (APP_URL)",
+        "lastWebhook": {
+          "title": "Last webhook received: {date}"
+        },
+        "noWebhook": {
+          "title": "No webhook received yet",
+          "summary": "PayPal sends one when a payment changes. Webhooks from before the update to this version aren't recorded."
+        },
+        "findings": {
+          "registration_missing": {
+            "title": "No webhook registered",
+            "summary": "Payment changes only arrive with the hourly status sync. Register the webhook in the {advancedTab}."
+          },
+          "registration_invalid": {
+            "title": "Webhook registered for another URL",
+            "summary": "PayPal sends the webhooks elsewhere, for example to a staging system or an old shop URL.",
+            "description": "Send a test webhook first, then register the right URL in the {advancedTab}."
+          },
+          "registration_outdated": {
+            "title": "Webhook registered with an outdated token",
+            "summary": "PayPal has the right URL, but not the current token.",
+            "description": "Refresh the webhook in the {advancedTab} to register the current token."
+          },
+          "registration_unknown": {
+            "title": "Registration couldn't be checked",
+            "summary": "PayPal couldn't be asked, for example because the API credentials in the General tab are missing or invalid."
+          },
+          "last_webhook_failed": {
+            "title": "Last webhook failed",
+            "summary": "The shop couldn't process the webhook from {date}. The log below has the details."
+          },
+          "unknown_transaction": {
+            "title": "Webhook for an unknown payment",
+            "summary": "Usually another shop or a staging system uses the same PayPal credentials. Give each system its own credentials."
+          },
+          "missed_events": {
+            "title": "Webhooks didn't arrive",
+            "summary": "{count} event since the last webhook: {eventType} on {date}. PayPal retries for 3 days. | {count} events since the last webhook, the newest {eventType} on {date}. PayPal retries for 3 days."
+          }
+        }
+      },
       "reachability": {
         "title": "Reachability",
         "description": "Sends a test request to the URLs PayPal calls, like PayPal does. It runs from this server, so a pass means the URL answers here, not that PayPal gets through.",

@@ -17,6 +17,9 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Swag\PayPal\Diagnostics\Reachability\ReachabilityProbe;
+use Swag\PayPal\Diagnostics\Webhook\Recording\LastWebhookStorage;
+use Swag\PayPal\Diagnostics\Webhook\Recording\WebhookOutcome;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Log\Log;
@@ -26,6 +29,7 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionInvalidIdException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
+use Swag\PayPal\Webhook\Exception\WebhookRejectedException;
 use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Swag\PayPal\Webhook\Registration\WebhookUrlSource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -47,6 +51,7 @@ class WebhookController extends AbstractController
         private readonly LoggerInterface $logger,
         private readonly WebhookServiceInterface $webhookService,
         private readonly EntityRepository $systemConfigRepository,
+        private readonly LastWebhookStorage $lastWebhookStorage,
         private readonly WebhookUrlBuilder $urlBuilder,
         private readonly RequestStack $requestStack,
     ) {
@@ -183,6 +188,11 @@ class WebhookController extends AbstractController
     #[Route(path: '/api/_action/paypal/webhook/execute', name: 'api.action.paypal.webhook.execute', methods: ['POST'], defaults: ['auth_required' => false])]
     public function executeWebhook(Request $request, Context $context): Response
     {
+        // answers before anything is executed
+        if (ReachabilityProbe::isProbe($request)) {
+            return ReachabilityProbe::answer(new Response(status: Response::HTTP_NO_CONTENT));
+        }
+
         $token = $request->query->getAlnum(WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME);
         if (!$this->validateShopwareToken($token, $context)) {
             if ($id = $request->request->get('id')) {
@@ -201,10 +211,19 @@ class WebhookController extends AbstractController
 
         try {
             $this->tryToExecuteWebhook($context, $webhook);
-        } catch (BadRequestHttpException $e) {
+        } catch (WebhookRejectedException $e) {
+            $this->lastWebhookStorage->record($token, $this->getEventType($webhook), $e->outcome, $this->getEventId($webhook));
+
             // errors are already logged, no need to throw this exception
             return new Response($e->getMessage(), $e->getStatusCode());
         }
+
+        $this->lastWebhookStorage->record(
+            $token,
+            $this->getEventType($webhook),
+            WebhookOutcome::Handled,
+            $this->getEventId($webhook),
+        );
 
         return new Response();
     }
@@ -229,7 +248,7 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @throws BadRequestHttpException
+     * @throws WebhookRejectedException
      * @throws PayPalApiException
      */
     protected function tryToExecuteWebhook(Context $context, Event $webhook): void
@@ -256,14 +275,14 @@ class WebhookController extends AbstractController
                 Log::context(...$logContext, code: LogCode::WEBHOOK_TRANSACTION_UNKNOWN, exception: $webhookException),
             );
 
-            throw new BadRequestHttpException('An error occurred during execution of webhook');
+            throw new WebhookRejectedException(WebhookOutcome::UnknownTransaction, $webhookException);
         } catch (WebhookException $webhookException) {
             $this->logger->error(
                 'Could not process PayPal webhook event {webhookEventType}: the event lacks the data the plugin needs',
                 Log::context(...$logContext, code: LogCode::WEBHOOK_EVENT_INVALID, exception: $webhookException),
             );
 
-            throw new BadRequestHttpException('An error occurred during execution of webhook');
+            throw new WebhookRejectedException(WebhookOutcome::Failed, $webhookException);
         } catch (\Exception $e) {
             if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
                 $this->logger->warning(
@@ -279,7 +298,7 @@ class WebhookController extends AbstractController
                 Log::context(...$logContext, code: LogCode::WEBHOOK_EVENT_FAILED, exception: $e),
             );
 
-            throw new BadRequestHttpException('An error occurred during execution of webhook');
+            throw new WebhookRejectedException(WebhookOutcome::Failed, $e);
         }
     }
 
@@ -300,6 +319,17 @@ class WebhookController extends AbstractController
         }
 
         return $sources;
+    }
+
+    private function getEventType(Event $webhook): string
+    {
+        // The payload may lack an event type
+        return $webhook->isset('eventType') ? $webhook->getEventType() : '';
+    }
+
+    private function getEventId(Event $webhook): string
+    {
+        return $webhook->isset('id') ? $webhook->getId() : '';
     }
 
     private function validateShopwareToken(string $token, Context $context): bool

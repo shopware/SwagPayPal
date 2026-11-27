@@ -9,9 +9,12 @@ use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\Adapter\Storage\AbstractKeyValueStorage;
 use Shopware\Core\Framework\Adapter\Twig\NamespaceHierarchy\BundleHierarchyBuilder;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
+use Shopware\PayPalSDK\Contract\RequestServiceInterface;
 use Shopware\Storefront\Theme\Twig\ThemeInheritanceBuilderInterface;
 use Swag\PayPal\Diagnostics\Administration\ExpressCallbackDiagnosticsController;
 use Swag\PayPal\Diagnostics\Administration\TwigDiagnosticsController;
+use Swag\PayPal\Diagnostics\Administration\WebhookDiagnosticsController;
 use Swag\PayPal\Diagnostics\ExpressCallback\CallbackUrlBuilder;
 use Swag\PayPal\Diagnostics\ExpressCallback\ExpressCallbackDiagnostics;
 use Swag\PayPal\Diagnostics\ExpressCallback\Recording\LastCallbackStorage;
@@ -24,8 +27,16 @@ use Swag\PayPal\Diagnostics\Twig\Inheritance\TemplateChainLoader;
 use Swag\PayPal\Diagnostics\Twig\Override\TemplateOverrideAnalyzer;
 use Swag\PayPal\Diagnostics\Twig\Parser\TwigTemplateParser;
 use Swag\PayPal\Diagnostics\Twig\TwigDiagnostics;
+use Swag\PayPal\Diagnostics\Webhook\Api\WebhookEventGateway;
+use Swag\PayPal\Diagnostics\Webhook\MissedEventsChecker;
+use Swag\PayPal\Diagnostics\Webhook\Recording\LastWebhookStorage;
+use Swag\PayPal\Diagnostics\Webhook\Recording\TestWebhookStorage;
+use Swag\PayPal\Diagnostics\Webhook\WebhookDiagnostics;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Swag\PayPal\Webhook\Registration\WebhookRegistrationChecker;
+use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -78,6 +89,59 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ]);
 
     $services->set(StoreApiUrlStorage::class)
+        ->args([
+            service(AbstractKeyValueStorage::class),
+            service('monolog.logger.paypal'),
+        ]);
+
+    // Webhook
+    $services->set(WebhookDiagnosticsController::class)
+        ->public()
+        ->args([
+            service(WebhookDiagnostics::class),
+        ])
+        ->call('setContainer', [service('service_container')]);
+
+    $services->set(WebhookDiagnostics::class)
+        ->args([
+            service('sales_channel.repository'),
+            service(WebhookRegistrationChecker::class),
+            service(WebhookUrlBuilder::class),
+            service(SystemConfigService::class),
+            service(LastWebhookStorage::class),
+            service(TestWebhookStorage::class),
+            service(ReachabilityProbe::class),
+            service('monolog.logger.paypal'),
+            service(ApiContextFactoryInterface::class),
+            service(WebhookEventGateway::class),
+            service(ClockInterface::class),
+            service(MissedEventsChecker::class),
+        ]);
+
+    $services->set(MissedEventsChecker::class)
+        ->args([
+            service(WebhookEventGateway::class),
+            service(ApiContextFactoryInterface::class),
+            service(ClockInterface::class),
+            service('monolog.logger.paypal'),
+        ]);
+
+    $services->set(WebhookEventGateway::class)
+        ->args([
+            service('paypal-sdk.client'),
+            service(TokenGatewayInterface::class),
+            service(RequestServiceInterface::class),
+        ]);
+
+    $services->set(LastWebhookStorage::class)
+        ->args([
+            service(AbstractKeyValueStorage::class),
+            service(ClockInterface::class),
+            service('monolog.logger.paypal'),
+            service(TestWebhookStorage::class),
+        ]);
+
+    $services->set(TestWebhookStorage::class)
         ->args([
             service(AbstractKeyValueStorage::class),
             service('monolog.logger.paypal'),

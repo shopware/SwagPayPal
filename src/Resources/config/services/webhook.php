@@ -11,6 +11,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
+use Swag\PayPal\Diagnostics\Webhook\Recording\LastWebhookStorage;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -49,6 +50,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service('monolog.logger.paypal'),
             service(WebhookService::class),
             service('system_config.repository'),
+            service(LastWebhookStorage::class),
             service(WebhookUrlBuilder::class),
             service('request_stack'),
         ])
