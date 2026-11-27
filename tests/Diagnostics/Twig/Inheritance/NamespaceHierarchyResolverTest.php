@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Adapter\Twig\NamespaceHierarchy\BundleHierarchyBuilder;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -49,7 +50,7 @@ class NamespaceHierarchyResolverTest extends TestCase
 
     public function testThrowsForUnknownSalesChannels(): void
     {
-        $resolver = $this->createResolver(new SalesChannelCollection(), new StaticEntityRepository([]));
+        $resolver = $this->createResolver(new SalesChannelCollection(), $this->themeRepository([]));
 
         $this->expectExceptionObject(SalesChannelException::salesChannelNotFound(TestDefaults::SALES_CHANNEL));
 
@@ -60,7 +61,7 @@ class NamespaceHierarchyResolverTest extends TestCase
     {
         $resolver = $this->createResolver(
             new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_API)]),
-            new StaticEntityRepository([]),
+            $this->themeRepository([]),
         );
 
         static::assertNull($resolver->resolveForStorefront(TestDefaults::SALES_CHANNEL, Context::createDefaultContext()));
@@ -69,7 +70,7 @@ class NamespaceHierarchyResolverTest extends TestCase
     public function testNoHierarchyWithoutTheStorefrontBundle(): void
     {
         $resolver = new NamespaceHierarchyResolver(
-            StaticEntityRepository::of(SalesChannelCollection::class),
+            $this->salesChannelRepository(),
             null,
             $this->bundleHierarchyBuilder,
             null,
@@ -84,7 +85,7 @@ class NamespaceHierarchyResolverTest extends TestCase
 
         $resolver = $this->createResolver(
             new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_STOREFRONT)]),
-            new StaticEntityRepository([new ThemeCollection()]),
+            $this->themeRepository([new ThemeCollection()]),
         );
 
         static::assertSame(['MyTheme', 'SwagPayPal', 'Storefront'], $resolver->resolveForStorefront(TestDefaults::SALES_CHANNEL, Context::createDefaultContext()));
@@ -97,14 +98,15 @@ class NamespaceHierarchyResolverTest extends TestCase
             ->with(self::BUNDLES, ['MyTheme' => true, 'Storefront' => true])
             ->willReturn(['SwagPayPal' => 0, 'MyTheme' => 0, 'Storefront' => 0]);
 
-        $themeRepository = new StaticEntityRepository([new ThemeCollection([$this->theme(technicalName: 'MyTheme')])]);
+        $searchedCriteria = [];
+        $themeRepository = $this->themeRepository([new ThemeCollection([$this->theme(technicalName: 'MyTheme')])], $searchedCriteria);
         $resolver = $this->createResolver(
             new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_STOREFRONT)]),
             $themeRepository,
         );
 
         static::assertSame(['SwagPayPal', 'MyTheme', 'Storefront'], $resolver->resolveForStorefront(TestDefaults::SALES_CHANNEL, Context::createDefaultContext()));
-        static::assertEquals([new EqualsFilter('salesChannels.id', TestDefaults::SALES_CHANNEL)], $themeRepository->searchedCriteria[0]->getFilters());
+        static::assertEquals([new EqualsFilter('salesChannels.id', TestDefaults::SALES_CHANNEL)], $searchedCriteria[0]->getFilters());
     }
 
     public function testThemeCopyUsesTheTemplatesOfTheThemeItWasCopiedFrom(): void
@@ -115,17 +117,18 @@ class NamespaceHierarchyResolverTest extends TestCase
             ->willReturn(self::BUNDLES);
 
         $original = $this->theme(technicalName: 'MyTheme');
-        $themeRepository = new StaticEntityRepository([
+        $searchedCriteria = [];
+        $themeRepository = $this->themeRepository([
             new ThemeCollection([$this->theme(parentThemeId: $original->getId())]),
             new ThemeCollection([$original]),
-        ]);
+        ], $searchedCriteria);
 
         $this->createResolver(
             new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_STOREFRONT)]),
             $themeRepository,
         )->resolveForStorefront(TestDefaults::SALES_CHANNEL, Context::createDefaultContext());
 
-        static::assertSame([$original->getId()], $themeRepository->searchedCriteria[1]->getIds());
+        static::assertSame([$original->getId()], $searchedCriteria[1]->getIds());
     }
 
     public function testDocumentsOfHeadlessSalesChannelsUseTheStorefrontTheme(): void
@@ -137,7 +140,7 @@ class NamespaceHierarchyResolverTest extends TestCase
 
         $resolver = $this->createResolver(
             new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_API)]),
-            new StaticEntityRepository([new ThemeCollection()]),
+            $this->themeRepository([new ThemeCollection()]),
         );
 
         static::assertSame(['SwagPayPal', 'MyTheme', 'Storefront'], $resolver->resolveForDocuments(TestDefaults::SALES_CHANNEL, Context::createDefaultContext()));
@@ -152,7 +155,7 @@ class NamespaceHierarchyResolverTest extends TestCase
 
         $resolver = $this->createResolver(
             new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_STOREFRONT)]),
-            new StaticEntityRepository([new ThemeCollection([$this->theme(technicalName: 'MyTheme')])]),
+            $this->themeRepository([new ThemeCollection([$this->theme(technicalName: 'MyTheme')])]),
         );
 
         $resolver->resolveForDocuments(TestDefaults::SALES_CHANNEL, Context::createDefaultContext());
@@ -161,7 +164,7 @@ class NamespaceHierarchyResolverTest extends TestCase
     public function testDocumentsKeepTheBundleOrderWithoutTheStorefrontBundle(): void
     {
         $resolver = new NamespaceHierarchyResolver(
-            new StaticEntityRepository([new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_API)])]),
+            $this->salesChannelRepository(new SalesChannelCollection([$this->salesChannel(Defaults::SALES_CHANNEL_TYPE_API)])),
             null,
             $this->bundleHierarchyBuilder,
             null,
@@ -172,7 +175,7 @@ class NamespaceHierarchyResolverTest extends TestCase
 
     public function testDocumentsThrowForUnknownSalesChannels(): void
     {
-        $resolver = $this->createResolver(new SalesChannelCollection(), new StaticEntityRepository([]));
+        $resolver = $this->createResolver(new SalesChannelCollection(), $this->themeRepository([]));
 
         $this->expectExceptionObject(SalesChannelException::salesChannelNotFound(TestDefaults::SALES_CHANNEL));
 
@@ -185,11 +188,45 @@ class NamespaceHierarchyResolverTest extends TestCase
     private function createResolver(SalesChannelCollection $salesChannels, StaticEntityRepository $themeRepository): NamespaceHierarchyResolver
     {
         return new NamespaceHierarchyResolver(
-            new StaticEntityRepository([$salesChannels]),
+            $this->salesChannelRepository($salesChannels),
             $themeRepository,
             $this->bundleHierarchyBuilder,
             $this->themeInheritanceBuilder,
         );
+    }
+
+    /**
+     * @return StaticEntityRepository<SalesChannelCollection>
+     */
+    private function salesChannelRepository(SalesChannelCollection ...$searches): StaticEntityRepository
+    {
+        /** @var StaticEntityRepository<SalesChannelCollection> $repository */
+        $repository = new StaticEntityRepository(\array_values($searches));
+
+        return $repository;
+    }
+
+    /**
+     * @param list<ThemeCollection> $searches
+     * @param list<Criteria> $searchedCriteria
+     *
+     * @return StaticEntityRepository<ThemeCollection>
+     */
+    private function themeRepository(array $searches, array &$searchedCriteria = []): StaticEntityRepository
+    {
+        /** @var StaticEntityRepository<ThemeCollection> $repository */
+        $repository = new StaticEntityRepository(\array_map(
+            static function (ThemeCollection $themes) use (&$searchedCriteria): callable {
+                return static function (Criteria $criteria) use ($themes, &$searchedCriteria): ThemeCollection {
+                    $searchedCriteria[] = $criteria;
+
+                    return $themes;
+                };
+            },
+            $searches,
+        ));
+
+        return $repository;
     }
 
     private function salesChannel(string $typeId): SalesChannelEntity
