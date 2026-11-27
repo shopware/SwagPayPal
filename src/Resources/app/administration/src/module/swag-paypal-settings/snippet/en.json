@@ -146,6 +146,102 @@
       "undetermined": "Could not determine whether the PayPal SDK v6 is activated for your PayPal account. Please make sure that your API credentials are valid and that PayPal can be reached."
     },
     "diagnostics": {
+      "reachability": {
+        "title": "Reachability",
+        "description": "Sends a test request to the URLs PayPal calls, like PayPal does. It runs from this server, so a pass means the URL answers here, not that PayPal gets through.",
+        "failed": "The reachability couldn't be tested.",
+        "errorMessage": "The reachability couldn't be tested:<br>{message}",
+        "labelStatusCode": "Status code",
+        "labelLocation": "Redirects to",
+        "labelAddresses": "Addresses",
+        "labelDetail": "Details",
+        "reachable": {
+          "title": "Reached"
+        },
+        "errors": {
+          "host_unresolved": {
+            "title": "Domain doesn't resolve",
+            "description": "DNS has no address for the domain, so PayPal can't reach it. Check the domain's DNS records."
+          },
+          "host_local": {
+            "title": "Only reachable on this server",
+            "description": "The domain resolves to an address of this server itself, like 127.0.0.1. PayPal can't reach it, even if the test request from this server gets through."
+          },
+          "certificate_invalid": {
+            "title": "Certificate not accepted",
+            "description": "The URL's TLS certificate isn't valid, for example self-signed, expired or issued for another domain. PayPal only calls URLs with a valid certificate."
+          },
+          "redirected": {
+            "title": "Redirected",
+            "description": "The URL redirects, and PayPal doesn't follow redirects. Common causes are a redirect to HTTPS or to the maintenance page."
+          },
+          "denied": {
+            "title": "Access denied",
+            "description": "The URL asks for a login or blocks the request, for example through basic auth or a firewall. Allow PayPal's requests to this path."
+          },
+          "not_found": {
+            "title": "Not found",
+            "description": "The URL doesn't reach the PayPal extension, for example because rewrite rules block the path."
+          },
+          "server_error": {
+            "title": "Server error",
+            "description": "The shop answered with a server error. The log has the details."
+          },
+          "unexpected_answer": {
+            "title": "Unexpected answer",
+            "description": "Something other than the PayPal extension answered, for example because the domain isn't assigned to this Sales Channel."
+          },
+          "host_private": {
+            "title": "Resolves to a private address",
+            "description": "The domain resolves to an address of a private network, which PayPal can't reach. Some servers resolve their own domain to their private address on purpose (split DNS). The internet then sees another address, and this is no problem."
+          },
+          "timeout": {
+            "title": "No answer",
+            "description": "The URL didn't answer within 5 seconds, PayPal's limit. Servers often can't reach their own public URL, so PayPal may still get through."
+          },
+          "connection_failed": {
+            "title": "Connection failed",
+            "description": "The connection to the URL failed, for example because a firewall drops it. Servers often can't reach their own public URL, so PayPal may still get through."
+          }
+        },
+        "summary": {
+          "callback": {
+            "error": "Callback URL isn't publicly reachable | Callback URLs aren't publicly reachable",
+            "warning": "Callback URL may not be publicly reachable | Callback URLs may not be publicly reachable",
+            "passed": "Callback URL answers | Callback URLs answer",
+            "description": "Shipping cost updates may fail when PayPal can't reach the callback URL."
+          },
+          "webhook": {
+            "error": "Webhook URL isn't publicly reachable | Webhook URLs aren't publicly reachable",
+            "warning": "Webhook URL may not be publicly reachable | Webhook URLs may not be publicly reachable",
+            "passed": "Webhook URL answers | Webhook URLs answer",
+            "description": "Payment updates may not arrive when PayPal can't reach the webhook URL."
+          },
+          "actionLabel": "Recommended action:",
+          "action": {
+            "error": "Configure a publicly reachable HTTPS domain and verify DNS.",
+            "warning": "Check that PayPal can reach the URLs from the internet, not only this server."
+          }
+        },
+        "counts": {
+          "reachable": "{count} reachable endpoint | {count} reachable endpoints",
+          "errors": {
+            "host_unresolved": "{count} unresolved domain | {count} unresolved domains",
+            "host_local": "{count} local-only endpoint | {count} local-only endpoints",
+            "certificate_invalid": "{count} invalid certificate | {count} invalid certificates",
+            "redirected": "{count} redirected endpoint | {count} redirected endpoints",
+            "denied": "{count} endpoint with denied access | {count} endpoints with denied access",
+            "not_found": "{count} endpoint not found | {count} endpoints not found",
+            "server_error": "{count} server error | {count} server errors",
+            "unexpected_answer": "{count} unexpected answer | {count} unexpected answers",
+            "host_private": "{count} private address | {count} private addresses",
+            "timeout": "{count} endpoint without answer | {count} endpoints without answer",
+            "connection_failed": "{count} failed connection | {count} failed connections"
+          }
+        },
+        "viewResults": "View {count} endpoint result | View {count} endpoint results",
+        "noAddresses": "None found"
+      },
       "status": {
         "error": "Error",
         "warning": "Warning",

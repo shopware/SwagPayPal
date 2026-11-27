@@ -146,6 +146,102 @@
       "undetermined": "Es konnte nicht ermittelt werden, ob das PayPal SDK v6 für dein PayPal-Konto aktiviert ist. Bitte stelle sicher, dass deine API-Zugangsdaten gültig sind und PayPal erreichbar ist."
     },
     "diagnostics": {
+      "reachability": {
+        "title": "Erreichbarkeit",
+        "description": "Sendet eine Testanfrage an die URLs, die PayPal aufruft. Sie läuft von diesem Server aus, daher heißt ein Erfolg, dass die URL hier antwortet, nicht dass PayPal durchkommt.",
+        "failed": "Die Erreichbarkeit konnte nicht getestet werden.",
+        "errorMessage": "Die Erreichbarkeit konnte nicht getestet werden:<br>{message}",
+        "labelStatusCode": "Statuscode",
+        "labelLocation": "Leitet weiter zu",
+        "labelAddresses": "Adressen",
+        "labelDetail": "Details",
+        "reachable": {
+          "title": "Erreicht"
+        },
+        "errors": {
+          "host_unresolved": {
+            "title": "Domain wird nicht aufgelöst",
+            "description": "Das DNS kennt keine Adresse für die Domain, daher kann PayPal sie nicht erreichen. Prüfe die DNS-Einträge der Domain."
+          },
+          "host_local": {
+            "title": "Nur auf diesem Server erreichbar",
+            "description": "Die Domain wird zu einer Adresse dieses Servers selbst aufgelöst, zum Beispiel 127.0.0.1. PayPal kann sie nicht erreichen, auch wenn die Testanfrage von diesem Server durchkommt."
+          },
+          "certificate_invalid": {
+            "title": "Zertifikat wird nicht akzeptiert",
+            "description": "Das TLS-Zertifikat der URL ist nicht gültig, zum Beispiel selbst signiert, abgelaufen oder für eine andere Domain ausgestellt. PayPal ruft nur URLs mit einem gültigen Zertifikat auf."
+          },
+          "redirected": {
+            "title": "Weitergeleitet",
+            "description": "Die URL leitet weiter, und PayPal folgt keinen Weiterleitungen. Häufige Ursachen sind eine Weiterleitung zu HTTPS oder zur Wartungsseite."
+          },
+          "denied": {
+            "title": "Zugriff verweigert",
+            "description": "Die URL verlangt eine Anmeldung oder blockiert die Anfrage, zum Beispiel durch Basic Auth oder eine Firewall. Erlaube PayPals Anfragen an diesen Pfad."
+          },
+          "not_found": {
+            "title": "Nicht gefunden",
+            "description": "Die URL erreicht die PayPal-Erweiterung nicht, zum Beispiel weil Rewrite-Regeln den Pfad blockieren."
+          },
+          "server_error": {
+            "title": "Serverfehler",
+            "description": "Der Shop hat mit einem Serverfehler geantwortet. Details stehen im Log."
+          },
+          "unexpected_answer": {
+            "title": "Unerwartete Antwort",
+            "description": "Etwas anderes als die PayPal-Erweiterung hat geantwortet, zum Beispiel weil die Domain diesem Verkaufskanal nicht zugeordnet ist."
+          },
+          "host_private": {
+            "title": "Wird zu einer privaten Adresse aufgelöst",
+            "description": "Die Domain wird zu einer Adresse eines privaten Netzwerks aufgelöst, die PayPal nicht erreichen kann. Manche Server lösen ihre eigene Domain absichtlich zu ihrer privaten Adresse auf (Split DNS). Das Internet sieht dann eine andere Adresse, und das ist kein Problem."
+          },
+          "timeout": {
+            "title": "Keine Antwort",
+            "description": "Die URL hat nicht innerhalb von 5 Sekunden geantwortet, dem Limit von PayPal. Server erreichen ihre eigene öffentliche URL oft nicht, daher kommt PayPal eventuell trotzdem durch."
+          },
+          "connection_failed": {
+            "title": "Verbindung fehlgeschlagen",
+            "description": "Die Verbindung zur URL ist fehlgeschlagen, zum Beispiel weil eine Firewall sie verwirft. Server erreichen ihre eigene öffentliche URL oft nicht, daher kommt PayPal eventuell trotzdem durch."
+          }
+        },
+        "summary": {
+          "callback": {
+            "error": "Callback-URL ist nicht öffentlich erreichbar | Callback-URLs sind nicht öffentlich erreichbar",
+            "warning": "Callback-URL ist eventuell nicht öffentlich erreichbar | Callback-URLs sind eventuell nicht öffentlich erreichbar",
+            "passed": "Callback-URL antwortet | Callback-URLs antworten",
+            "description": "Aktualisierungen der Versandkosten können fehlschlagen, wenn PayPal die Callback-URL nicht erreichen kann."
+          },
+          "webhook": {
+            "error": "Webhook-URL ist nicht öffentlich erreichbar | Webhook-URLs sind nicht öffentlich erreichbar",
+            "warning": "Webhook-URL ist eventuell nicht öffentlich erreichbar | Webhook-URLs sind eventuell nicht öffentlich erreichbar",
+            "passed": "Webhook-URL antwortet | Webhook-URLs antworten",
+            "description": "Änderungen an Zahlungen kommen eventuell nicht an, wenn PayPal die Webhook-URL nicht erreichen kann."
+          },
+          "actionLabel": "Empfohlene Maßnahme:",
+          "action": {
+            "error": "Richte eine öffentlich erreichbare HTTPS-Domain ein und prüfe das DNS.",
+            "warning": "Prüfe, ob PayPal die URLs aus dem Internet erreichen kann, nicht nur dieser Server."
+          }
+        },
+        "counts": {
+          "reachable": "{count} erreichbarer Endpunkt | {count} erreichbare Endpunkte",
+          "errors": {
+            "host_unresolved": "{count} nicht aufgelöste Domain | {count} nicht aufgelöste Domains",
+            "host_local": "{count} nur lokal erreichbarer Endpunkt | {count} nur lokal erreichbare Endpunkte",
+            "certificate_invalid": "{count} ungültiges Zertifikat | {count} ungültige Zertifikate",
+            "redirected": "{count} weitergeleiteter Endpunkt | {count} weitergeleitete Endpunkte",
+            "denied": "{count} Endpunkt mit verweigertem Zugriff | {count} Endpunkte mit verweigertem Zugriff",
+            "not_found": "{count} Endpunkt nicht gefunden | {count} Endpunkte nicht gefunden",
+            "server_error": "{count} Serverfehler | {count} Serverfehler",
+            "unexpected_answer": "{count} unerwartete Antwort | {count} unerwartete Antworten",
+            "host_private": "{count} private Adresse | {count} private Adressen",
+            "timeout": "{count} Endpunkt ohne Antwort | {count} Endpunkte ohne Antwort",
+            "connection_failed": "{count} fehlgeschlagene Verbindung | {count} fehlgeschlagene Verbindungen"
+          }
+        },
+        "viewResults": "{count} Endpunkt-Ergebnis anzeigen | {count} Endpunkt-Ergebnisse anzeigen",
+        "noAddresses": "Keine gefunden"
+      },
       "status": {
         "error": "Fehler",
         "warning": "Warnung",

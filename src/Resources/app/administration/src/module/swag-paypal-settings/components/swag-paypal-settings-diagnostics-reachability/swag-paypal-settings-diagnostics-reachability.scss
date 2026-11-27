@@ -1,0 +1,57 @@
+.swag-paypal-settings-diagnostics-reachability {
+    &__summary.swag-paypal-settings-diagnostics-item {
+        border-bottom: 0;
+    }
+
+    &__summary .swag-paypal-settings-diagnostics-item__icon {
+        display: none;
+    }
+
+    &__summary .swag-paypal-settings-diagnostics-item__content {
+        padding-left: 0;
+    }
+
+    &__results {
+        margin-top: var(--scale-size-12);
+        padding: 0 var(--scale-size-20);
+        border: 1px solid var(--color-border-primary-default);
+        border-radius: var(--border-radius-s);
+        background-color: var(--color-background-secondary-default);
+    }
+
+    &__results-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--scale-size-16) 0;
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        list-style: none;
+        cursor: pointer;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-border-brand-selected);
+        }
+    }
+
+    &__chevron {
+        color: var(--color-icon-secondary-default);
+        transition: transform 0.15s ease;
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+    }
+
+    &__results[open] &__chevron {
+        transform: rotate(180deg);
+    }
+
+    &__results[open] &__results-summary {
+        border-bottom: 1px solid var(--color-border-secondary-default);
+    }
+}
