@@ -26,11 +26,21 @@
             {{ $t('swag-paypal-settings.webhook.info') }}
         </span>
 
+        <mt-select
+            v-if="hasUrlSourceChoice"
+            v-model="urlSource"
+            class="swag-paypal-settings-webhook__url-source"
+            :label="$t('swag-paypal-settings.webhook.labelUrlSource')"
+            :options="urlSourceOptions"
+            :disabled="!canRefresh"
+            hide-clearable-button
+        />
+
         <mt-button
             v-tooltip="refreshTooltip"
             class="swag-paypal-settings-webhook__refresh-button"
             variant="secondary"
-            :disabled="status !== 'none' || !allowRefresh || !acl.can('swag_paypal.editor')"
+            :disabled="!canRefresh"
             :is-loading="status === 'refreshing'"
             @click="onRefreshWebhook"
         >

@@ -70,10 +70,13 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
+use Swag\PayPal\Webhook\Registration\WebhookRegistrationChecker;
+use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -671,11 +674,15 @@ class UpdateTest extends TestCase
 
     private function createWebhookService(SystemConfigService $systemConfigService): WebhookService
     {
+        $webhookResource = new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock());
+        $urlBuilder = new WebhookUrlBuilder($this->createMock(RouterInterface::class), new RequestStack(), '');
+
         return new WebhookService(
-            new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock()),
+            $webhookResource,
             new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]),
             $systemConfigService,
-            $this->createMock(RouterInterface::class),
+            new WebhookRegistrationChecker($webhookResource, $systemConfigService, $urlBuilder),
+            $urlBuilder,
             new NullLogger(),
         );
     }

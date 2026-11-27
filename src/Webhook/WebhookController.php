@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -25,9 +26,12 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionInvalidIdException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
+use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
+use Swag\PayPal\Webhook\Registration\WebhookUrlSource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -43,6 +47,8 @@ class WebhookController extends AbstractController
         private readonly LoggerInterface $logger,
         private readonly WebhookServiceInterface $webhookService,
         private readonly EntityRepository $systemConfigRepository,
+        private readonly WebhookUrlBuilder $urlBuilder,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -59,10 +65,25 @@ class WebhookController extends AbstractController
         responses: [new OA\Response(
             response: Response::HTTP_OK,
             description: 'Returns the status of the PayPal webhook',
-            content: new OA\JsonContent(properties: [new OA\Property(
-                property: 'result',
-                type: 'string',
-            )])
+            content: new OA\JsonContent(required: ['result', 'urlSources'], properties: [
+                new OA\Property(
+                    property: 'result',
+                    type: 'string',
+                ),
+                new OA\Property(
+                    property: 'urlSources',
+                    description: 'The hosts the webhook can be registered for, one per distinct URL, the Administration\'s first',
+                    type: 'array',
+                    items: new OA\Items(
+                        required: ['source', 'host'],
+                        properties: [
+                            new OA\Property(property: 'source', type: 'string', enum: ['administration', 'app_url']),
+                            new OA\Property(property: 'host', type: 'string'),
+                        ],
+                        type: 'object',
+                    ),
+                ),
+            ])
         )]
     )]
     #[Route(path: '/api/_action/paypal/webhook/status/{salesChannelId}', name: 'api.action.paypal.webhook.status', methods: ['GET'], defaults: ['_acl' => ['swag_paypal.viewer']])]
@@ -70,12 +91,21 @@ class WebhookController extends AbstractController
     {
         $status = $this->webhookService->getStatus($salesChannelId !== 'null' ? $salesChannelId : null);
 
-        return new JsonResponse(['result' => $status]);
+        return new JsonResponse(['result' => $status, 'urlSources' => $this->getUrlSources()]);
     }
 
     #[OA\Post(
         path: '/_action/paypal/webhook/register/{salesChannelId}',
         operationId: 'registerWebhook',
+        requestBody: new OA\RequestBody(
+            required: false,
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'urlSource',
+                description: 'Where the host of the webhook URL comes from: the host the Administration is opened with (default) or Shopware\'s `APP_URL`',
+                type: 'string',
+                enum: ['administration', 'app_url'],
+            )]),
+        ),
         tags: ['Admin Api', 'SwagPayPalWebhook'],
         parameters: [new OA\Parameter(
             parameter: 'salesChannelId',
@@ -95,7 +125,17 @@ class WebhookController extends AbstractController
     #[Route(path: '/api/_action/paypal/webhook/register/{salesChannelId}', name: 'api.action.paypal.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function registerWebhook(string $salesChannelId): JsonResponse
     {
-        $result = $this->webhookService->registerWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
+        $source = $this->requestStack->getCurrentRequest()?->request->getString('urlSource', WebhookUrlSource::Administration->value) ?? WebhookUrlSource::Administration->value;
+        $source = WebhookUrlSource::tryFrom($source);
+
+        if ($source === null || !isset($this->urlBuilder->buildAll('token')[$source->value])) {
+            throw RoutingException::invalidRequestParameter('urlSource');
+        }
+
+        $result = $this->urlBuilder->withSource(
+            $source,
+            fn () => $this->webhookService->registerWebhook($salesChannelId !== 'null' ? $salesChannelId : null),
+        );
 
         return new JsonResponse(['result' => $result]);
     }
@@ -241,6 +281,25 @@ class WebhookController extends AbstractController
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }
+    }
+
+    /**
+     * @return list<array{source: string, host: string}>
+     */
+    private function getUrlSources(): array
+    {
+        $sources = [];
+        foreach ($this->urlBuilder->buildAll('token') as $source => $url) {
+            $host = \parse_url($url, \PHP_URL_HOST);
+            if (!\is_string($host)) {
+                continue;
+            }
+
+            $port = \parse_url($url, \PHP_URL_PORT);
+            $sources[] = ['source' => $source, 'host' => $port === null ? $host : $host . ':' . $port];
+        }
+
+        return $sources;
     }
 
     private function validateShopwareToken(string $token, Context $context): bool

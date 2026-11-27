@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Added the option to register the webhook for the `APP_URL` in the tab "Advanced", if it differs from the URL of the Administration (shopware/SwagPayPal#800)
 - Fixes an issue, where a cancelled payment was not marked as partially paid when a partial amount was captured afterwards (shopware/SwagPayPal#841)
 - Fixes an issue, where cancelling the authorization in the Administration marked a paid or partially paid payment as cancelled (shopware/SwagPayPal#841)
 - Fixes an issue, where the checkout kept loading and could not be completed, if the PayPal JS SDK v6 was enabled and a content blocker blocked requests to PayPal. An error message is shown instead (shopware/shopware#23165)

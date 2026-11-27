@@ -21,6 +21,10 @@
         line-height: var(--line-height-sm);
     }
 
+    &__url-source {
+        justify-self: stretch;
+    }
+
     & &__label {
         border: 0;
         margin: 0;

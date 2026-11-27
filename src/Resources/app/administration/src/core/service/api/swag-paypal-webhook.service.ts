@@ -1,6 +1,11 @@
 import type { LoginService } from 'src/core/service/login.service';
 import type { AxiosInstance } from 'axios';
 import type * as PayPal from 'SwagPayPal/types';
+import type { operations } from 'SwagPayPal/types/openapi';
+
+export type WebhookUrlSource = NonNullable<
+    NonNullable<operations['registerWebhook']['requestBody']>['content']['application/json']['urlSource']
+>;
 
 const ApiService = Shopware.Classes.ApiService;
 
@@ -9,10 +14,10 @@ export default class SwagPayPalWebhookService extends ApiService {
         super(httpClient, loginService, apiEndpoint);
     }
 
-    register(salesChannelId: string | null) {
+    register(salesChannelId: string | null, urlSource?: WebhookUrlSource) {
         return this.httpClient.post<PayPal.Api.Operations<'registerWebhook'>>(
             `_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`,
-            {},
+            urlSource ? { urlSource } : {},
             { headers: this.getBasicHeaders() },
         ).then(ApiService.handleResponse.bind(this));
     }

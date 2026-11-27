@@ -27,13 +27,16 @@ use Swag\PayPal\Webhook\Handler\SaleDenied;
 use Swag\PayPal\Webhook\Handler\SaleRefunded;
 use Swag\PayPal\Webhook\Handler\VaultPaymentTokenCreated;
 use Swag\PayPal\Webhook\Handler\VaultPaymentTokenDeleted;
+use Swag\PayPal\Webhook\Registration\WebhookRegistrationChecker;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
+use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Swag\PayPal\Webhook\WebhookController;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
+use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
@@ -46,6 +49,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service('monolog.logger.paypal'),
             service(WebhookService::class),
             service('system_config.repository'),
+            service(WebhookUrlBuilder::class),
+            service('request_stack'),
         ])
         ->call('setContainer', [service('service_container')]);
 
@@ -55,7 +60,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(WebhookResource::class),
             service(WebhookRegistry::class),
             service(SystemConfigService::class),
-            service('router'),
+            service(WebhookRegistrationChecker::class),
+            service(WebhookUrlBuilder::class),
             service('monolog.logger.paypal'),
         ]);
 
@@ -151,6 +157,20 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->tag('swag.paypal.webhook.handler');
 
     // registration
+    $services->set(WebhookUrlBuilder::class)
+        ->args([
+            service('router'),
+            service('request_stack'),
+            env('APP_URL')->default('')->string(),
+        ]);
+
+    $services->set(WebhookRegistrationChecker::class)
+        ->args([
+            service(WebhookResource::class),
+            service(SystemConfigService::class),
+            service(WebhookUrlBuilder::class),
+        ]);
+
     $services->set(WebhookSystemConfigHelper::class)
         ->args([
             service('monolog.logger.paypal'),

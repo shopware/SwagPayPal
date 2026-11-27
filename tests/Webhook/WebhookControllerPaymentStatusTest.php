@@ -32,12 +32,15 @@ use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Util\Log\PaymentStatusChangeSubscriber;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Handler\CaptureCompleted;
+use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Swag\PayPal\Webhook\WebhookController;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -87,6 +90,8 @@ class WebhookControllerPaymentStatusTest extends TestCase
             $logger,
             $webhookService,
             $systemConfigRepo,
+            new WebhookUrlBuilder($this->createMock(RouterInterface::class), new RequestStack(), ''),
+            new RequestStack(),
         );
     }
 
