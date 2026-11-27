@@ -23,6 +23,7 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\DigitalGoodsCategoryRemover;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\TokenResponse;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\StoreApiUrlStorage;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -51,6 +52,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         private readonly SystemConfigService $systemConfigService,
         private readonly RouterInterface $router,
         private readonly LoggerInterface $logger,
+        private readonly StoreApiUrlStorage $storeApiUrlStorage,
     ) {
     }
 
@@ -111,6 +113,10 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                         ['salesChannelId' => $salesChannelContext->getSalesChannelId(), 'token' => $salesChannelContext->getToken()],
                         UrlGeneratorInterface::ABSOLUTE_URL,
                     );
+                    if (!$isStorefront) {
+                        $this->storeApiUrlStorage->record($salesChannelContext->getSalesChannelId(), $callbackUrl);
+                    }
+
                     $callbackConfig->setCallbackUrl($callbackUrl);
                     $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_OPTIONS]);
                     $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);

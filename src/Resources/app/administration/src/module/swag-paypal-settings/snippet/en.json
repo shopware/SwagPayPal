@@ -147,6 +147,63 @@
       "undetermined": "Could not determine whether the PayPal SDK v6 is activated for your PayPal account. Please make sure that your API credentials are valid and that PayPal can be reached."
     },
     "diagnostics": {
+      "expressCallback": {
+        "title": "Express Checkout callback",
+        "subtitle": "PayPal calls this shop to update the shipping costs when a buyer changes the shipping method in the PayPal dialog.",
+        "buttonCheck": "Check again",
+        "selectSalesChannel": "Select a Sales Channel to check its callback.",
+        "failed": "The callback couldn't be checked.",
+        "errorMessage": "The callback couldn't be checked:<br>{message}",
+        "status": {
+          "inactive": {
+            "title": "Express Checkout isn't active",
+            "summary": "PayPal or its Express Checkout buttons are off in this Sales Channel, so PayPal doesn't call it."
+          },
+          "local_environment": {
+            "title": "Local development environment is on",
+            "summary": "PayPal doesn't call this shop. Turn it off in the {advancedTab} of a live shop."
+          },
+          "disabled": {
+            "title": "\"Shipping method choice in PayPal dialog\" is off",
+            "summary": "Buyers can't change the shipping method in PayPal, so PayPal doesn't call this shop. You can turn it on in the {storefrontTab}."
+          }
+        },
+        "lastCallback": {
+          "title": "Last callback received: {date}",
+          "outcome": {
+            "answered": "The shop sent the recalculated prices.",
+            "rejected": "The shop declined the buyer's address or shipping method. That's expected if your shipping methods exclude it."
+          }
+        },
+        "noCallback": {
+          "title": "No callback received yet",
+          "description": "To try it, start an Express Checkout in your storefront, change the shipping method in the PayPal dialog, then check again. Callbacks from before the update to this version aren't recorded.",
+          "summary": "PayPal only calls when a buyer changes the shipping method in its dialog."
+        },
+        "findings": {
+          "last_callback_failed": {
+            "title": "Last callback failed",
+            "summary": "The shop answered with a server error on {date}. The log below has the details."
+          },
+          "untrusted_proxy": {
+            "title": "HTTPS proxy isn't trusted",
+            "description": "This request came through an HTTPS proxy that Shopware doesn't trust, and PayPal doesn't follow the redirect to HTTPS. If the storefront runs behind the same proxy, add it to TRUSTED_PROXIES.",
+            "summary": "Callback URLs start with http://, so PayPal's calls end at the redirect to HTTPS."
+          },
+          "sandbox": {
+            "title": "Sandbox is active",
+            "summary": "PayPal's sandbox is unreliable with callbacks. If Express Checkout fails, try live credentials."
+          },
+          "store_api_url_unknown": {
+            "title": "Callback URL not known yet",
+            "summary": "The shop learns it with the first Express Checkout through the Store API."
+          },
+          "store_api_host_unknown": {
+            "title": "Callback URL on an unknown host",
+            "summary": "The Store API is called on {host}, which isn't a domain of this shop, so it isn't tested. Add {host} as a domain of a Sales Channel to test it."
+          }
+        }
+      },
       "reachability": {
         "title": "Reachability",
         "description": "Sends a test request to the URLs PayPal calls, like PayPal does. It runs from this server, so a pass means the URL answers here, not that PayPal gets through.",
@@ -321,7 +378,9 @@
         "passed": "Passed",
         "not-observed": "Not observed"
       },
-      "sectionActivity": "Configuration & activity"
+      "sectionActivity": "Configuration & activity",
+      "advancedTab": "Advanced tab",
+      "storefrontTab": "Storefront presentation tab"
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

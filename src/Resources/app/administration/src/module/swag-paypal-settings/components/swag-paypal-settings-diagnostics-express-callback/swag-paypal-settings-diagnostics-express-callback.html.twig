@@ -1,0 +1,136 @@
+<mt-card
+    class="swag-paypal-settings-diagnostics-express-callback"
+    position-identifier="swag-paypal-settings-diagnostics-express-callback"
+    :title="$t('swag-paypal-settings.diagnostics.expressCallback.title')"
+    :subtitle="$t('swag-paypal-settings.diagnostics.expressCallback.subtitle')"
+    :is-loading="isChecking"
+>
+    <template #headerRight>
+        <mt-button
+            class="swag-paypal-settings-diagnostics-express-callback__check-button"
+            variant="secondary"
+            size="small"
+            :disabled="!salesChannelId || isChecking || isTestingReachability"
+            @click="onCheck"
+        >
+            {{ $t('swag-paypal-settings.diagnostics.expressCallback.buttonCheck') }}
+        </mt-button>
+    </template>
+
+    <mt-banner
+        v-if="!salesChannelId"
+        class="swag-paypal-settings-diagnostics-express-callback__select-sales-channel"
+        variant="info"
+    >
+        {{ $t('swag-paypal-settings.diagnostics.expressCallback.selectSalesChannel') }}
+    </mt-banner>
+
+    <mt-banner
+        v-else-if="check?.status === 'failed'"
+        class="swag-paypal-settings-diagnostics-express-callback__failed"
+        variant="critical"
+    >
+        {{ $t('swag-paypal-settings.diagnostics.expressCallback.failed') }}
+    </mt-banner>
+
+    <div
+        v-else-if="result"
+        class="swag-paypal-settings-diagnostics-express-callback__content"
+    >
+        <swag-paypal-settings-diagnostics-section :title="$t('swag-paypal-settings.diagnostics.sectionActivity')">
+            <swag-paypal-settings-diagnostics-item
+                v-if="status"
+                class="swag-paypal-settings-diagnostics-express-callback__status"
+                :status="status"
+                :title="$t(`swag-paypal-settings.diagnostics.expressCallback.status.${result.status}.title`)"
+                :subtitle="$t(`swag-paypal-settings.diagnostics.expressCallback.status.${result.status}.summary`)"
+            >
+                <template
+                    v-if="result.status === 'local_environment'"
+                    #subtitle
+                >
+                    <i18n-t
+                        :keypath="`swag-paypal-settings.diagnostics.expressCallback.status.${result.status}.summary`"
+                        tag="span"
+                    >
+                        <template #advancedTab>
+                            <mt-link
+                                type="internal"
+                                :to="{ name: 'swag.paypal.settings.index.advanced' }"
+                            >
+                                {{ $t('swag-paypal-settings.diagnostics.advancedTab') }}
+                            </mt-link>
+                        </template>
+                    </i18n-t>
+                </template>
+
+                <template
+                    v-else-if="result.status === 'disabled'"
+                    #subtitle
+                >
+                    <i18n-t
+                        :keypath="`swag-paypal-settings.diagnostics.expressCallback.status.${result.status}.summary`"
+                        tag="span"
+                    >
+                        <template #storefrontTab>
+                            <mt-link
+                                type="internal"
+                                :to="{ name: 'swag.paypal.settings.index.storefront' }"
+                            >
+                                {{ $t('swag-paypal-settings.diagnostics.storefrontTab') }}
+                            </mt-link>
+                        </template>
+                    </i18n-t>
+                </template>
+            </swag-paypal-settings-diagnostics-item>
+
+            <template v-else>
+                <swag-paypal-settings-diagnostics-item
+                    v-for="finding in result.findings"
+                    :key="finding.type"
+                    class="swag-paypal-settings-diagnostics-express-callback__finding"
+                    :status="findingStatus(finding)"
+                    :title="$t(`swag-paypal-settings.diagnostics.expressCallback.findings.${finding.type}.title`)"
+                    :subtitle="$t(`swag-paypal-settings.diagnostics.expressCallback.findings.${finding.type}.summary`, { date: lastCallbackDate, host: finding.host ?? '' })"
+                >
+                    <template
+                        v-if="finding.type === 'untrusted_proxy'"
+                        #default
+                    >
+                        <p class="swag-paypal-settings-diagnostics-item__description">
+                            {{ $t('swag-paypal-settings.diagnostics.expressCallback.findings.untrusted_proxy.description') }}
+                        </p>
+                    </template>
+                </swag-paypal-settings-diagnostics-item>
+
+                <swag-paypal-settings-diagnostics-item
+                    v-if="!result.lastCallback"
+                    class="swag-paypal-settings-diagnostics-express-callback__no-callback"
+                    status="not-observed"
+                    :title="$t('swag-paypal-settings.diagnostics.expressCallback.noCallback.title')"
+                    :subtitle="$t('swag-paypal-settings.diagnostics.expressCallback.noCallback.summary')"
+                >
+                    <p class="swag-paypal-settings-diagnostics-item__description">
+                        {{ $t('swag-paypal-settings.diagnostics.expressCallback.noCallback.description') }}
+                    </p>
+                </swag-paypal-settings-diagnostics-item>
+
+                <swag-paypal-settings-diagnostics-item
+                    v-else-if="result.lastCallback.outcome !== 'failed'"
+                    class="swag-paypal-settings-diagnostics-express-callback__last-callback"
+                    status="passed"
+                    :title="$t('swag-paypal-settings.diagnostics.expressCallback.lastCallback.title', { date: lastCallbackDate })"
+                    :subtitle="$t(`swag-paypal-settings.diagnostics.expressCallback.lastCallback.outcome.${result.lastCallback.outcome}`)"
+                />
+            </template>
+        </swag-paypal-settings-diagnostics-section>
+
+        <swag-paypal-settings-diagnostics-reachability
+            v-if="result.status !== 'inactive'"
+            class="swag-paypal-settings-diagnostics-express-callback__reachability"
+            subject="callback"
+            :sales-channel-id="salesChannelId"
+            @busy-change="isTestingReachability = $event"
+        />
+    </div>
+</mt-card>

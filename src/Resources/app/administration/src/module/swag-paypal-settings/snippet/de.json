@@ -147,6 +147,63 @@
       "undetermined": "Es konnte nicht ermittelt werden, ob das PayPal SDK v6 für dein PayPal-Konto aktiviert ist. Bitte stelle sicher, dass deine API-Zugangsdaten gültig sind und PayPal erreichbar ist."
     },
     "diagnostics": {
+      "expressCallback": {
+        "title": "Express-Checkout-Callback",
+        "subtitle": "PayPal ruft diesen Shop auf, um die Versandkosten zu aktualisieren, wenn Käufer im PayPal-Dialog die Versandart wechseln.",
+        "buttonCheck": "Erneut prüfen",
+        "selectSalesChannel": "Wähle einen Verkaufskanal aus, um seinen Callback zu prüfen.",
+        "failed": "Der Callback konnte nicht geprüft werden.",
+        "errorMessage": "Der Callback konnte nicht geprüft werden:<br>{message}",
+        "status": {
+          "inactive": {
+            "title": "Express Checkout ist nicht aktiv",
+            "summary": "PayPal oder seine Express-Checkout-Buttons sind in diesem Verkaufskanal aus, daher ruft PayPal ihn nicht auf."
+          },
+          "local_environment": {
+            "title": "Lokale Entwicklungsumgebung ist aktiv",
+            "summary": "PayPal ruft diesen Shop nicht auf. Schalte sie im {advancedTab} eines Live-Shops aus."
+          },
+          "disabled": {
+            "title": "„Versandarten im PayPal-Dialog auswählbar“ ist aus",
+            "summary": "Käufer können die Versandart in PayPal nicht wechseln, daher ruft PayPal diesen Shop nicht auf. Du kannst sie im {storefrontTab} einschalten."
+          }
+        },
+        "lastCallback": {
+          "title": "Letzter Callback empfangen: {date}",
+          "outcome": {
+            "answered": "Der Shop hat die neu berechneten Preise gesendet.",
+            "rejected": "Der Shop hat die Adresse oder Versandart des Käufers abgelehnt. Das ist zu erwarten, wenn deine Versandarten sie ausschließen."
+          }
+        },
+        "noCallback": {
+          "title": "Noch kein Callback empfangen",
+          "description": "Zum Ausprobieren starte einen Express Checkout in deiner Storefront, wechsle im PayPal-Dialog die Versandart und prüfe dann erneut. Callbacks von vor dem Update auf diese Version werden nicht aufgezeichnet.",
+          "summary": "PayPal ruft nur auf, wenn Käufer im PayPal-Dialog die Versandart wechseln."
+        },
+        "findings": {
+          "last_callback_failed": {
+            "title": "Letzter Callback fehlgeschlagen",
+            "summary": "Der Shop hat am {date} mit einem Serverfehler geantwortet. Details stehen im Log unten."
+          },
+          "untrusted_proxy": {
+            "title": "Dem HTTPS-Proxy wird nicht vertraut",
+            "description": "Diese Anfrage kam über einen HTTPS-Proxy, dem Shopware nicht vertraut, und PayPal folgt der Weiterleitung zu HTTPS nicht. Läuft die Storefront hinter demselben Proxy, trage ihn in TRUSTED_PROXIES ein.",
+            "summary": "Callback-URLs beginnen mit http://, daher enden die Aufrufe von PayPal an der Weiterleitung zu HTTPS."
+          },
+          "sandbox": {
+            "title": "Sandbox ist aktiv",
+            "summary": "Die Sandbox von PayPal ist bei Callbacks unzuverlässig. Schlägt Express Checkout fehl, probiere es mit Live-Zugangsdaten."
+          },
+          "store_api_url_unknown": {
+            "title": "Callback-URL noch unbekannt",
+            "summary": "Der Shop erfährt sie beim ersten Express Checkout über die Store API."
+          },
+          "store_api_host_unknown": {
+            "title": "Callback-URL auf einem unbekannten Host",
+            "summary": "Die Store API wird auf {host} aufgerufen, das keine Domain dieses Shops ist, daher wird sie nicht getestet. Füge {host} als Domain eines Verkaufskanals hinzu, um sie zu testen."
+          }
+        }
+      },
       "reachability": {
         "title": "Erreichbarkeit",
         "description": "Sendet eine Testanfrage an die URLs, die PayPal aufruft. Sie läuft von diesem Server aus, daher heißt ein Erfolg, dass die URL hier antwortet, nicht dass PayPal durchkommt.",
@@ -321,7 +378,9 @@
         "passed": "Bestanden",
         "not-observed": "Nicht beobachtet"
       },
-      "sectionActivity": "Konfiguration & Aktivität"
+      "sectionActivity": "Konfiguration & Aktivität",
+      "advancedTab": "Tab „Fortgeschritten“",
+      "storefrontTab": "Tab „Storefront-Darstellung“"
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

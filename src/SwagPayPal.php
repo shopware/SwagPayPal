@@ -32,6 +32,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
+use Swag\PayPal\Util\Lifecycle\Installer\DiagnosticsInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
@@ -304,6 +305,7 @@ class SwagPayPal extends Plugin
                 $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME)
             ),
             new TableInstaller($this->container->get(Connection::class)),
+            new DiagnosticsInstaller($this->container->get(Connection::class)),
         );
     }
 

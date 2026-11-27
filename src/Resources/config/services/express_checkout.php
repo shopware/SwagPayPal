@@ -23,6 +23,8 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRou
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\LastCallbackStorage;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\StoreApiUrlStorage;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -83,6 +85,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(SystemConfigService::class),
             service('router'),
             service('monolog.logger.paypal'),
+            service(StoreApiUrlStorage::class),
         ]);
 
     $services->set(ExpressShippingCallbackService::class)
@@ -102,6 +105,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->args([
             service(ExpressShippingCallbackService::class),
             service('monolog.logger.paypal'),
+            service(LastCallbackStorage::class),
         ]);
 
     $services->set(ExpressCheckoutSubscriber::class)

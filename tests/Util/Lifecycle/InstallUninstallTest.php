@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Util\Lifecycle\Installer\DiagnosticsInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
@@ -48,10 +49,11 @@ class InstallUninstallTest extends TestCase
             $posStateService,
             $agenticCommerceService,
             $this->createMock(TableInstaller::class),
+            $this->createMock(DiagnosticsInstaller::class),
         ))->install($context);
     }
 
-    public function testUninstallHandlesAgenticAndPosCleanup(): void
+    public function testUninstallHandlesAgenticPosAndDiagnosticsCleanup(): void
     {
         $context = Context::createDefaultContext();
         $paymentMethodInstaller = $this->createMock(PaymentMethodInstaller::class);
@@ -79,6 +81,10 @@ class InstallUninstallTest extends TestCase
         $tableInstaller
             ->expects($this->once())
             ->method('removeTables');
+        $diagnosticsInstaller = $this->createMock(DiagnosticsInstaller::class);
+        $diagnosticsInstaller
+            ->expects($this->once())
+            ->method('removeDiagnosticsData');
 
         (new InstallUninstall(
             $paymentMethodInstaller,
@@ -87,6 +93,7 @@ class InstallUninstallTest extends TestCase
             $posStateService,
             $agenticCommerceService,
             $tableInstaller,
+            $diagnosticsInstaller,
         ))->uninstall($context);
     }
 }

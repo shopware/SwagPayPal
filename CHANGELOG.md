@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Added a check of the Express Checkout shipping callback to the tab "Diagnostics", which shows the last callback of PayPal and tests whether its URLs are reachable (shopware/SwagPayPal#800)
 - Added the tab "Diagnostics" to the PayPal settings, which shows if a theme or another plugin hides the PayPal buttons by overriding their templates (shopware/SwagPayPal#800)
 - Added the option to register the webhook for the `APP_URL` in the tab "Advanced", if it differs from the URL of the Administration (shopware/SwagPayPal#800)
 - Fixes an issue, where a cancelled payment was not marked as partially paid when a partial amount was captured afterwards (shopware/SwagPayPal#841)

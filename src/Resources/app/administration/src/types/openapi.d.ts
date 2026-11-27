@@ -21,6 +21,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/_action/paypal/diagnostics/express-callback/{salesChannelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Checks whether PayPal can reach the shop with the shipping callback of Express Checkout */
+        get: operations["getPayPalExpressCallbackDiagnostics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/_action/paypal/diagnostics/express-callback/{salesChannelId}/reachability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sends a test request to the shipping callback URLs of the Sales Channel, like PayPal sends it. It runs from the shop's server, so a pass means the URL answers from there */
+        post: operations["testPayPalExpressCallbackReachability"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/_action/paypal/diagnostics/twig/{salesChannelId}": {
         parameters: {
             query?: never;
@@ -581,6 +615,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Something that keeps PayPal from reaching the shop, or makes it unreliable */
+        swag_paypal_diagnostics_express_callback_finding: {
+            /** @enum {string} */
+            type: "last_callback_failed" | "untrusted_proxy" | "sandbox" | "store_api_url_unknown" | "store_api_host_unknown";
+            /** @enum {string} */
+            severity: "error" | "warning" | "notice" | "unknown";
+            /** @description The host of a `store_api_host_unknown` finding */
+            host: string | null;
+        };
+        swag_paypal_diagnostics_express_callback_result: {
+            /**
+             * @description `inactive` without PayPal or Express Checkout buttons, `local_environment` and `disabled` when the plugin doesn't ask PayPal for callbacks
+             * @enum {string}
+             */
+            status: "inactive" | "local_environment" | "disabled" | "active";
+            lastCallback: components["schemas"]["swag_paypal_diagnostics_express_callback_last_callback"] | (never | null);
+            /** @description Empty unless the status is `active` */
+            findings: components["schemas"]["swag_paypal_diagnostics_express_callback_finding"][];
+        };
+        /** @description The last shipping callback PayPal sent to the Sales Channel */
+        swag_paypal_diagnostics_express_callback_last_callback: {
+            /** Format: date-time */
+            at: string;
+            /**
+             * @description `answered` when the shop sent the recalculated prices, `rejected` when it can't ship to the address or with the shipping method, `failed` on a server error
+             * @enum {string}
+             */
+            outcome: "answered" | "rejected" | "failed";
+        };
         /** @description The answer to a test request sent to a callback URL, like PayPal sends it, combined with the address its host resolves to */
         swag_paypal_diagnostics_reachability: {
             /** @description The tested URL, its throw-away token replaced by `<token>` */
@@ -2178,6 +2241,50 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getPayPalExpressCallbackDiagnostics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                salesChannelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The state of the shipping callback */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["swag_paypal_diagnostics_express_callback_result"];
+                };
+            };
+        };
+    };
+    testPayPalExpressCallbackReachability: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                salesChannelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The answer of each callback URL */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["swag_paypal_diagnostics_reachability"][];
+                };
             };
         };
     };
