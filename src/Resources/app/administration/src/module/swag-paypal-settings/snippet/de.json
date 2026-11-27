@@ -108,13 +108,17 @@
       "title": "Webhook",
       "info": "Der Webhook dient dazu, den Status einer Transaktion asynchron zu aktualisieren. Falsch registrierte Webhooks, z.B. auf einem anderen oder nicht öffentlich zugänglichen Server, können zu unbestätigten Transaktionen führen, unabhängig davon, ob die Transaktion von PayPal verarbeitet wurde.",
       "buttonRefresh": "Webhook aktualisieren",
-      "refreshFailed": "Aktualisierung des Webhooks ist fehlgeschlagen",
-      "fetchFailed": "Prüfen des Webhooks ist fehlgeschlagen",
       "tooltipDisabled": "Der Webhook kann nicht aktualisiert werden, da \"Lokale Entwicklungsumgebung\" aktiviert ist",
+      "labelUrlSource": "Webhook-URL",
+      "urlSource": {
+        "administration": "Administrations-URL: {host}",
+        "app_url": "Shop-URL (APP_URL): {host}"
+      },
       "status": {
-        "unknown": "Laden ...",
+        "loading": "Laden ...",
+        "unknown": "Konnte nicht geprüft werden",
         "missing": "Fehlend",
-        "invalid": "Registriert, aber mit abweichender Domain",
+        "invalid": "Für eine andere URL registriert",
         "valid": "Gültig",
         "disabled": "Deaktiviert"
       },

@@ -1311,9 +1311,36 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "result",
+                                        "urlSources"
+                                    ],
                                     "properties": {
                                         "result": {
                                             "type": "string"
+                                        },
+                                        "urlSources": {
+                                            "description": "The hosts the webhook can be registered for, one per distinct URL, the Administration's first",
+                                            "type": "array",
+                                            "items": {
+                                                "required": [
+                                                    "source",
+                                                    "host"
+                                                ],
+                                                "properties": {
+                                                    "source": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "administration",
+                                                            "app_url"
+                                                        ]
+                                                    },
+                                                    "host": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -1342,6 +1369,26 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "urlSource": {
+                                        "description": "Where the host of the webhook URL comes from: the host the Administration is opened with (default) or Shopware's `APP_URL`",
+                                        "type": "string",
+                                        "enum": [
+                                            "administration",
+                                            "app_url"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Returns the action taken for the webhook registration",

@@ -26,8 +26,11 @@ use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\Webhook\Registration\WebhookRegistrationChecker;
+use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -68,11 +71,13 @@ class WebhookServiceTest extends TestCase
 
         $this->webhookResource = $this->createMock(WebhookResource::class);
 
+        $urlBuilder = new WebhookUrlBuilder($this->router, new RequestStack(), '');
         $this->webhookService = new WebhookService(
             $this->webhookResource,
             new WebhookRegistry([new DummyWebhook($this->orderTransactionRepo)]),
             $this->systemConfig,
-            $this->router,
+            new WebhookRegistrationChecker($this->webhookResource, $this->systemConfig, $urlBuilder),
+            $urlBuilder,
             $this->createPayPalLogger(),
         );
     }

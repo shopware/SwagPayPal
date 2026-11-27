@@ -2886,7 +2886,13 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        result?: string;
+                        result: string;
+                        /** @description The hosts the webhook can be registered for, one per distinct URL, the Administration's first */
+                        urlSources: {
+                            /** @enum {string} */
+                            source: "administration" | "app_url";
+                            host: string;
+                        }[];
                     };
                 };
             };
@@ -2901,7 +2907,17 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Where the host of the webhook URL comes from: the host the Administration is opened with (default) or Shopware's `APP_URL`
+                     * @enum {string}
+                     */
+                    urlSource?: "administration" | "app_url";
+                };
+            };
+        };
         responses: {
             /** @description Returns the action taken for the webhook registration */
             200: {

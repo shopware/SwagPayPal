@@ -31,8 +31,10 @@ use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
+use Swag\PayPal\Webhook\Registration\WebhookRegistrationChecker;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
+use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
@@ -286,11 +288,14 @@ class WebhookSubscriberTest extends TestCase
      */
     private function createWebhookSubscriber(array $configuration): WebhookSubscriber
     {
+        $webhookResource = new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock());
+        $urlBuilder = new WebhookUrlBuilder($this->createMock(RouterInterface::class), new RequestStack(), '');
         $webhookService = new WebhookService(
-            new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock()),
+            $webhookResource,
             new WebhookRegistry([]),
             $this->systemConfigService,
-            $this->createMock(RouterInterface::class),
+            new WebhookRegistrationChecker($webhookResource, $this->systemConfigService, $urlBuilder),
+            $urlBuilder,
             new NullLogger(),
         );
 
