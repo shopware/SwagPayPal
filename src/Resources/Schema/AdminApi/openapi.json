@@ -2035,7 +2035,7 @@
                 "type": "object"
             },
             "swag_paypal_diagnostics_webhook_simulate_event": {
-                "description": "The request body of PayPal's simulate event call. PayPal requires either the webhook ID or a URL: set only one of them.",
+                "description": "PayPal requires either the webhook ID or the URL, not both.",
                 "required": [
                     "event_type",
                     "resource_version"
@@ -2082,7 +2082,7 @@
                 ],
                 "properties": {
                     "count": {
-                        "description": "Events PayPal created after the last webhook the shop received. Every webhook of an app receives every event of the app,\nso these events didn't arrive (or not yet, PayPal retries failed deliveries for 3 days).",
+                        "description": "Events PayPal created after the shop's last webhook. Every webhook of an app gets every event,\nso these didn't arrive, or not yet: PayPal retries for 3 days.",
                         "type": "integer"
                     },
                     "more": {

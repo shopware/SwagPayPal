@@ -754,7 +754,7 @@ export interface components {
             storefront: components["schemas"]["swag_paypal_diagnostics_twig_area_result"];
             documents: components["schemas"]["swag_paypal_diagnostics_twig_area_result"];
         };
-        /** @description The request body of PayPal's simulate event call. PayPal requires either the webhook ID or a URL: set only one of them. */
+        /** @description PayPal requires either the webhook ID or the URL, not both. */
         swag_paypal_diagnostics_webhook_simulate_event: {
             /** @description The ID of a registered webhook, PayPal sends the event to its URL. Either this or `url` must be set */
             webhook_id?: string;
@@ -769,8 +769,8 @@ export interface components {
         /** @description Events PayPal created after the last webhook the shop received */
         swag_paypal_diagnostics_webhook_missed_events: {
             /**
-             * @description Events PayPal created after the last webhook the shop received. Every webhook of an app receives every event of the app,
-             *     so these events didn't arrive (or not yet, PayPal retries failed deliveries for 3 days).
+             * @description Events PayPal created after the shop's last webhook. Every webhook of an app gets every event,
+             *     so these didn't arrive, or not yet: PayPal retries for 3 days.
              */
             count: number;
             /** @description Whether PayPal has more events than the counted ones */
