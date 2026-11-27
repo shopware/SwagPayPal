@@ -32,6 +32,40 @@
                 }
             }
         },
+        "/_action/paypal/diagnostics/twig/{salesChannelId}": {
+            "get": {
+                "tags": [
+                    "Admin Api",
+                    "PayPal"
+                ],
+                "description": "Checks whether templates of themes, extensions and apps keep the checked blocks of PayPal's storefront and document templates from rendering",
+                "operationId": "getPayPalTwigDiagnostics",
+                "parameters": [
+                    {
+                        "parameter": "salesChannelId",
+                        "name": "salesChannelId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The templates that keep checked PayPal blocks from rendering",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/swag_paypal_diagnostics_twig_result"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/paypal/dispute": {
             "get": {
                 "tags": [
@@ -1545,6 +1579,118 @@
                         "description": "The HTTP client's message when the request failed, for support",
                         "type": "string",
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_diagnostics_twig_template_override": {
+                "required": [
+                    "type",
+                    "severity",
+                    "templatePath",
+                    "namespace",
+                    "file",
+                    "line",
+                    "block",
+                    "affected"
+                ],
+                "properties": {
+                    "type": {
+                        "description": "A template of another extension or theme that keeps checked PayPal blocks from rendering.",
+                        "type": "string",
+                        "enum": [
+                            "missing_parent",
+                            "conditional_parent",
+                            "conditional_block",
+                            "template_replaced",
+                            "plugin_template_skipped",
+                            "dynamic_extends",
+                            "unreadable"
+                        ]
+                    },
+                    "severity": {
+                        "description": "`error` when PayPal blocks don't render, `warning` when they only render under some conditions, `unknown` when the check couldn't tell",
+                        "type": "string",
+                        "enum": [
+                            "error",
+                            "warning",
+                            "notice",
+                            "unknown"
+                        ]
+                    },
+                    "templatePath": {
+                        "description": "For example `storefront/page/checkout/confirm/index.html.twig` or `documents/invoice.html.twig`",
+                        "type": "string"
+                    },
+                    "namespace": {
+                        "description": "The extension, app or theme the overriding template belongs to",
+                        "type": "string"
+                    },
+                    "file": {
+                        "description": "Relative to the project directory. Null for templates stored in the database, like the ones of apps",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "line": {
+                        "type": "integer"
+                    },
+                    "block": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "affected": {
+                        "description": "The checked PayPal blocks that don't render",
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "block",
+                                "feature"
+                            ],
+                            "properties": {
+                                "block": {
+                                    "type": "string"
+                                },
+                                "feature": {
+                                    "description": "The feature named by the block's `@diagnostics` marker, for example `express_checkout_button`",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_diagnostics_twig_area_result": {
+                "required": [
+                    "applicable",
+                    "overrides"
+                ],
+                "properties": {
+                    "applicable": {
+                        "description": "False when nothing renders the area's templates, for example the storefront of a headless Sales Channel",
+                        "type": "boolean"
+                    },
+                    "overrides": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/swag_paypal_diagnostics_twig_template_override"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_diagnostics_twig_result": {
+                "required": [
+                    "storefront",
+                    "documents"
+                ],
+                "properties": {
+                    "storefront": {
+                        "$ref": "#/components/schemas/swag_paypal_diagnostics_twig_area_result"
+                    },
+                    "documents": {
+                        "$ref": "#/components/schemas/swag_paypal_diagnostics_twig_area_result"
                     }
                 },
                 "type": "object"
@@ -8361,12 +8507,12 @@
             "description": "SwagPayPalPaymentMethod"
         },
         {
-            "name": "Admin API",
-            "description": "Admin API"
-        },
-        {
             "name": "PayPal",
             "description": "PayPal"
+        },
+        {
+            "name": "Admin API",
+            "description": "Admin API"
         },
         {
             "name": "SwagPayPalPosWebhook",

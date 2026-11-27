@@ -22,6 +22,7 @@
     "tabs": {
       "general": "Allgemein",
       "storefront": "Storefront-Darstellung",
+      "diagnostics": "Diagnose",
       "advanced": "Fortgeschritten"
     },
     "options": {
@@ -241,6 +242,77 @@
         },
         "viewResults": "{count} Endpunkt-Ergebnis anzeigen | {count} Endpunkt-Ergebnisse anzeigen",
         "noAddresses": "Keine gefunden"
+      },
+      "twig": {
+        "title": "Überschriebene Templates",
+        "subtitle": "Prüft, ob Templates von Themes, Erweiterungen und Apps verhindern, dass PayPal-Elemente in diesem Verkaufskanal angezeigt werden.",
+        "buttonCheck": "Erneut prüfen",
+        "selectSalesChannel": "Wähle einen Verkaufskanal aus, um seine Templates zu prüfen.",
+        "failed": "Die Templates konnten nicht geprüft werden.",
+        "errorMessage": "Die Templates konnten nicht geprüft werden:<br>{message}",
+        "labelTemplate": "Template",
+        "labelOverriddenBlock": "Überschriebener Block",
+        "labelContainedBlocks": "Enthält PayPal-Block | Enthält PayPal-Blöcke",
+        "labelPayPalBlocks": "PayPal-Block | PayPal-Blöcke",
+        "areas": {
+          "storefront": {
+            "title": "Storefront",
+            "notApplicable": "Nicht geprüft, da dieser Verkaufskanal keine Storefront hat.",
+            "noOverrides": "Kein Template verhindert, dass PayPal-Elemente in der Storefront angezeigt werden."
+          },
+          "documents": {
+            "title": "Dokumente",
+            "notApplicable": "Für diesen Verkaufskanal nicht geprüft.",
+            "noOverrides": "Kein Template verhindert, dass PayPal-Angaben auf Dokumenten angezeigt werden."
+          }
+        },
+        "types": {
+          "missing_parent": {
+            "title": "{namespace} ersetzt PayPal-Elemente",
+            "description": "Dieses Template überschreibt einen PayPal-Block oder einen Block, der einen enthält, ohne parent() aufzurufen, daher werden die PayPal-Elemente nicht angezeigt."
+          },
+          "conditional_parent": {
+            "title": "Mögliche Überschreibung in {namespace}",
+            "description": "Dieses Template überschreibt einen PayPal-Block oder einen Block, der einen enthält, und ruft parent() nur innerhalb von if oder for auf, daher werden die PayPal-Elemente eventuell nicht angezeigt."
+          },
+          "conditional_block": {
+            "title": "Mögliche Überschreibung in {namespace}",
+            "description": "Dieses Template überschreibt einen Block, der einen PayPal-Block enthält, und behält den PayPal-Block nur innerhalb von if oder for bei, daher werden die PayPal-Elemente eventuell nicht angezeigt."
+          },
+          "template_replaced": {
+            "title": "{namespace} ersetzt ein PayPal-Template",
+            "description": "Dieses Template erweitert das überschriebene Template nicht und ersetzt es daher komplett, samt der PayPal-Elemente."
+          },
+          "plugin_template_skipped": {
+            "title": "{namespace} überspringt ein PayPal-Template",
+            "description": "Dieses Template verwendet extends statt sw_extends und überspringt daher das PayPal-Template."
+          },
+          "dynamic_extends": {
+            "title": "Ein Template von {namespace} kann nicht geprüft werden",
+            "description": "Dieses Template erweitert ein Template, dessen Name in einer Variable steht, daher kann nicht geprüft werden, ob PayPal-Elemente angezeigt werden."
+          },
+          "unreadable": {
+            "title": "Ein Template von {namespace} kann nicht gelesen werden",
+            "description": "Das Template konnte nicht verarbeitet werden, zum Beispiel weil es ein nicht vorhandenes Template erweitert. Das muss sich nicht auf die Anzeige auswirken."
+          }
+        },
+        "features": {
+          "card_fields": "Felder für Kartenzahlung",
+          "checkout_buttons": "Zahlungsbuttons im Checkout",
+          "express_checkout_button": "Express-Checkout-Button",
+          "express_checkout_parameter": "Express Checkout nach Wechsel der Zahlungs- oder Versandart",
+          "funding_eligibility": "Verfügbarkeitsprüfung der Zahlungsarten",
+          "pay_later_banner": "'Später Bezahlen'-Banner",
+          "pui_bank_details": "Bankverbindung für Rechnungskauf",
+          "pui_disclaimer": "Rechtlicher Hinweis zum Rechnungskauf",
+          "pui_fields": "Kundenfelder für Rechnungskauf",
+          "pui_instructions": "Zahlungsanweisungen für Rechnungskauf",
+          "pui_payment_method": "Zahlungsart Rechnungskauf",
+          "sdk_configuration": "Konfiguration des PayPal-Skripts",
+          "vault": "Gespeicherte Zahlungsarten",
+          "wallet_scripts": "Skripte für Apple Pay und Google Pay"
+        },
+        "noOverridesSubtitle": "Erweiterungen von Shopware werden nicht geprüft."
       },
       "status": {
         "error": "Fehler",

@@ -1,0 +1,107 @@
+<mt-card
+    class="swag-paypal-settings-diagnostics-twig"
+    position-identifier="swag-paypal-settings-diagnostics-twig"
+    :title="$t('swag-paypal-settings.diagnostics.twig.title')"
+    :subtitle="$t('swag-paypal-settings.diagnostics.twig.subtitle')"
+    :is-loading="isChecking"
+>
+    <template #headerRight>
+        <mt-button
+            class="swag-paypal-settings-diagnostics-twig__check-button"
+            variant="secondary"
+            size="small"
+            :disabled="!settingsStore.salesChannel || isChecking"
+            @click="onCheck"
+        >
+            {{ $t('swag-paypal-settings.diagnostics.twig.buttonCheck') }}
+        </mt-button>
+    </template>
+
+    <mt-banner
+        v-if="!settingsStore.salesChannel"
+        class="swag-paypal-settings-diagnostics-twig__select-sales-channel"
+        variant="info"
+    >
+        {{ $t('swag-paypal-settings.diagnostics.twig.selectSalesChannel') }}
+    </mt-banner>
+
+    <mt-banner
+        v-else-if="check?.status === 'failed'"
+        class="swag-paypal-settings-diagnostics-twig__failed"
+        variant="critical"
+    >
+        {{ $t('swag-paypal-settings.diagnostics.twig.failed') }}
+    </mt-banner>
+
+    <div
+        v-else
+        class="swag-paypal-settings-diagnostics-twig__areas"
+    >
+        <swag-paypal-settings-diagnostics-section
+            v-for="area in areas"
+            :key="area.name"
+            class="swag-paypal-settings-diagnostics-twig__area"
+            :class="`swag-paypal-settings-diagnostics-twig__area--${area.name}`"
+            :title="$t(`swag-paypal-settings.diagnostics.twig.areas.${area.name}.title`)"
+        >
+            <swag-paypal-settings-diagnostics-item
+                v-if="!area.applicable"
+                class="swag-paypal-settings-diagnostics-twig__not-applicable"
+                status="not-observed"
+                :title="$t(`swag-paypal-settings.diagnostics.twig.areas.${area.name}.notApplicable`)"
+            />
+
+            <swag-paypal-settings-diagnostics-item
+                v-else-if="area.overrides.length === 0"
+                class="swag-paypal-settings-diagnostics-twig__no-overrides"
+                status="passed"
+                :title="$t(`swag-paypal-settings.diagnostics.twig.areas.${area.name}.noOverrides`)"
+                :subtitle="$t('swag-paypal-settings.diagnostics.twig.noOverridesSubtitle')"
+            />
+
+            <template v-else>
+                <swag-paypal-settings-diagnostics-item
+                    v-for="(override, index) in area.overrides"
+                    :key="index"
+                    class="swag-paypal-settings-diagnostics-twig__override"
+                    :status="overrideStatus(override)"
+                    :title="$t(`swag-paypal-settings.diagnostics.twig.types.${override.type}.title`, { namespace: override.namespace })"
+                    :subtitle="featureLabels(override)"
+                >
+                    <p class="swag-paypal-settings-diagnostics-item__description">
+                        {{ $t(`swag-paypal-settings.diagnostics.twig.types.${override.type}.description`) }}
+                    </p>
+
+                    <dl class="swag-paypal-settings-diagnostics-item__details">
+                        <dt>{{ $t('swag-paypal-settings.diagnostics.twig.labelTemplate') }}</dt>
+                        <dd><code>{{ location(override) }}</code></dd>
+
+                        <template v-if="override.block">
+                            <dt>{{ $t('swag-paypal-settings.diagnostics.twig.labelOverriddenBlock') }}</dt>
+                            <dd class="swag-paypal-settings-diagnostics-twig__overridden-block">
+                                <code>{{ override.block }}</code>
+                            </dd>
+                        </template>
+
+                        <template v-if="paypalBlocks(override).length > 0">
+                            <dt>
+                                {{ $t(
+                                    override.block
+                                        ? 'swag-paypal-settings.diagnostics.twig.labelContainedBlocks'
+                                        : 'swag-paypal-settings.diagnostics.twig.labelPayPalBlocks',
+                                    paypalBlocks(override).length,
+                                ) }}
+                            </dt>
+                            <dd class="swag-paypal-settings-diagnostics-twig__paypal-blocks">
+                                <code
+                                    v-for="block in paypalBlocks(override)"
+                                    :key="block"
+                                >{{ block }}</code>
+                            </dd>
+                        </template>
+                    </dl>
+                </swag-paypal-settings-diagnostics-item>
+            </template>
+        </swag-paypal-settings-diagnostics-section>
+    </div>
+</mt-card>

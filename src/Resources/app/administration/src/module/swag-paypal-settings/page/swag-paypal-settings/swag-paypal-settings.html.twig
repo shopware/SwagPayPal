@@ -44,6 +44,13 @@
                         {{ $t('swag-paypal-settings.tabs.storefront') }}
                     </sw-tabs-item>
                     <sw-tabs-item
+                        key="diagnostics"
+                        :active-tab="active"
+                        :route="{ name: 'swag.paypal.settings.index.diagnostics' }"
+                    >
+                        {{ $t('swag-paypal-settings.tabs.diagnostics') }}
+                    </sw-tabs-item>
+                    <sw-tabs-item
                         key="advanced"
                         :active-tab="active"
                         :route="{ name: 'swag.paypal.settings.index.advanced' }"
@@ -53,7 +60,9 @@
                 </template>
             </sw-tabs>
 
-            <swag-paypal-settings-sales-channel-switch />
+            <swag-paypal-settings-sales-channel-switch
+                :show-default-payment="$route.name !== 'swag.paypal.settings.index.diagnostics'"
+            />
 
             <keep-alive>
                 <router-view />

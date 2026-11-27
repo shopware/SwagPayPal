@@ -3,10 +3,11 @@ import SwagPayPalSettingsSalesChannelSwitch from '.';
 
 Shopware.Component.register('swag-paypal-settings-sales-channel-switch', Promise.resolve(SwagPayPalSettingsSalesChannelSwitch));
 
-async function createWrapper() {
+async function createWrapper(props: { showDefaultPayment?: boolean } = {}) {
     return mount(
         await Shopware.Component.build('swag-paypal-settings-sales-channel-switch') as typeof SwagPayPalSettingsSalesChannelSwitch,
         {
+            props,
             global: {
                 mocks: { $t: (key: string) => key },
                 provide: {
@@ -43,6 +44,14 @@ describe('swag-paypal-settings-sales-channel-switch', () => {
         const wrapper = await createWrapper();
 
         expect(wrapper.vm).toBeTruthy();
+    });
+
+    it('should show the default payment method block unless told not to', async () => {
+        expect((await createWrapper()).find('.swag-paypal-settings-sales-channel-switch__default').exists()).toBe(true);
+
+        const wrapper = await createWrapper({ showDefaultPayment: false });
+        expect(wrapper.find('.swag-paypal-settings-sales-channel-switch__default').exists()).toBe(false);
+        expect(wrapper.find('.sw-single-select').exists()).toBe(true);
     });
 
     it('should fetch sales channels on creation', async () => {

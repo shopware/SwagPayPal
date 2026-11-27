@@ -3,6 +3,7 @@
 {% block buy_widget_buy_container %}
     {{ parent() }}
 
+    {# @diagnostics express_checkout_button #}
     {% block buy_widget_buy_button_container_paypal %}
         {% set isProductDetail = cmsPage.type is same as 'product_detail' %}
 

@@ -22,6 +22,7 @@
     "tabs": {
       "general": "General",
       "storefront": "Storefront presentation",
+      "diagnostics": "Diagnostics",
       "advanced": "Advanced"
     },
     "options": {
@@ -241,6 +242,77 @@
         },
         "viewResults": "View {count} endpoint result | View {count} endpoint results",
         "noAddresses": "None found"
+      },
+      "twig": {
+        "title": "Template overrides",
+        "subtitle": "Checks whether templates of themes, extensions and apps keep PayPal elements from showing in this Sales Channel.",
+        "buttonCheck": "Check again",
+        "selectSalesChannel": "Select a Sales Channel to check its templates.",
+        "failed": "The templates couldn't be checked.",
+        "errorMessage": "The templates couldn't be checked:<br>{message}",
+        "labelTemplate": "Template",
+        "labelOverriddenBlock": "Overridden block",
+        "labelContainedBlocks": "Contains PayPal block | Contains PayPal blocks",
+        "labelPayPalBlocks": "PayPal block | PayPal blocks",
+        "areas": {
+          "storefront": {
+            "title": "Storefront",
+            "notApplicable": "Not checked, as this Sales Channel has no storefront.",
+            "noOverrides": "No template keeps PayPal elements from showing in the storefront."
+          },
+          "documents": {
+            "title": "Documents",
+            "notApplicable": "Not checked for this Sales Channel.",
+            "noOverrides": "No template keeps PayPal details from showing on documents."
+          }
+        },
+        "types": {
+          "missing_parent": {
+            "title": "{namespace} replaces PayPal elements",
+            "description": "This template overrides a PayPal block, or a block around one, without calling parent(), so the PayPal elements don't show."
+          },
+          "conditional_parent": {
+            "title": "Possible override in {namespace}",
+            "description": "This template overrides a PayPal block, or a block around one, and calls parent() only inside an if or for, so the PayPal elements may not show."
+          },
+          "conditional_block": {
+            "title": "Possible override in {namespace}",
+            "description": "This template overrides a block around a PayPal block and keeps the PayPal block only inside an if or for, so the PayPal elements may not show."
+          },
+          "template_replaced": {
+            "title": "{namespace} replaces a PayPal template",
+            "description": "This template doesn't extend the template it overrides, so it replaces it completely, including the PayPal elements."
+          },
+          "plugin_template_skipped": {
+            "title": "{namespace} skips a PayPal template",
+            "description": "This template uses extends instead of sw_extends, so it skips the PayPal template."
+          },
+          "dynamic_extends": {
+            "title": "Can't check a template of {namespace}",
+            "description": "This template extends a template named in a variable, so the check can't tell whether PayPal elements show."
+          },
+          "unreadable": {
+            "title": "Can't read a template of {namespace}",
+            "description": "The template couldn't be parsed, for example because it extends a template that doesn't exist. This doesn't necessarily affect what's shown."
+          }
+        },
+        "features": {
+          "card_fields": "Card payment fields",
+          "checkout_buttons": "Payment buttons in the checkout",
+          "express_checkout_button": "Express Checkout button",
+          "express_checkout_parameter": "Express Checkout after changing the payment or shipping method",
+          "funding_eligibility": "Availability check of payment methods",
+          "pay_later_banner": "'Pay Later' banner",
+          "pui_bank_details": "Pay upon invoice bank details",
+          "pui_disclaimer": "Pay upon invoice legal notice",
+          "pui_fields": "Pay upon invoice customer fields",
+          "pui_instructions": "Pay upon invoice payment instructions",
+          "pui_payment_method": "Pay upon invoice payment method",
+          "sdk_configuration": "PayPal script configuration",
+          "vault": "Saved payment methods",
+          "wallet_scripts": "Apple Pay and Google Pay scripts"
+        },
+        "noOverridesSubtitle": "Extensions made by Shopware aren't checked."
       },
       "status": {
         "error": "Error",

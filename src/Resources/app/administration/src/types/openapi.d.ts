@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/_action/paypal/diagnostics/twig/{salesChannelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Checks whether templates of themes, extensions and apps keep the checked blocks of PayPal's storefront and document templates from rendering */
+        get: operations["getPayPalTwigDiagnostics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/paypal/dispute": {
         parameters: {
             query?: never;
@@ -586,6 +603,41 @@ export interface components {
             location: string | null;
             /** @description The HTTP client's message when the request failed, for support */
             detail: string | null;
+        };
+        swag_paypal_diagnostics_twig_template_override: {
+            /**
+             * @description A template of another extension or theme that keeps checked PayPal blocks from rendering.
+             * @enum {string}
+             */
+            type: "missing_parent" | "conditional_parent" | "conditional_block" | "template_replaced" | "plugin_template_skipped" | "dynamic_extends" | "unreadable";
+            /**
+             * @description `error` when PayPal blocks don't render, `warning` when they only render under some conditions, `unknown` when the check couldn't tell
+             * @enum {string}
+             */
+            severity: "error" | "warning" | "notice" | "unknown";
+            /** @description For example `storefront/page/checkout/confirm/index.html.twig` or `documents/invoice.html.twig` */
+            templatePath: string;
+            /** @description The extension, app or theme the overriding template belongs to */
+            namespace: string;
+            /** @description Relative to the project directory. Null for templates stored in the database, like the ones of apps */
+            file: string | null;
+            line: number;
+            block: string | null;
+            /** @description The checked PayPal blocks that don't render */
+            affected: {
+                block: string;
+                /** @description The feature named by the block's `@diagnostics` marker, for example `express_checkout_button` */
+                feature: string;
+            }[];
+        };
+        swag_paypal_diagnostics_twig_area_result: {
+            /** @description False when nothing renders the area's templates, for example the storefront of a headless Sales Channel */
+            applicable: boolean;
+            overrides: components["schemas"]["swag_paypal_diagnostics_twig_template_override"][];
+        };
+        swag_paypal_diagnostics_twig_result: {
+            storefront: components["schemas"]["swag_paypal_diagnostics_twig_area_result"];
+            documents: components["schemas"]["swag_paypal_diagnostics_twig_area_result"];
         };
         swag_paypal_pos_webhook: {
             organizationUuid: string;
@@ -2126,6 +2178,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getPayPalTwigDiagnostics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                salesChannelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The templates that keep checked PayPal blocks from rendering */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["swag_paypal_diagnostics_twig_result"];
+                };
             };
         };
     };

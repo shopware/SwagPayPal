@@ -4,6 +4,7 @@
 } %}
 
 {% block page_checkout_confirm_form_submit %}
+    {# @diagnostics pui_disclaimer #}
     {% block page_checkout_confirm_form_pui_disclaimer %}
         {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData puiFraudnetData #}
         {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
@@ -14,6 +15,7 @@
 
     {{ parent() }}
 
+    {# @diagnostics checkout_buttons #}
     {% block page_checkout_confirm_form_submit_paypal_container %}
         {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
         {% if config('SwagPayPal.settings.sdkV6Enabled') %}

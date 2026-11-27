@@ -1,0 +1,7 @@
+.swag-paypal-settings-diagnostics-twig {
+    &__paypal-blocks {
+        display: grid;
+        gap: var(--scale-size-4);
+        justify-items: start;
+    }
+}

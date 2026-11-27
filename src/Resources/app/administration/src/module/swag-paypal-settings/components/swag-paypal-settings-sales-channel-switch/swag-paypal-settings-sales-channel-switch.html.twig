@@ -18,7 +18,10 @@
         :disabled="!acl.can('swag_paypal.editor') || isLoading || settingsStore.isLoading"
     />
 
-    <div class="swag-paypal-settings-sales-channel-switch__default">
+    <div
+        v-if="showDefaultPayment"
+        class="swag-paypal-settings-sales-channel-switch__default"
+    >
         <p>{{ $t('swag-paypal-settings-sales-channel-switch.description') }}</p>
 
         <sw-button-process

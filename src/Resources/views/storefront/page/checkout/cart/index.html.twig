@@ -3,6 +3,7 @@
 {% block page_checkout_cart_table_items %}
     {{ parent() }}
 
+    {# @diagnostics pay_later_banner #}
     {% block page_checkout_cart_table_items_paypal_installment_banner %}
         {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
         {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID')] %}
@@ -26,6 +27,7 @@
 {% block page_checkout_aside_actions %}
     {{ parent() }}
 
+    {# @diagnostics express_checkout_button #}
     {% block page_checkout_aside_actions_paypal_express_button %}
         {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
         {% set expressSettings = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
@@ -39,6 +41,7 @@
         {% endif %}
     {% endblock %}
 
+    {# @diagnostics pay_later_banner #}
     {% block page_checkout_aside_actions_paypal_installment_banner %}
         {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
         {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
