@@ -70,7 +70,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
                 return ReachabilityProbe::answer($response);
             }
 
-            $this->logger->warning('Rejected a shipping callback with an invalid payload', Log::context(
+            $this->logger->notice('Rejected a shipping callback with an invalid payload', Log::context(
                 code: LogCode::EXPRESS_CALLBACK_INVALID,
                 salesChannelId: $salesChannelContext->getSalesChannelId(),
             ));

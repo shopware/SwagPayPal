@@ -49,6 +49,18 @@ export const COUNTRY_OVERRIDES = [
 
 export type COUNTRY_OVERRIDE = typeof COUNTRY_OVERRIDES[number];
 
+// Monolog's level values, 0 turns the logs off
+export const LOG_LEVELS = {
+    off: 0,
+    debug: 100,
+    info: 200,
+    notice: 250,
+    warning: 300,
+    error: 400,
+} as const;
+
+export type LOG_LEVEL = typeof LOG_LEVELS[keyof typeof LOG_LEVELS];
+
 export const INTENTS = [
     'CAPTURE',
     'AUTHORIZE',
@@ -169,6 +181,7 @@ export const SYSTEM_CONFIGS = [
 
     'SwagPayPal.settings.isLocalEnvironment',
     'SwagPayPal.settings.sdkV6Enabled',
+    'SwagPayPal.settings.logLevel',
 ] as const;
 
 export type SYSTEM_CONFIG = typeof SYSTEM_CONFIGS[number];

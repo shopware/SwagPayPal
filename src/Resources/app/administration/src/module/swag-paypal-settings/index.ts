@@ -1,5 +1,6 @@
 Shopware.Component.register('swag-paypal-settings-diagnostics-express-callback', () => import('./components/swag-paypal-settings-diagnostics-express-callback'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-item', () => import('./components/swag-paypal-settings-diagnostics-item'));
+Shopware.Component.register('swag-paypal-settings-diagnostics-log', () => import('./components/swag-paypal-settings-diagnostics-log'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-reachability', () => import('./components/swag-paypal-settings-diagnostics-reachability'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-section', () => import('./components/swag-paypal-settings-diagnostics-section'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-twig', () => import('./components/swag-paypal-settings-diagnostics-twig'));

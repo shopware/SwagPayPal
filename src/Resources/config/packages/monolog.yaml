@@ -1,2 +1,7 @@
 monolog:
     channels: ['paypal']
+    handlers:
+        paypal_database:
+            type: service
+            id: Swag\PayPal\Diagnostics\Log\Recording\DatabaseLogHandler
+            channels: ['paypal']

@@ -1,0 +1,117 @@
+.swag-paypal-settings-diagnostics-log {
+    &__subtitle {
+        color: var(--color-text-secondary-default);
+        font-size: var(--font-size-xs);
+        line-height: var(--font-line-height-xs);
+    }
+
+    &__toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: var(--scale-size-16);
+        padding: var(--scale-size-24);
+        border-bottom: var(--scale-size-1) solid var(--color-border-secondary-default);
+        background: var(--color-elevation-surface-sunken);
+
+        .mt-field {
+            margin-bottom: 0;
+        }
+    }
+
+    &__search {
+        width: 100%;
+    }
+
+    &__level {
+        display: inline-flex;
+        align-items: center;
+        height: var(--scale-size-20);
+        padding: 0 var(--scale-size-8);
+        border: 1px solid var(--color-border-primary-default);
+        border-radius: var(--border-radius-round);
+        background-color: var(--color-background-secondary-default);
+        color: var(--color-text-primary-default);
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-medium);
+        line-height: var(--font-line-height-2xs);
+        white-space: nowrap;
+
+        @each $tone in critical, attention, brand, secondary {
+            &--#{$tone} {
+                border-color: var(--color-border-#{$tone}-default);
+                background-color: var(--color-background-#{$tone}-default);
+            }
+        }
+    }
+
+    &__message {
+        // a flex item of the cell; width 0 keeps the text out of the table's automatic column sizing
+        flex: 1 1 0;
+        width: 0;
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+        background: none;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+
+        // the cell's line height equals the font size, so Firefox would cut off the underline
+        line-height: normal;
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:focus-visible {
+            outline: var(--scale-size-2) solid var(--color-border-brand-default);
+            outline-offset: var(--scale-size-2);
+            border-radius: var(--border-radius-2xs);
+        }
+
+        &:hover,
+        &:focus-visible {
+            text-decoration: underline;
+        }
+    }
+
+    &__empty {
+        padding: var(--scale-size-24);
+        text-align: center;
+    }
+}
+
+.swag-paypal-settings-diagnostics-log-detail {
+    &__facts {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        align-items: center;
+        gap: 8px 24px;
+        margin: 0 0 24px;
+
+        dt {
+            font-weight: 600;
+        }
+
+        dd {
+            margin: 0;
+        }
+    }
+
+    h4 {
+        margin: 16px 0 8px;
+    }
+
+    &__message {
+        overflow-wrap: anywhere;
+    }
+
+    &__json {
+        margin: 0;
+        padding: 12px 16px;
+        overflow-x: auto;
+        border-radius: 4px;
+        background: var(--color-background-secondary-default, #f0f2f5);
+        font-family: monospace;
+        font-size: 13px;
+    }
+}

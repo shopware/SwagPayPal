@@ -40,3 +40,35 @@
         />
     </div>
 </mt-card>
+
+{% block swag_paypal_settings_logs %}
+<mt-card
+    class="swag-paypal-settings-logs"
+    position-identifier="swag-paypal-settings-logs"
+    :title="$t('swag-paypal-settings.logs.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <div class="swag-paypal-settings-logs__content">
+        <i18n-t
+            class="swag-paypal-settings-logs__info-text"
+            keypath="swag-paypal-settings.logs.info"
+            tag="span"
+        >
+            <template #diagnostics>
+                <mt-link
+                    type="internal"
+                    :to="{ name: 'swag.paypal.settings.index.diagnostics' }"
+                >
+                    {{ $t('swag-paypal-settings.tabs.diagnostics') }}
+                </mt-link>
+            </template>
+        </i18n-t>
+
+        <swag-paypal-setting
+            path="SwagPayPal.settings.logLevel"
+            :options="logLevelOptions"
+            :disabled="!!settingsStore.salesChannel"
+        />
+    </div>
+</mt-card>
+{% endblock %}

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
+use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -297,6 +298,17 @@ class UpdateTest extends TestCase
         yield 'installment banner logo type' => ['10.6.0', '10.7.0', Settings::INSTALLMENT_BANNER_LOGO_TYPE, 'alternative'];
         yield 'installment banner text color' => ['10.6.0', '10.7.0', Settings::INSTALLMENT_BANNER_TEXT_COLOR, 'blue'];
         yield 'installment banner text size' => ['10.6.0', '10.7.0', Settings::INSTALLMENT_BANNER_TEXT_SIZE, 16];
+        yield 'log level' => ['10.9.0', '10.10.0', Settings::LOG_LEVEL, 0];
+    }
+
+    public function testUpdateTo10100SetsTheDefaultLogLevel(): void
+    {
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfig->delete(Settings::LOG_LEVEL);
+
+        $this->createUpdateService($systemConfig)->update($this->createUpdateContext('10.9.0', '10.10.0'));
+
+        static::assertSame(Level::Warning->value, $systemConfig->get(Settings::LOG_LEVEL));
     }
 
     public function testUpdateSkipsNonNumericCurrentPluginVersion(): void

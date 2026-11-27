@@ -146,7 +146,50 @@
       "ineligible": "The PayPal SDK v6 is not activated for your PayPal account yet. You can activate it in your PayPal merchant account.",
       "undetermined": "Could not determine whether the PayPal SDK v6 is activated for your PayPal account. Please make sure that your API credentials are valid and that PayPal can be reached."
     },
+    "logs": {
+      "title": "Logs",
+      "info": "Stores the PayPal log entries from the selected level up in the database of this shop. You can view them in the {diagnostics} tab. Turn it off if you collect your logs elsewhere, e.g. in Datadog or Loki.",
+      "level": {
+        "off": "Off",
+        "debug": "Debug",
+        "info": "Info",
+        "notice": "Notice",
+        "warning": "Warning",
+        "error": "Error",
+        "critical": "Critical"
+      }
+    },
     "diagnostics": {
+      "log": {
+        "title": "Log",
+        "subtitle": "Log level: {level}. You can change it in the {advanced} tab.",
+        "searchPlaceholder": "Search message, code, context and extra",
+        "reload": "Reload",
+        "columnTime": "Time",
+        "columnLevel": "Level",
+        "columnCode": "Code",
+        "columnMessage": "Message",
+        "empty": "There are no log entries yet.",
+        "emptyOff": "The log level is Off, so no log entries are stored.",
+        "errorMessage": "The log couldn't be loaded: {message}",
+        "emptyFiltered": "No log entries match your search or filters.",
+        "filter": {
+          "level": "Level",
+          "code": "Code",
+          "period": {
+            "all": "All time",
+            "hour": "Last hour",
+            "day": "Last 24 hours",
+            "week": "Last 7 days"
+          }
+        },
+        "detail": {
+          "title": "Log entry",
+          "context": "Context",
+          "extra": "Extra",
+          "close": "Close"
+        }
+      },
       "expressCallback": {
         "title": "Express Checkout callback",
         "subtitle": "PayPal calls this shop to update the shipping costs when a buyer changes the shipping method in the PayPal dialog.",

@@ -197,7 +197,7 @@ class WebhookController extends AbstractController
         if (!$this->validateShopwareToken($token, $context)) {
             if ($id = $request->request->get('id')) {
                 // unauthenticated input, `Log::context()` cuts it
-                $this->logger->warning('Rejected a PayPal webhook event with a token that doesn\'t match this shop', Log::context(
+                $this->logger->notice('Rejected a PayPal webhook event with a token that doesn\'t match this shop', Log::context(
                     code: LogCode::WEBHOOK_TOKEN_INVALID,
                     webhookEventId: (string) $id,
                     webhookEventType: (string) $request->request->get('event_type'),

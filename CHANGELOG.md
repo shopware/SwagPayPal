@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PayPal log lines from the level "Warning" up are now stored in the database for 30 days, at most 100,000 lines, and shown in the tab "Diagnostics". The level can be changed or turned off in the tab "Advanced", the environment variable `PAYPAL_DB_LOGGER=0` turns it off for shops that collect their logs elsewhere (shopware/SwagPayPal#800)
 - Added a webhook check to the tab "Diagnostics", which shows the registration and the last webhook, finds events that PayPal sent but that didn't arrive, and sends test webhooks (shopware/SwagPayPal#800)
 - Added a check of the Express Checkout shipping callback to the tab "Diagnostics", which shows the last callback of PayPal and tests whether its URLs are reachable (shopware/SwagPayPal#800)
 - Added the tab "Diagnostics" to the PayPal settings, which shows if a theme or another plugin hides the PayPal buttons by overriding their templates (shopware/SwagPayPal#800)

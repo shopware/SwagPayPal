@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { config, mount } from '@vue/test-utils';
 import SwagPayPalSettingsAdvanced from '.';
 import type SwagPayPalSetting from 'SwagPayPal/app/component/swag-paypal-setting';
 
@@ -25,6 +25,10 @@ async function createWrapper() {
 }
 
 describe('swag-paypal-settings-advanced', () => {
+    afterEach(() => {
+        Shopware.Store.get('swagPayPalSettings').$reset();
+    });
+
     it('should be a Vue.js component', async () => {
         const wrapper = await createWrapper();
 
@@ -43,6 +47,7 @@ describe('swag-paypal-settings-advanced', () => {
         expect(cardClasses).toEqual([
             'swag-paypal-settings-environment',
             'swag-paypal-settings-cross-border',
+            'swag-paypal-settings-logs',
         ]);
     });
 
@@ -56,10 +61,56 @@ describe('swag-paypal-settings-advanced', () => {
             'SwagPayPal.settings.isLocalEnvironment',
             'SwagPayPal.settings.crossBorderMessagingEnabled',
             'SwagPayPal.settings.crossBorderBuyerCountry',
+            'SwagPayPal.settings.logLevel',
         ]);
 
         expect(settings['SwagPayPal.settings.crossBorderBuyerCountry'].vm.$attrs.options)
             .toBe(wrapper.vm.countryOverrideOptions);
+        expect(settings['SwagPayPal.settings.logLevel'].vm.$attrs.options)
+            .toBe(wrapper.vm.logLevelOptions);
+    });
+
+    it('should offer every log level and turning the logs off', async () => {
+        const wrapper = await createWrapper();
+
+        expect(wrapper.vm.logLevelOptions).toEqual([
+            { value: 0, label: 'swag-paypal-settings.logs.level.off' },
+            { value: 100, label: 'swag-paypal-settings.logs.level.debug' },
+            { value: 200, label: 'swag-paypal-settings.logs.level.info' },
+            { value: 250, label: 'swag-paypal-settings.logs.level.notice' },
+            { value: 300, label: 'swag-paypal-settings.logs.level.warning' },
+            { value: 400, label: 'swag-paypal-settings.logs.level.error' },
+        ]);
+    });
+
+    it('should change the log level only for all Sales Channels', async () => {
+        const wrapper = await createWrapper();
+        const logLevel = () => wrapper
+            .findAllComponents<typeof SwagPayPalSetting>({ name: 'swag-paypal-setting' })
+            .find((el) => el.props().path === 'SwagPayPal.settings.logLevel');
+
+        expect(logLevel()?.vm.$attrs.disabled).toBe(false);
+
+        Shopware.Store.get('swagPayPalSettings').salesChannel = 'a1b2c3d4e5f60718293a4b5c6d7e8f90';
+        await flushPromises();
+
+        expect(logLevel()?.vm.$attrs.disabled).toBe(true);
+    });
+
+    it('should link the logs to the Diagnostics tab', async () => {
+        // i18n-t renders the link only for a message with its placeholder
+        const i18n = config.global.plugins.find((plugin) => 'global' in plugin) as unknown as {
+            global: { mergeLocaleMessage: (locale: string, messages: Record<string, string>) => void };
+        };
+        i18n.global.mergeLocaleMessage('en', { 'swag-paypal-settings.logs.info': 'View them in the {diagnostics} tab.' });
+
+        const wrapper = await createWrapper();
+
+        const link = wrapper.findComponent<{ props: () => { to: unknown } }>('.swag-paypal-settings-logs__info-text .mt-link');
+
+        expect(link.exists()).toBe(true);
+        expect(link.props('to')).toEqual({ name: 'swag.paypal.settings.index.diagnostics' });
+        expect(link.text()).toBe('swag-paypal-settings.tabs.diagnostics');
     });
 
     it('should have cross-border information', async () => {

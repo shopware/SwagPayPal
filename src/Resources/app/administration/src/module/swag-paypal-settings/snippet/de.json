@@ -146,7 +146,50 @@
       "ineligible": "Das PayPal SDK v6 ist für dein PayPal-Konto noch nicht aktiviert. Du kannst es in deinem PayPal-Händlerkonto aktivieren.",
       "undetermined": "Es konnte nicht ermittelt werden, ob das PayPal SDK v6 für dein PayPal-Konto aktiviert ist. Bitte stelle sicher, dass deine API-Zugangsdaten gültig sind und PayPal erreichbar ist."
     },
+    "logs": {
+      "title": "Logs",
+      "info": "Speichert die PayPal-Logeinträge ab dem gewählten Level in der Datenbank dieses Shops. Du kannst sie im Tab {diagnostics} ansehen. Schalte es aus, wenn du deine Logs anderswo sammelst, z. B. in Datadog oder Loki.",
+      "level": {
+        "off": "Aus",
+        "debug": "Debug",
+        "info": "Info",
+        "notice": "Hinweis",
+        "warning": "Warnung",
+        "error": "Fehler",
+        "critical": "Kritisch"
+      }
+    },
     "diagnostics": {
+      "log": {
+        "title": "Log",
+        "subtitle": "Log-Level: {level}. Du kannst es im Tab „{advanced}“ ändern.",
+        "searchPlaceholder": "Nachricht, Code, Kontext und Extra durchsuchen",
+        "reload": "Neu laden",
+        "columnTime": "Zeit",
+        "columnLevel": "Level",
+        "columnCode": "Code",
+        "columnMessage": "Nachricht",
+        "empty": "Es gibt noch keine Logeinträge.",
+        "emptyOff": "Das Log-Level ist „Aus“, daher werden keine Logeinträge gespeichert.",
+        "errorMessage": "Das Log konnte nicht geladen werden: {message}",
+        "emptyFiltered": "Keine Logeinträge passen zu deiner Suche oder deinen Filtern.",
+        "filter": {
+          "level": "Level",
+          "code": "Code",
+          "period": {
+            "all": "Gesamter Zeitraum",
+            "hour": "Letzte Stunde",
+            "day": "Letzte 24 Stunden",
+            "week": "Letzte 7 Tage"
+          }
+        },
+        "detail": {
+          "title": "Logeintrag",
+          "context": "Kontext",
+          "extra": "Extra",
+          "close": "Schließen"
+        }
+      },
       "expressCallback": {
         "title": "Express-Checkout-Callback",
         "subtitle": "PayPal ruft diesen Shop auf, um die Versandkosten zu aktualisieren, wenn Käufer im PayPal-Dialog die Versandart wechseln.",

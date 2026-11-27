@@ -1,0 +1,189 @@
+<mt-card
+    v-if="acl.can('swag_paypal_log:read')"
+    class="swag-paypal-settings-diagnostics-log"
+    position-identifier="swag-paypal-settings-diagnostics-log"
+    :title="$t('swag-paypal-settings.diagnostics.log.title')"
+>
+    <template #subtitle>
+        <i18n-t
+            class="swag-paypal-settings-diagnostics-log__subtitle"
+            keypath="swag-paypal-settings.diagnostics.log.subtitle"
+            tag="span"
+        >
+            <template #level>
+                {{ logLevelLabel }}
+            </template>
+
+            <template #advanced>
+                <mt-link
+                    type="internal"
+                    :to="{ name: 'swag.paypal.settings.index.advanced' }"
+                >
+                    {{ $t('swag-paypal-settings.tabs.advanced') }}
+                </mt-link>
+            </template>
+        </i18n-t>
+    </template>
+
+    <template #grid>
+        <div class="swag-paypal-settings-diagnostics-log__toolbar">
+            <sw-container
+                columns="1fr 1fr 1fr auto"
+                gap="var(--scale-size-16)"
+                align="start"
+            >
+                <mt-select
+                    class="swag-paypal-settings-diagnostics-log__period-filter"
+                    :model-value="period"
+                    :options="periodOptions"
+                    small
+                    hide-clearable-button
+                    @update:model-value="onPeriodChange"
+                />
+
+                <mt-select
+                    class="swag-paypal-settings-diagnostics-log__level-filter"
+                    :model-value="selectedLevels"
+                    :options="levelOptions"
+                    :placeholder="$t('swag-paypal-settings.diagnostics.log.filter.level')"
+                    enable-multi-selection
+                    small
+                    @update:model-value="onLevelsChange"
+                />
+
+                <mt-select
+                    class="swag-paypal-settings-diagnostics-log__code-filter"
+                    :model-value="selectedCodes"
+                    :options="codeOptions"
+                    :placeholder="$t('swag-paypal-settings.diagnostics.log.filter.code')"
+                    enable-multi-selection
+                    small
+                    @update:model-value="onCodesChange"
+                />
+
+                <mt-button
+                    class="swag-paypal-settings-diagnostics-log__reload"
+                    :aria-label="$t('swag-paypal-settings.diagnostics.log.reload')"
+                    size="small"
+                    variant="secondary"
+                    square
+                    @click="onReload"
+                >
+                    <mt-icon
+                        name="solid-undo-s"
+                        size="var(--scale-size-16)"
+                        decorative
+                    />
+                </mt-button>
+            </sw-container>
+
+            <sw-card-filter
+                class="swag-paypal-settings-diagnostics-log__search"
+                :placeholder="$t('swag-paypal-settings.diagnostics.log.searchPlaceholder')"
+                @sw-card-filter-term-change="onSearch"
+            />
+        </div>
+
+        <p
+            v-if="lines.length === 0 && !isLoading"
+            class="swag-paypal-settings-diagnostics-log__empty"
+        >
+            {{ emptyText }}
+        </p>
+
+        <sw-data-grid
+            v-else
+            class="swag-paypal-settings-diagnostics-log__grid"
+            :data-source="lines"
+            :columns="columns"
+            :is-loading="isLoading"
+            :show-selection="false"
+            :show-actions="false"
+        >
+            <template #column-createdAt="{ item }">
+                {{ formatTime(item.createdAt) }}
+            </template>
+
+            <template #column-level="{ item }">
+                <span
+                    class="swag-paypal-settings-diagnostics-log__level"
+                    :class="`swag-paypal-settings-diagnostics-log__level--${levelTone(item.level)}`"
+                >
+                    {{ levelLabel(item.level) }}
+                </span>
+            </template>
+
+            <template #column-message="{ item }">
+                {# sw-data-grid of 6.7.0 has no row click, so the message opens the details #}
+                <button
+                    type="button"
+                    class="swag-paypal-settings-diagnostics-log__message"
+                    @click="onOpenDetails(item.id)"
+                >
+                    {{ item.message }}
+                </button>
+            </template>
+        </sw-data-grid>
+
+        <sw-pagination
+            v-if="total > 0"
+            :page="page"
+            :limit="limit"
+            :total="total"
+            :steps="[25, 50, 100]"
+            @page-change="onPageChange"
+        />
+    </template>
+</mt-card>
+
+<sw-modal
+    v-if="detailLine"
+    class="swag-paypal-settings-diagnostics-log-detail"
+    :title="$t('swag-paypal-settings.diagnostics.log.detail.title')"
+    variant="large"
+    @modal-close="onCloseDetails"
+>
+    <dl class="swag-paypal-settings-diagnostics-log-detail__facts">
+        <dt>{{ $t('swag-paypal-settings.diagnostics.log.columnTime') }}</dt>
+        <dd class="swag-paypal-settings-diagnostics-log-detail__time">
+            {{ formatTime(detailLine.createdAt) }}
+        </dd>
+
+        <dt>{{ $t('swag-paypal-settings.diagnostics.log.columnLevel') }}</dt>
+        <dd>
+            <span
+                class="swag-paypal-settings-diagnostics-log__level swag-paypal-settings-diagnostics-log-detail__level"
+                :class="`swag-paypal-settings-diagnostics-log__level--${levelTone(detailLine.level)}`"
+            >
+                {{ levelLabel(detailLine.level) }}
+            </span>
+        </dd>
+
+        <template v-if="detailLine.code">
+            <dt>{{ $t('swag-paypal-settings.diagnostics.log.columnCode') }}</dt>
+            <dd class="swag-paypal-settings-diagnostics-log-detail__code">
+                <code>{{ detailLine.code }}</code>
+            </dd>
+        </template>
+    </dl>
+
+    <h4>{{ $t('swag-paypal-settings.diagnostics.log.columnMessage') }}</h4>
+    <p class="swag-paypal-settings-diagnostics-log-detail__message">
+        {{ detailLine.message }}
+    </p>
+
+    <h4>{{ $t('swag-paypal-settings.diagnostics.log.detail.context') }}</h4>
+    <pre class="swag-paypal-settings-diagnostics-log-detail__json swag-paypal-settings-diagnostics-log-detail__context"><code>{{ formatJson(detailLine.context) }}</code></pre>
+
+    <h4>{{ $t('swag-paypal-settings.diagnostics.log.detail.extra') }}</h4>
+    <pre class="swag-paypal-settings-diagnostics-log-detail__json swag-paypal-settings-diagnostics-log-detail__extra"><code>{{ formatJson(detailLine.extra) }}</code></pre>
+
+    <template #modal-footer>
+        <mt-button
+            variant="secondary"
+            @click="onCloseDetails"
+        >
+            {{ $t('swag-paypal-settings.diagnostics.log.detail.close') }}
+        </mt-button>
+    </template>
+</sw-modal>

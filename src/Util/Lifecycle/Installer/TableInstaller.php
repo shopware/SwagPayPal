@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenDefinition;
 use Swag\PayPal\DataAbstractionLayer\VaultTokenMapping\VaultTokenMappingDefinition;
+use Swag\PayPal\Diagnostics\Log\DataAbstractionLayer\LogLineDefinition;
 use Swag\PayPal\Reporting\DataAbstractionLayer\TransactionReport\TransactionReportDefinition;
 
 /**
@@ -25,6 +26,7 @@ class TableInstaller
         VaultTokenDefinition::ENTITY_NAME,
         TransactionReportDefinition::ENTITY_NAME,
         'swag_paypal_order_transactions',
+        LogLineDefinition::ENTITY_NAME,
     ];
 
     public function __construct(

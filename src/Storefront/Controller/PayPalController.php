@@ -108,7 +108,7 @@ class PayPalController extends StorefrontController
         try {
             $returnToken = $this->returnTokenService->parse($token, $salesChannelContext->getSalesChannelId());
         } catch (JWTException $e) {
-            $this->logger->warning(
+            $this->logger->notice(
                 'Could not restore the buyer\'s session after the return from PayPal, because the return token is invalid or expired',
                 Log::context(code: LogCode::STOREFRONT_RETURN_TOKEN_INVALID, exception: $e),
             );
@@ -306,7 +306,7 @@ class PayPalController extends StorefrontController
                 break;
             case BrowserErrorCode::SCRIPT:
             case BrowserErrorCode::SCRIPT_NOT_LOADED:
-                $this->logger->warning('The browser reported that the PayPal script failed', Log::context(...$logContext, code: LogCode::STOREFRONT_SCRIPT_FAILED));
+                $this->logger->notice('The browser reported that the PayPal script failed', Log::context(...$logContext, code: LogCode::STOREFRONT_SCRIPT_FAILED));
 
                 break;
             case BrowserErrorCode::BROWSER_UNSUPPORTED:
@@ -315,7 +315,7 @@ class PayPalController extends StorefrontController
 
                 break;
             default:
-                $this->logger->warning('The browser reported a PayPal error', Log::context(...$logContext, code: LogCode::STOREFRONT_ERROR_REPORTED));
+                $this->logger->notice('The browser reported a PayPal error', Log::context(...$logContext, code: LogCode::STOREFRONT_ERROR_REPORTED));
         }
     }
 

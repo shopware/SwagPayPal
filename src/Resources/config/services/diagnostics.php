@@ -5,6 +5,7 @@
  * file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\Connection;
 use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\Adapter\Storage\AbstractKeyValueStorage;
 use Shopware\Core\Framework\Adapter\Twig\NamespaceHierarchy\BundleHierarchyBuilder;
@@ -20,6 +21,10 @@ use Swag\PayPal\Diagnostics\ExpressCallback\ExpressCallbackDiagnostics;
 use Swag\PayPal\Diagnostics\ExpressCallback\Recording\LastCallbackStorage;
 use Swag\PayPal\Diagnostics\ExpressCallback\Recording\StoreApiUrlStorage;
 use Swag\PayPal\Diagnostics\ExpressCallback\TrustedHosts;
+use Swag\PayPal\Diagnostics\Log\DataAbstractionLayer\LogLineDefinition;
+use Swag\PayPal\Diagnostics\Log\Recording\DatabaseLogHandler;
+use Swag\PayPal\Diagnostics\Log\Retention\LogCleanupTask;
+use Swag\PayPal\Diagnostics\Log\Retention\LogCleanupTaskHandler;
 use Swag\PayPal\Diagnostics\Reachability\HostResolver;
 use Swag\PayPal\Diagnostics\Reachability\ReachabilityProbe;
 use Swag\PayPal\Diagnostics\Twig\Inheritance\NamespaceHierarchyResolver;
@@ -45,6 +50,8 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
+    $containerConfigurator->parameters()->set('env(PAYPAL_DB_LOGGER)', '1');
+
     $services = $containerConfigurator->services();
 
     // Express Checkout callback
@@ -195,4 +202,30 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->args([
             service(TwigTemplateParser::class),
         ]);
+
+    // Logs, added to the `paypal` channel in packages/monolog.yaml
+    $services->set(DatabaseLogHandler::class)
+        ->args([
+            service(Connection::class),
+            service(SystemConfigService::class),
+            env('PAYPAL_DB_LOGGER')->bool(),
+        ]);
+
+    $services->set(LogLineDefinition::class)
+        ->tag('shopware.entity.definition', ['entity' => LogLineDefinition::ENTITY_NAME]);
+
+    $services->set(LogCleanupTask::class)
+        ->tag('shopware.scheduled.task');
+
+    $services->set(LogCleanupTaskHandler::class)
+        ->args([
+            service('scheduled_task.repository'),
+            service('monolog.logger.paypal'),
+            service(Connection::class),
+            service(ClockInterface::class),
+        ])
+        ->arg('$maxAgeInDays', 30)
+        ->arg('$maxLines', 100_000)
+        ->arg('$batchSize', 10_000)
+        ->tag('messenger.message_handler');
 };

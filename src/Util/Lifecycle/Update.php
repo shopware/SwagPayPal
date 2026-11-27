@@ -173,6 +173,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '10.8.5', '<')) {
             $this->updateTo1085($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.10.0', '<')) {
+            $this->updateTo10100();
+        }
     }
 
     private function updateTo130(): void
@@ -624,5 +628,10 @@ class Update
     private function updateTo1085(Context $context): void
     {
         $this->agenticCommerceService->addAgenticSalesChannelType($context);
+    }
+
+    private function updateTo10100(): void
+    {
+        $this->setSettingToDefaultValue(Settings::LOG_LEVEL);
     }
 }

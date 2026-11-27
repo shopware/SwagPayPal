@@ -318,7 +318,7 @@ class WebhookControllerTest extends TestCase
 
         static::assertSame('Shopware token is invalid', $response->getContent());
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Warning, [Log::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
+        $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Notice, [Log::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
     }
 
     public function testExecuteWebhookEmptyTokenSent(): void
@@ -360,7 +360,7 @@ class WebhookControllerTest extends TestCase
 
         static::assertSame('Shopware token is invalid', $response->getContent());
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $record = $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Warning, [Log::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
+        $record = $this->assertPayPalLogged(LogCode::WEBHOOK_TOKEN_INVALID, Level::Notice, [Log::WEBHOOK_EVENT_ID => WebhookDataFixture::get()['id']]);
         static::assertStringNotContainsString('invalid-token', \json_encode($record->context, \JSON_THROW_ON_ERROR));
     }
 
