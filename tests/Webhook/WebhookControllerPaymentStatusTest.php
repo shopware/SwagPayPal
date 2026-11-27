@@ -91,6 +91,7 @@ class WebhookControllerPaymentStatusTest extends TestCase
             $webhookService,
             $systemConfigRepo,
             new WebhookUrlBuilder($this->createMock(RouterInterface::class), new RequestStack(), ''),
+            new RequestStack(),
         );
     }
 

@@ -75,6 +75,7 @@ class WebhookControllerTest extends TestCase
             new WebhookServiceMock(SystemConfigServiceMock::createWithoutCredentials()),
             $systemConfigRepo,
             new WebhookUrlBuilder($this->createMock(Router::class), new RequestStack(), ''),
+            new RequestStack(),
         );
     }
 
@@ -128,7 +129,7 @@ class WebhookControllerTest extends TestCase
 
     public function testRegisterWebhook(): void
     {
-        $jsonResponse = $this->controller->registerWebhook(TestDefaults::SALES_CHANNEL, new Request());
+        $jsonResponse = $this->controller->registerWebhook(TestDefaults::SALES_CHANNEL);
         $content = $jsonResponse->getContent();
         static::assertNotFalse($content);
 
@@ -140,10 +141,8 @@ class WebhookControllerTest extends TestCase
     #[DataProvider('provideUrlSources')]
     public function testRegisterWebhookWithAUrlSource(?string $urlSource, string $expectedUrl): void
     {
-        [$controller] = $this->createRegisteringController('https://app.example');
-
-        $request = new Request([], $urlSource === null ? [] : ['urlSource' => $urlSource]);
-        $result = \json_decode((string) $controller->registerWebhook(TestDefaults::SALES_CHANNEL, $request)->getContent(), true);
+        [$controller] = $this->createRegisteringController('https://app.example', new Request([], $urlSource === null ? [] : ['urlSource' => $urlSource]));
+        $result = \json_decode((string) $controller->registerWebhook(TestDefaults::SALES_CHANNEL)->getContent(), true);
 
         static::assertSame(['result' => $expectedUrl], $result);
     }
@@ -160,20 +159,20 @@ class WebhookControllerTest extends TestCase
 
     public function testRegisterWebhookRejectsAnUnknownUrlSource(): void
     {
-        [$controller] = $this->createRegisteringController('https://app.example');
+        [$controller] = $this->createRegisteringController('https://app.example', new Request([], ['urlSource' => 'other']));
 
         $this->expectException(RoutingException::class);
 
-        $controller->registerWebhook(TestDefaults::SALES_CHANNEL, new Request([], ['urlSource' => 'other']));
+        $controller->registerWebhook(TestDefaults::SALES_CHANNEL);
     }
 
     public function testRegisterWebhookRejectsTheAppUrlWithoutAppUrl(): void
     {
-        [$controller] = $this->createRegisteringController('');
+        [$controller] = $this->createRegisteringController('', new Request([], ['urlSource' => 'app_url']));
 
         $this->expectException(RoutingException::class);
 
-        $controller->registerWebhook(TestDefaults::SALES_CHANNEL, new Request([], ['urlSource' => 'app_url']));
+        $controller->registerWebhook(TestDefaults::SALES_CHANNEL);
     }
 
     public function testDeregisterWebhook(): void
@@ -365,7 +364,7 @@ class WebhookControllerTest extends TestCase
     /**
      * @return array{WebhookController, WebhookUrlBuilder}
      */
-    private function createRegisteringController(string $appUrl): array
+    private function createRegisteringController(string $appUrl, Request $currentRequest = new Request()): array
     {
         $routes = new RouteCollection();
         $routes->add('api.action.paypal.webhook.execute', new Route('/api/_action/paypal/webhook/execute'));
@@ -377,8 +376,11 @@ class WebhookControllerTest extends TestCase
         $webhookService = $this->createMock(WebhookServiceInterface::class);
         $webhookService->method('registerWebhook')->willReturnCallback(static fn () => $builder->build('t'));
 
+        $controllerRequestStack = new RequestStack();
+        $controllerRequestStack->push($currentRequest);
+
         return [
-            new WebhookController($this->createPayPalLogger(), $webhookService, $this->createMock(EntityRepository::class), $builder),
+            new WebhookController($this->createPayPalLogger(), $webhookService, $this->createMock(EntityRepository::class), $builder, $controllerRequestStack),
             $builder,
         ];
     }

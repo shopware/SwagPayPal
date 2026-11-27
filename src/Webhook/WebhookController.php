@@ -31,6 +31,7 @@ use Swag\PayPal\Webhook\Registration\WebhookUrlSource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -47,6 +48,7 @@ class WebhookController extends AbstractController
         private readonly WebhookServiceInterface $webhookService,
         private readonly EntityRepository $systemConfigRepository,
         private readonly WebhookUrlBuilder $urlBuilder,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -121,9 +123,9 @@ class WebhookController extends AbstractController
         )]
     )]
     #[Route(path: '/api/_action/paypal/webhook/register/{salesChannelId}', name: 'api.action.paypal.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
-    public function registerWebhook(string $salesChannelId, Request $request): JsonResponse
+    public function registerWebhook(string $salesChannelId): JsonResponse
     {
-        $source = $request->request->getString('urlSource', WebhookUrlSource::Administration->value);
+        $source = $this->requestStack->getCurrentRequest()?->request->getString('urlSource', WebhookUrlSource::Administration->value) ?? WebhookUrlSource::Administration->value;
         $source = WebhookUrlSource::tryFrom($source);
 
         if ($source === null || !isset($this->urlBuilder->buildAll('token')[$source->value])) {

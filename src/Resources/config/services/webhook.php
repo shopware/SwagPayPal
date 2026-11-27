@@ -50,6 +50,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(WebhookService::class),
             service('system_config.repository'),
             service(WebhookUrlBuilder::class),
+            service('request_stack'),
         ])
         ->call('setContainer', [service('service_container')]);
 
